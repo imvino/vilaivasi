@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
                         flexGrow: 1,
                         p: 3,
                         width: { sm: `calc(100% - ${isSidebarOpen ? 240 : 64}px)` },
-                        ml: { sm: isSidebarOpen ? `240px` : '64px' },
+                        // ml: { sm: isSidebarOpen ? `240px` : '64px' },
                         mt: ['56px', '64px'],
                         transition: theme.transitions.create(['margin', 'width'], {
                             easing: theme.transitions.easing.sharp,

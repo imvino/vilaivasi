@@ -15,7 +15,7 @@ const AddProductPage = () => {
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', p: 3 }}>
-            <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
+            <Box sx={{ maxWidth: 'xl', mx: 'auto' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="h4" component="h1">Add product</Typography>
                     <Button color="primary">Learn</Button>
