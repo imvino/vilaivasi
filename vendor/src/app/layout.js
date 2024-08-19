@@ -3,56 +3,42 @@
 'use client'
 
 import React, { useState } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Header from './components/Header';
+import { Layout as AntLayout, theme } from 'antd';
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#000',
-        },
-        secondary: {
-            main: '#000',
-        },
-    },
-});
-
+const { Content, Footer } = AntLayout;
 export default function RootLayout({ children }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
+    const [collapsed, setCollapsed] = useState(false);
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
 
     return (
         <html lang="en">
-        <body>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Box sx={{ display: 'flex' }}>
-                <Header toggleSidebar={toggleSidebar} />
-                <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-                <Box
-                    component="main"
-                    sx={{
-                        flexGrow: 1,
-                        p: 3,
-                        width: { sm: `calc(100% - ${isSidebarOpen ? 240 : 64}px)` },
-                        // ml: { sm: isSidebarOpen ? `240px` : '64px' },
-                        mt: ['56px', '64px'],
-                        transition: theme.transitions.create(['margin', 'width'], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                        }),
-                    }}
-                >
-                    {children}
-                </Box>
-            </Box>
-        </ThemeProvider>
+        <body style={{ margin: 0, padding: 0 }}>
+        <AntLayout style={{ minHeight: '100vh' }}>
+            <Sidebar collapsed={collapsed} onCollapse={setCollapsed}/>
+            <AntLayout>
+                <Header/>
+                <Content style={{ margin: '0 16px' }}>
+                    <div
+                        style={{
+                            padding: 24,
+                            minHeight: 360,
+                            background: colorBgContainer,
+                            borderRadius: borderRadiusLG,
+                            marginTop: 16,
+                        }}
+                    >
+                        {children}
+                    </div>
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>
+                    Vilaivasi ©{new Date().getFullYear()} Created by Your Company
+                </Footer>
+            </AntLayout>
+        </AntLayout>
         </body>
         </html>
     );

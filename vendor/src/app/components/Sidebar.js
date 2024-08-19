@@ -1,72 +1,36 @@
 // components/Sidebar.js
 
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Collapse, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { Dashboard, ShoppingCart, Inventory, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Layout, Menu } from 'antd';
+import { HomeOutlined, ShoppingCartOutlined, AppstoreOutlined } from '@ant-design/icons';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
-    const [productsOpen, setProductsOpen] = React.useState(true);
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+const { Sider } = Layout;
 
-    const handleProductsClick = () => {
-        setProductsOpen(!productsOpen);
+function getItem(label, key, icon, children) {
+    return {
+        key,
+        icon,
+        children,
+        label,
     };
+}
 
-    const drawerContent = (
-        <List>
-            <ListItem button>
-                <ListItemIcon><Dashboard /></ListItemIcon>
-                {isOpen && <ListItemText primary="Dashboard" />}
-            </ListItem>
-            <ListItem button>
-                <ListItemIcon><ShoppingCart /></ListItemIcon>
-                {isOpen && <ListItemText primary="Point of Sale" />}
-            </ListItem>
-            <ListItem button onClick={handleProductsClick}>
-                <ListItemIcon><Inventory /></ListItemIcon>
-                {isOpen && <ListItemText primary="Products" />}
-                {isOpen && (productsOpen ? <ExpandLess /> : <ExpandMore />)}
-            </ListItem>
-            {isOpen && (
-                <Collapse in={productsOpen} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        {['Products', 'Product types', 'Brands', 'Tags', 'Seasons', 'Gift cards', 'Discount offers', 'Print labels'].map((text) => (
-                            <ListItem button key={text} sx={{ pl: 4 }}>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Collapse>
-            )}
-        </List>
-    );
+const items = [
+    getItem('Dashboard', '1', <HomeOutlined />),
+    getItem('Point of Sale', '2', <ShoppingCartOutlined />),
+    getItem('Products', 'sub1', <AppstoreOutlined />, [
+        getItem('All Products', '3'),
+        getItem('Categories', '4'),
+        getItem('Inventory', '5'),
+    ]),
+];
 
+const Sidebar = ({ collapsed, onCollapse }) => {
     return (
-        <Drawer
-            variant={isMobile ? "temporary" : "permanent"}
-            open={isMobile ? isOpen : true}
-            onClose={toggleSidebar}
-            sx={{
-                width: isOpen ? 240 : 64,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                    width: isOpen ? 240 : 64,
-                    boxSizing: 'border-box',
-                    top: ['56px', '64px'],
-                    height: 'auto',
-                    bottom: 0,
-                    transition: theme.transitions.create('width', {
-                        easing: theme.transitions.easing.sharp,
-                        duration: theme.transitions.duration.enteringScreen,
-                    }),
-                    overflowX: 'hidden',
-                },
-            }}
-        >
-            {drawerContent}
-        </Drawer>
+        <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+            <div style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, 0.2)' }} />
+            <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        </Sider>
     );
 };
 

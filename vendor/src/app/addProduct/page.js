@@ -4,176 +4,216 @@
 
 import React, { useState } from 'react';
 import {
-    Typography, Grid, Paper, Radio, RadioGroup, FormControlLabel, TextField, Checkbox,
-    Button, Switch, Select, MenuItem, InputLabel, FormControl, Box
-} from '@mui/material';
-import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
+    Typography, Row, Col, Card, Radio, Input, Checkbox, Button, Switch, Select, Form, Space, Upload
+} from 'antd';
+import { CameraOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const AddProductPage = () => {
     const [productType, setProductType] = useState('simple');
     const [inventory, setInventory] = useState(false);
+    const [form] = Form.useForm();
 
     return (
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', p: 3 }}>
-            <Box sx={{ maxWidth: 'xl', mx: 'auto' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Typography variant="h4" component="h1">Add product</Typography>
-                    <Button color="primary">Learn</Button>
-                </Box>
+        <div style={{ background: '#f0f2f5', minHeight: '100vh', padding: 24 }}>
+            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+                <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+                    <Title level={4}>Add product</Title>
+                    <Button type="link">Learn</Button>
+                </Row>
 
-                <Grid container spacing={3}>
-                    {/* Left Column */}
-                    <Grid item xs={12} lg={8}>
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>PRODUCT TYPE</Typography>
-                            <RadioGroup
-                                row
-                                value={productType}
-                                onChange={(e) => setProductType(e.target.value)}
-                            >
-                                <FormControlLabel value="simple" control={<Radio />} label="Simple product, no variants" />
-                                <FormControlLabel value="variants" control={<Radio />} label="Product with variants" />
-                                <FormControlLabel value="composite" control={<Radio />} label="Composite product" />
-                            </RadioGroup>
-                        </Paper>
+                <Form form={form} layout="vertical">
+                    <Row gutter={24}>
+                        {/* Left Column */}
+                        <Col xs={24} lg={16}>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">PRODUCT TYPE</Title>
+                                <Radio.Group
+                                    value={productType}
+                                    onChange={(e) => setProductType(e.target.value)}
+                                >
+                                    <Space direction="vertical">
+                                        <Radio value="simple">Simple product, no variants</Radio>
+                                        <Radio value="variants">Product with variants</Radio>
+                                        <Radio value="composite">Composite product</Radio>
+                                    </Space>
+                                </Radio.Group>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>PRIMARY INFORMATION</Typography>
-                            <TextField fullWidth label="Product name" required margin="normal" />
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField fullWidth label="SKU" margin="normal" />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField fullWidth label="Barcode" margin="normal" />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField fullWidth label="Supplier code" margin="normal" />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField fullWidth label="Custom field" margin="normal" />
-                                </Grid>
-                            </Grid>
-                            <FormControlLabel
-                                control={<Checkbox />}
-                                label="Serial number enabled product. Prompt cashier to enter serial number at checkout."
-                            />
-                            <FormControlLabel
-                                control={<Checkbox />}
-                                label="Part of a composite product, cannot be sold individually."
-                            />
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                multiline
-                                rows={4}
-                                margin="normal"
-                            />
-                        </Paper>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">PRIMARY INFORMATION</Title>
+                                <Form.Item name="productName" label="Product name" required>
+                                    <Input />
+                                </Form.Item>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item name="sku" label="SKU">
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="barcode" label="Barcode">
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item name="supplierCode" label="Supplier code">
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="customField" label="Custom field">
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Form.Item name="serialNumberEnabled" valuePropName="checked">
+                                    <Checkbox>
+                                        Serial number enabled product. Prompt cashier to enter serial number at checkout.
+                                    </Checkbox>
+                                </Form.Item>
+                                <Form.Item name="partOfComposite" valuePropName="checked">
+                                    <Checkbox>
+                                        Part of a composite product, cannot be sold individually.
+                                    </Checkbox>
+                                </Form.Item>
+                                <Form.Item name="description" label="Description">
+                                    <TextArea rows={4} />
+                                </Form.Item>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>INVENTORY</Typography>
-                            <Typography variant="body2" gutterBottom>Track inventory for this product</Typography>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                Would you like Hike to track inventory movement for this product?
-                            </Typography>
-                            <FormControlLabel
-                                control={<Switch checked={inventory} onChange={(e) => setInventory(e.target.checked)} />}
-                                label={inventory ? "On" : "Off"}
-                            />
-                        </Paper>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">INVENTORY</Title>
+                                <Text>Track inventory for this product</Text>
+                                <br />
+                                <Text type="secondary">
+                                    Would you like Hike to track inventory movement for this product?
+                                </Text>
+                                <br />
+                                <Form.Item name="inventoryTracking" valuePropName="checked">
+                                    <Switch
+                                        checked={inventory}
+                                        onChange={setInventory}
+                                        checkedChildren="On"
+                                        unCheckedChildren="Off"
+                                    />
+                                </Form.Item>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>PRICING</Typography>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6} md={2.4}>
-                                    <TextField fullWidth label="Cost price" type="number" defaultValue="0.00" />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={2.4}>
-                                    <TextField fullWidth label="Mark-up %" type="number" defaultValue="0.00" />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={2.4}>
-                                    <TextField fullWidth label="Retail (Ex. Tax)" type="number" defaultValue="0.00" />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={2.4}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Tax rate</InputLabel>
-                                        <Select defaultValue="">
-                                            <MenuItem value="">No Tax</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={2.4}>
-                                    <TextField fullWidth label="Retail price (Inc. Tax)" type="number" defaultValue="0.00" />
-                                </Grid>
-                            </Grid>
-                        </Paper>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">PRICING</Title>
+                                <Row gutter={16}>
+                                    <Col span={8}>
+                                        <Form.Item name="costPrice" label="Cost price">
+                                            <Input type="number" defaultValue="0.00" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Form.Item name="markup" label="Mark-up %">
+                                            <Input type="number" defaultValue="0.00" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Form.Item name="retailExTax" label="Retail (Ex. Tax)">
+                                            <Input type="number" defaultValue="0.00" />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item name="taxRate" label="Tax rate">
+                                            <Select defaultValue="">
+                                                <Select.Option value="">No Tax</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="retailIncTax" label="Retail price (Inc. Tax)">
+                                            <Input type="number" defaultValue="0.00" />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>ADDITIONAL UNIT OF MEASURES</Typography>
-                            <FormControlLabel
-                                control={<Checkbox />}
-                                label="Activate additional unit of measures"
-                            />
-                        </Paper>
-                    </Grid>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">ADDITIONAL UNIT OF MEASURES</Title>
+                                <Form.Item name="additionalUnitOfMeasures" valuePropName="checked">
+                                    <Checkbox>Activate additional unit of measures</Checkbox>
+                                </Form.Item>
+                            </Card>
+                        </Col>
 
-                    {/* Right Column */}
-                    <Grid item xs={12} lg={4}>
-                        <Paper sx={{ p: 3, mb: 3, height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <CameraAltOutlinedIcon sx={{ fontSize: 60, color: 'text.secondary' }} />
-                        </Paper>
+                        {/* Right Column */}
+                        <Col xs={24} lg={8}>
+                            <Card style={{ marginBottom: 24, height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <Upload>
+                                    <Button icon={<CameraOutlined />} size="large" />
+                                </Upload>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>SALES CHANNELS</Typography>
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="Point of Sale" />
-                            <FormControlLabel control={<Checkbox />} label="Ecommerce" />
-                        </Paper>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">SALES CHANNELS</Title>
+                                <Form.Item name="pointOfSale" valuePropName="checked">
+                                    <Checkbox>Point of Sale</Checkbox>
+                                </Form.Item>
+                                <Form.Item name="ecommerce" valuePropName="checked">
+                                    <Checkbox>Ecommerce</Checkbox>
+                                </Form.Item>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>CATEGORIZE</Typography>
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel>Product types</InputLabel>
-                                <Select defaultValue="">
-                                    <MenuItem value="">Select or add new type...</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel>Suppliers</InputLabel>
-                                <Select defaultValue="">
-                                    <MenuItem value="">Select or add new...</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <TextField fullWidth label="Brand" placeholder="Start typing brand name..." margin="normal" />
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel>Tags</InputLabel>
-                                <Select defaultValue="">
-                                    <MenuItem value="">Select or add new...</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <TextField fullWidth label="Season" placeholder="Start typing season..." margin="normal" />
-                            <TextField fullWidth label="Additional loyalty points" type="number" defaultValue="0" margin="normal" />
-                        </Paper>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">CATEGORIZE</Title>
+                                <Form.Item name="productTypes" label="Product types">
+                                    <Select placeholder="Select or add new type...">
+                                        <Select.Option value="">Select or add new type...</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item name="suppliers" label="Suppliers">
+                                    <Select placeholder="Select or add new...">
+                                        <Select.Option value="">Select or add new...</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item name="brand" label="Brand">
+                                    <Input placeholder="Start typing brand name..." />
+                                </Form.Item>
+                                <Form.Item name="tags" label="Tags">
+                                    <Select placeholder="Select or add new...">
+                                        <Select.Option value="">Select or add new...</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item name="season" label="Season">
+                                    <Input placeholder="Start typing season..." />
+                                </Form.Item>
+                                <Form.Item name="loyaltyPoints" label="Additional loyalty points">
+                                    <Input type="number" defaultValue="0" />
+                                </Form.Item>
+                            </Card>
 
-                        <Paper sx={{ p: 3, mb: 3 }}>
-                            <Typography variant="h6" color="primary" gutterBottom>OPTIONAL EXTRAS</Typography>
-                            <FormControl fullWidth>
-                                <InputLabel>Search for Product</InputLabel>
-                                <Select defaultValue="">
-                                    <MenuItem value="">Search for Product</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Paper>
-                    </Grid>
-                </Grid>
+                            <Card style={{ marginBottom: 24 }}>
+                                <Title level={5} type="primary">OPTIONAL EXTRAS</Title>
+                                <Form.Item name="searchProduct">
+                                    <Select placeholder="Search for Product">
+                                        <Select.Option value="">Search for Product</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                {/* Action Buttons */}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                    <Button variant="outlined" sx={{ mr: 2 }}>CANCEL</Button>
-                    <Button variant="contained" color="primary">SAVE</Button>
-                </Box>
-            </Box>
-        </Box>
+                    {/* Action Buttons */}
+                    <Row justify="end" style={{ marginTop: 24 }}>
+                        <Space>
+                            <Button>CANCEL</Button>
+                            <Button type="primary">SAVE</Button>
+                        </Space>
+                    </Row>
+                </Form>
+            </div>
+        </div>
     );
 };
 
