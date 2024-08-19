@@ -12,10 +12,10 @@ import Sidebar from './components/Sidebar';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#00A3B1',
+            main: '#000',
         },
         secondary: {
-            main: '#9C27B0',
+            main: '#000',
         },
     },
 });

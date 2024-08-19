@@ -22,7 +22,7 @@ const Header = ({ toggleSidebar }) => {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                    Vilivasi
+                    Vilaivasi
                 </Typography>
                 <Button
                     variant="contained"
