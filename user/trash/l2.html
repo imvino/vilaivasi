@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery App - Coffee Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white min-h-screen">
+
+
+        <!-- Header -->
+        <header class="bg-green-500 text-white p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <button class="mr-4"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="text-xl font-semibold">Snacks & Beverages</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button><i class="fas fa-search"></i></button>
+                <button class="relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span
+                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">14</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Category Filters -->
+        <div class="p-4 flex space-x-2 overflow-x-auto">
+            <div class="flex-shrink-0 w-20 h-20 border rounded-lg p-1 flex flex-col items-center justify-center">
+                <img src="https://random.imagecdn.app/40/40" alt="Tea" class="w-10 h-10 object-cover mb-1">
+                <span class="text-xs">Tea</span>
+            </div>
+            <div
+                class="flex-shrink-0 w-20 h-20 border rounded-lg p-1 flex flex-col items-center justify-center border-blue-500">
+                <img src="https://random.imagecdn.app/40/40" alt="Coffee" class="w-10 h-10 object-cover mb-1">
+                <span class="text-xs text-blue-500">Coffee</span>
+            </div>
+            <div class="flex-shrink-0 w-20 h-20 border rounded-lg p-1 flex flex-col items-center justify-center">
+                <img src="https://random.imagecdn.app/40/40" alt="Juices" class="w-10 h-10 object-cover mb-1">
+                <span class="text-xs">Juices</span>
+            </div>
+            <div class="flex-shrink-0 w-20 h-20 border rounded-lg p-1 flex flex-col items-center justify-center">
+                <img src="https://random.imagecdn.app/40/40" alt="Nutritional Mix" class="w-10 h-10 object-cover mb-1">
+                <span class="text-xs">Nutritional Mix</span>
+            </div>
+        </div>
+
+        <!-- Sub-categories -->
+        <div class="px-4 flex space-x-2 overflow-x-auto">
+            <button class="px-4 py-2 rounded-full bg-blue-100 text-blue-600 text-sm">All</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm">Roast & Ground</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm">Instant Coffee</button>
+        </div>
+
+        <!-- Product Count -->
+        <div class="px-4 py-2 text-gray-600">60 Products</div>
+
+        <!-- Product List -->
+        <div class="px-4 space-y-4">
+            <!-- BRU Instant Coffee -->
+            <div class="flex items-start border-b pb-4">
+                <div class="relative w-1/3">
+                    <img src="https://random.imagecdn.app/100/100" alt="BRU Instant Coffee" class="w-full object-cover">
+                    <span class="absolute top-0 left-0 bg-green-500 text-white text-xs px-2 py-1">21% off</span>
+                </div>
+                <div class="w-2/3 pl-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-semibold">BRU</h3>
+                            <p class="text-sm">Instant Coffee</p>
+                        </div>
+                        <span class="text-xs text-gray-500">AD</span>
+                    </div>
+                    <div class="mt-2">
+                        <select class="border rounded px-2 py-1 text-sm">
+                            <option>100 g</option>
+                        </select>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between">
+                        <div>
+                            <span class="text-gray-500 line-through text-sm">MRP ₹280</span>
+                            <span class="font-semibold">₹219</span>
+                        </div>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded">Add</button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">@ ₹219 / 100g</p>
+                </div>
+            </div>
+
+            <!-- CONTINENTAL Xtra Jar Instant Coffee -->
+            <div class="flex items-start border-b pb-4">
+                <div class="relative w-1/3">
+                    <img src="https://random.imagecdn.app/100/100" alt="CONTINENTAL Coffee" class="w-full object-cover">
+                    <span class="absolute top-0 left-0 bg-green-500 text-white text-xs px-2 py-1">20% off</span>
+                </div>
+                <div class="w-2/3 pl-4">
+                    <h3 class="font-semibold">CONTINENTAL</h3>
+                    <p class="text-sm">Xtra Jar Instant Coffee</p>
+                    <div class="mt-2">
+                        <select class="border rounded px-2 py-1 text-sm">
+                            <option>20 g</option>
+                        </select>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between">
+                        <div>
+                            <span class="text-gray-500 line-through text-sm">MRP ₹80</span>
+                            <span class="font-semibold">₹64</span>
+                        </div>
+                        <div class="flex items-center">
+                            <button
+                                class="bg-blue-500 text-white w-8 h-8 rounded-l flex items-center justify-center">-</button>
+                            <span class="bg-gray-100 px-4 py-1">1</span>
+                            <button
+                                class="bg-blue-500 text-white w-8 h-8 rounded-r flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">@ ₹320 / 100g</p>
+                </div>
+            </div>
+
+            <!-- Additional product items can be added here following the same structure -->
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-between items-center p-2">
+            <button class="text-center">
+                <i class="fas fa-home text-gray-600"></i>
+                <p class="text-xs">Grocery</p>
+            </button>
+            <button class="text-center">
+                <i class="fas fa-th text-gray-600"></i>
+                <p class="text-xs">Categories</p>
+            </button>
+            <button class="bg-red-500 text-white rounded-full w-16 h-16 flex items-center justify-center -mt-6">
+                <img src="https://random.imagecdn.app/40/40" alt="Colgate" class="w-12 h-12 object-contain">
+            </button>
+            <button class="text-center">
+                <i class="fas fa-redo text-gray-600"></i>
+                <p class="text-xs">Buy again</p>
+            </button>
+            <button class="text-center relative">
+                <i class="fas fa-shopping-cart text-gray-600"></i>
+                <span
+                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">14</span>
+                <p class="text-xs">₹893</p>
+            </button>
+        </nav>
+
+        <!-- Promotional Banner -->
+        <div class="fixed bottom-16 left-0 right-0 bg-yellow-400 py-2 px-4 text-center">
+            <p class="text-sm font-semibold">Add items worth ₹578 more to get ₹50 off</p>
+        </div>
+    </div>
+</body>
+
+</html>

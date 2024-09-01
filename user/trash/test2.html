@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .blue-gradient {
+            background: linear-gradient(to right, #2874f0, #5d9dff);
+        }
+
+        .text-xs {
+            font-size: 10px !important;
+        }
+
+        .category-item {
+            position: relative;
+        }
+
+        .category-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 10px;
+            width: 4px;
+            background-color: #2874f0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .category-item.active::before {
+            opacity: 1;
+        }
+
+        .category-item.active {
+            background-color: white;
+        }
+
+        .category-item:not(.active) {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+
+<body class="bg-white">
+    <div class="h-screen flex flex-col">
+        <!-- Top bar -->
+        <div class="bg-white p-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">All Categories</h1>
+            <button class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main content -->
+        <main class="flex-1 flex overflow-hidden">
+            <!-- Left sidebar -->
+            <div class="w-1/5 overflow-y-auto scrollbar-hide">
+                <ul id="categoryList">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center active bg-white"
+                        data-category="Furniture">
+                        <img src="https://random.imagecdn.app/40/40" alt="Furniture"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs text-blue-600 font-medium">Furniture</span>
+                    </li>
+                    <hr class="h-px bg-gray-200 border-0">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center"
+                        data-category="Beauty & Wellness">
+                        <img src="https://random.imagecdn.app/40/40" alt="Beauty & Wellness"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Beauty & Wellness</span>
+                    </li>
+                    <hr class="h-px bg-gray-200 border-0">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center"
+                        data-category="Electronics">
+                        <img src="https://random.imagecdn.app/40/40" alt="Electronics"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Electronics</span>
+                    </li>
+                    <hr class="h-px bg-gray-200 border-0">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center" data-category="Mobile">
+                        <img src="https://random.imagecdn.app/40/40" alt="Mobile"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Mobile</span>
+                    </li>
+                    <hr class="h-px bg-gray-200 border-0">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center"
+                        data-category="Toys, Baby, Books">
+                        <img src="https://random.imagecdn.app/40/40" alt="Toys, Baby, Books"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Toys, Baby, Books</span>
+                    </li>
+                    <hr class="h-px bg-gray-200 border-0">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center" data-category="Spa">
+                        <img src="https://random.imagecdn.app/40/40" alt="Spa"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Spa</span>
+                    </li>
+
+
+
+                </ul>
+            </div>
+
+            <!-- Right content -->
+            <div class="w-4/5 bg-white overflow-y-auto scrollbar-hide">
+                <!-- Grocery header -->
+                <div class="blue-gradient text-white p-4 flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Grocery</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+
+                <div class="p-4">
+                    <div class="mb-8">
+                        <h3 class="text-base font-semibold mb-4">In The Spotlight</h3>
+                        <div class="grid grid-cols-4 gap-1">
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="New Launches"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">New Launches</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="Premium"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">Premium</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="Shop Now!"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">Shop Now!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subCat"></div>
+
+                </div>
+            </div>
+    </div>
+    </div>
+    </main>
+
+    <!-- Bottom navigation -->
+    <nav class="bg-white fixed bottom-0 left-0 right-0 flex justify-around items-center p-2">
+        <a href="#" class="text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="#" class="text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span class="text-xs">Explore</span>
+        </a>
+        <a href="#" class="text-center text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            <span class="text-xs">Categories</span>
+        </a>
+        <a href="#" class="text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span class="text-xs">Account</span>
+        </a>
+        <a href="#" class="text-center relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="text-xs">Cart</span>
+            <span
+                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">13</span>
+        </a>
+    </nav>
+    </div>
+</body>
+
+</html>
+
+<script>
+    let subCatHtml = `<div class="mb-8">
+                            <h3 class="text-base font-semibold mb-4">Skin Care</h3>
+                            <div class="grid grid-cols-4 gap-1">
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Face Wash"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Face Wash</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Sunscreen"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Sunscreen</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Face Creams"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Face Creams</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Serums"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Serums</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Lotions"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Lotions</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Scrub"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Scrub</span>
+                                </div>
+                            </div>
+                        </div>`;
+
+    const subCatList = document.getElementById('subCat');
+
+    // Append restaurant HTML 6 times
+    for (let i = 0; i < 6; i++) {
+        subCatList.innerHTML += subCatHtml;
+    }
+
+    // Make sidebar interactive
+    const categoryItems = document.querySelectorAll('.category-item');
+
+    function setActiveCategory(item) {
+        categoryItems.forEach(i => {
+            i.classList.remove('active');
+            i.classList.add('bg-gray-100');
+            i.querySelector('span').classList.remove('text-blue-600', 'font-medium');
+        });
+
+        item.classList.add('active');
+        item.classList.remove('bg-gray-100');
+        item.querySelector('span').classList.add('text-blue-600', 'font-medium');
+    }
+
+    categoryItems.forEach(item => {
+        item.addEventListener('click', function () {
+            setActiveCategory(this);
+        });
+    });
+
+    // Set the first item as active by default
+    if (categoryItems.length > 0) {
+        setActiveCategory(categoryItems[0]);
+    }
+
+
+</script>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beverage Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'shop-pink': '#E91E63',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white min-h-screen pb-16">
+
+
+        <!-- Header -->
+        <header class="bg-shop-pink text-white p-4 flex items-center justify-between">
+            <button class="text-2xl"><i class="fas fa-arrow-left"></i></button>
+            <h1 class="text-2xl font-bold">Beverages</h1>
+            <div class="bg-white text-shop-pink px-3 py-1 rounded-full flex items-center">
+                <i class="fas fa-shopping-basket mr-2"></i>
+                <span class="font-bold">KD 2.125</span>
+            </div>
+        </header>
+
+        <!-- Categories -->
+        <div class="flex justify-between px-4 py-2 border-b">
+            <button class="text-shop-pink font-bold border-b-2 border-shop-pink">Soft Drinks</button>
+            <button class="text-gray-500">Juices</button>
+            <button class="text-gray-500">Malt Drinks</button>
+            <button class="text-gray-500">Sports</button>
+        </div>
+
+        <!-- Product List -->
+        <div class="p-4">
+            <h2 class="text-2xl font-bold mb-4">Soft Drinks</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <!-- 7UP Can 150ml -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+                    <img src="https://random.imagecdn.app/200/200" alt="7UP Can 150ml" class="w-full h-40 object-cover">
+                    <div
+                        class="absolute top-2 left-2 bg-shop-pink text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold">
+                        1</div>
+                    <div
+                        class="absolute top-2 right-2 bg-white text-shop-pink rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold shadow-md">
+                        +</div>
+                    <div class="absolute bottom-24 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full">
+                        Coupon</div>
+                    <div class="p-3">
+                        <p class="text-shop-pink font-bold text-lg">KD 0.075</p>
+                        <h3 class="text-sm font-bold">7UP Can 150ml</h3>
+                    </div>
+                </div>
+
+                <!-- 7UP Can 250ml -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+                    <img src="https://random.imagecdn.app/200/200" alt="7UP Can 250ml" class="w-full h-40 object-cover">
+                    <div class="absolute top-2 right-2 flex items-center space-x-1">
+                        <button
+                            class="bg-white text-shop-pink rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold shadow-md">-</button>
+                        <span
+                            class="bg-shop-pink text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold">1</span>
+                        <button
+                            class="bg-white text-shop-pink rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold shadow-md">+</button>
+                    </div>
+                    <div class="absolute bottom-24 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full">
+                        Coupon</div>
+                    <div class="p-3">
+                        <p class="text-shop-pink font-bold text-lg">KD 0.100</p>
+                        <h3 class="text-sm font-bold">7UP Can 250ml</h3>
+                    </div>
+                </div>
+
+                <!-- 7UP Can 3 x 250ml -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+                    <img src="https://random.imagecdn.app/200/200       " alt="7UP Can 3 x 250ml"
+                        class="w-full h-40 object-cover">
+                    <div
+                        class="absolute top-2 left-2 bg-shop-pink text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold">
+                        3</div>
+                    <div
+                        class="absolute top-2 right-2 bg-white text-shop-pink rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold shadow-md">
+                        +</div>
+                    <div class="absolute bottom-24 left-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full">
+                        Coupon</div>
+                    <div class="p-3">
+                        <p class="text-shop-pink font-bold text-lg">KD 0.285</p>
+                        <h3 class="text-sm font-bold">7UP Can 3 x 250ml</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-between items-center p-2">
+            <button class="text-shop-pink text-center">
+                <i class="fas fa-home text-2xl"></i>
+                <p class="text-xs">Home</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-search text-2xl"></i>
+                <p class="text-xs">Search</p>
+            </button>
+            <button class="bg-shop-pink text-white rounded-full w-12 h-12 flex items-center justify-center">
+                <i class="fas fa-th text-2xl"></i>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-clipboard-list text-2xl"></i>
+                <p class="text-xs">Orders</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-user text-2xl"></i>
+                <p class="text-xs">Profile</p>
+            </button>
+        </nav>
+    </div>
+</body>
+
+</html>

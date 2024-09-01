@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .carousel {
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        .carousel > * {
+            scroll-snap-align: start;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white p-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+                <div>
+                    <h1 class="font-bold text-lg">Vgn Stafford Block-M <i class="fas fa-chevron-down text-xs ml-1"></i></h1>
+                    <p class="text-gray-500 text-xs">Sathyamurthi Nagar, Poompozhil Nagar, Avadi, Tamil N...</p>
+                </div>
+            </div>
+            <div class="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center">
+                <i class="fas fa-user text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="px-4 py-2 bg-white">
+        <div class="flex items-center bg-gray-100 rounded-full p-2">
+            <i class="fas fa-search text-gray-400 mr-2"></i>
+            <input type="text" placeholder="Search for 'Biryani'" class="bg-transparent flex-grow focus:outline-none">
+            <i class="fas fa-microphone text-orange-500"></i>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow overflow-y-auto bg-white">
+        <!-- Subway Offer -->
+        <div class="p-4">
+            <div class="bg-green-50 rounded-lg p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-green-800 font-bold text-xl">Subway</h2>
+                    <p class="text-green-700 font-bold text-lg">Get flat ₹150 OFF</p>
+                    <p class="text-green-600 text-sm">above ₹299 & a free cookie</p>
+                    <button class="bg-green-700 text-white px-4 py-1 rounded-full mt-2">ORDER NOW</button>
+                </div>
+                <img src="https://random.imagecdn.app/150/100/?subway,sandwich" alt="Subway Offer" class="rounded-lg">
+            </div>
+        </div>
+
+        <!-- Carousel Dots -->
+        <div class="flex justify-center space-x-1 my-2">
+            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+            <div class="w-2 h-2 bg-gray-800 rounded-full"></div>
+            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="px-4 py-2">
+            <div class="carousel flex space-x-4 overflow-x-auto pb-2">
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?gourmet,food" alt="Gourmet Delights" class="w-full rounded-lg mb-1">
+                    <span class="text-xs">GOURMET DELIGHTS</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?delivery,food" alt="Pocket Hero" class="w-full rounded-lg mb-1">
+                    <span class="text-xs text-orange-500">POCKET HERO</span>
+                    <span class="text-xs text-orange-500 block">FREE DELIVERY</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?vegetarian,food" alt="Green Dot" class="w-full rounded-lg mb-1">
+                    <span class="text-xs text-green-500">GREEN DOT</span>
+                    <span class="text-xs text-green-500 block">VEG AWARDS</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?train,food" alt="Food on Train" class="w-full rounded-lg mb-1">
+                    <span class="text-xs">NEW FOOD</span>
+                    <span class="text-xs block">ON TRAIN</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?gourmet,food" alt="Gourmet Delights" class="w-full rounded-lg mb-1">
+                    <span class="text-xs">GOURMET DELIGHTS</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?delivery,food" alt="Pocket Hero" class="w-full rounded-lg mb-1">
+                    <span class="text-xs text-orange-500">POCKET HERO</span>
+                    <span class="text-xs text-orange-500 block">FREE DELIVERY</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?vegetarian,food" alt="Green Dot" class="w-full rounded-lg mb-1">
+                    <span class="text-xs text-green-500">GREEN DOT</span>
+                    <span class="text-xs text-green-500 block">VEG AWARDS</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?train,food" alt="Food on Train" class="w-full rounded-lg mb-1">
+                    <span class="text-xs">NEW FOOD</span>
+                    <span class="text-xs block">ON TRAIN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- In The Spotlight -->
+        <div class="px-4 py-2">
+            <h2 class="font-bold text-lg mb-2">IN THE SPOTLIGHT</h2>
+            <div class="carousel flex space-x-4 overflow-x-auto pb-2">
+                <div class="flex-shrink-0 w-48 relative">
+                    <img src="https://random.imagecdn.app/192/128/?restaurant,food" alt="Flat Deal" class="w-full h-32 object-cover rounded-lg">
+                    <div class="absolute top-2 right-2 bg-white rounded-full p-1">
+                        <i class="far fa-heart text-gray-400"></i>
+                    </div>
+                    <div class="absolute bottom-2 left-2 text-white">
+                        <h3 class="font-bold">FLAT DEAL</h3>
+                        <p class="text-xl font-bold">₹100 OFF</p>
+                        <p class="text-sm">ABOVE ₹179</p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 w-48 relative">
+                    <img src="https://random.imagecdn.app/192/128/?cake,dessert" alt="Dream Cake" class="w-full h-32 object-cover rounded-lg">
+                    <div class="absolute top-2 right-2 bg-white rounded-full p-1">
+                        <i class="far fa-heart text-gray-400"></i>
+                    </div>
+                    <div class="absolute bottom-2 left-2 text-white">
+                        <h3 class="font-bold">ITEMS</h3>
+                        <p class="text-xl font-bold">AT ₹69</p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 w-48 relative">
+                    <img src="https://random.imagecdn.app/192/128/?discount,food" alt="50% OFF" class="w-full h-32 object-cover rounded-lg">
+                    <div class="absolute top-2 right-2 bg-white rounded-full p-1">
+                        <i class="far fa-heart text-gray-400"></i>
+                    </div>
+                    <div class="absolute bottom-2 left-2 text-white">
+                        <h3 class="font-bold">50% OFF</h3>
+                        <p class="text-sm">UPTO ₹100</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant List -->
+        <div class="px-4 py-2">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-bold">Jha Sweets</h2>
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-star text-green-500 mr-1"></i>
+                    <span>4.6</span>
+                    <span class="mx-1">•</span>
+                    <span>20-25 mins</span>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm">Indian, Sweets</p>
+        </div>
+
+        <div class="px-4 py-2 border-t">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-bold">FB Cakes</h2>
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-star text-green-500 mr-1"></i>
+                    <span>4.4</span>
+                    <span class="mx-1">•</span>
+                    <span>20-25 mins</span>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm">Bakery, Desserts</p>
+        </div>
+
+        <div class="px-4 py-2 border-t">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-bold">Hotel Kitchen 65</h2>
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-star text-green-500 mr-1"></i>
+                    <span>4.3</span>
+                    <span class="mx-1">•</span>
+                    <span>10-15 mins</span>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm">Barbecue, Biryani, Arabian</p>
+        </div>
+
+        <!-- What's on your mind? -->
+        <div class="px-4 py-2 mt-4">
+            <h2 class="font-bold text-lg mb-2">WHAT'S ON YOUR MIND?</h2>
+            <div class="carousel flex space-x-4 overflow-x-auto pb-2">
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?biryani" alt="Biryani" class="w-full rounded-full mb-1">
+                    <span class="text-xs">Biryani</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?pizza" alt="Pizza" class="w-full rounded-full mb-1">
+                    <span class="text-xs">Pizza</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?burger" alt="Burger" class="w-full rounded-full mb-1">
+                    <span class="text-xs">Burger</span>
+                </div>
+                <div class="flex-shrink-0 w-20 text-center">
+                    <img src="https://random.imagecdn.app/80/80?chinese,food" alt="Chinese" class="w-full rounded-full mb-1">
+                    <span class="text-xs">Chinese</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bg-white border-t">
+        <ul class="flex justify-around">
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-orange-500">
+                    <i class="fas fa-utensils text-xl mb-1"></i>
+                    <span class="text-xs">Food</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-coffee text-xl mb-1"></i>
+                    <span class="text-xs">Dineout</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-redo text-xl mb-1"></i>
+                    <span class="text-xs">Reorder</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-magic text-xl mb-1"></i>
+                    <span class="text-xs">Genie</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        // Add smooth scrolling to carousels
+        document.querySelectorAll('.carousel').forEach(carousel => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+            });
+
+            carousel.addEventListener('mouseleave', () => {
+                isDown = false;
+            });
+
+            carousel.addEventListener('mouseup', () => {
+                isDown = false;
+            });
+
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                carousel.scrollLeft = scrollLeft - walk;
+            });
+        });
+    </script>
+</body>
+</html>

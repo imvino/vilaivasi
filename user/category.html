@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+
+        .blue-gradient {
+            background: linear-gradient(to right, #2874f0, #5d9dff);
+        }
+
+        .text-xs {
+            font-size: 10px !important;
+        }
+
+        .category-item {
+            position: relative;
+        }
+
+        .category-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 10px;
+            width: 4px;
+            background-color: #2874f0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .category-item.active::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-white">
+    <div class="h-screen flex flex-col">
+        <!-- Top bar remains the same -->
+
+        <main class="flex-1 flex overflow-hidden">
+            <!-- Left sidebar -->
+            <div class="w-1/5 overflow-y-auto scrollbar-hide">
+                <ul id="categoryList">
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center active bg-white"
+                        data-category="Furniture">
+                        <img src="https://random.imagecdn.app/40/40" alt="Furniture"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs text-blue-600 font-medium">Furniture</span>
+                    </li>
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center bg-gray-100"
+                        data-category="Beauty & Wellness">
+                        <img src="https://random.imagecdn.app/40/40" alt="Beauty & Wellness"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Beauty & Wellness</span>
+                    </li>
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center bg-gray-100"
+                        data-category="Beauty & Wellness">
+                        <img src="https://random.imagecdn.app/40/40" alt="Beauty & Wellness"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Beauty & Wellness</span>
+                    </li>
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center bg-gray-100"
+                        data-category="Beauty & Wellness">
+                        <img src="https://random.imagecdn.app/40/40" alt="Beauty & Wellness"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Beauty & Wellness</span>
+                    </li>
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center bg-gray-100"
+                        data-category="Beauty & Wellness">
+                        <img src="https://random.imagecdn.app/40/40" alt="Beauty & Wellness"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Beauty & Wellness</span>
+                    </li>
+                    <li class="category-item py-2 px-2 flex flex-col items-center text-center"
+                        data-category="Electronics">
+                        <img src="https://random.imagecdn.app/40/40" alt="Electronics"
+                            class="w-10 h-10 object-cover rounded-lg mb-1">
+                        <span class="text-xs">Electronics</span>
+                    </li>
+                    <!-- Other list items remain the same -->
+                </ul>
+            </div>
+
+            <!-- Right content -->
+            <div class="w-4/5 bg-white overflow-y-auto scrollbar-hide">
+                <!-- Header -->
+                <div class="blue-gradient text-white p-4 flex justify-between items-center">
+                    <h2 id="categoryTitle" class="text-xl font-bold">Furniture</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="p-4">
+                    <div class="mb-8">
+                        <h3 class="text-base font-semibold mb-4">In The Spotlight</h3>
+                        <div class="grid grid-cols-3 gap-1">
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="New Launches"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">New Launches</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="Premium"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">Premium</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://random.imagecdn.app/80/80" alt="Shop Now!"
+                                    class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                <span class="text-xs">Shop Now!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subCat">
+                        <div class="mb-8">
+                            <h3 class="text-base font-semibold mb-4">Skin Care</h3>
+                            <div class="grid grid-cols-3 gap-1">
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Face Wash"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Face Wash</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Sunscreen"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Sunscreen</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Face Creams"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Face Creams</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Serums"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Serums</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Lotions"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Lotions</span>
+                                </div>
+                                <div class="text-center">
+                                    <img src="https://random.imagecdn.app/80/80" alt="Scrub"
+                                        class="w-20 h-20 mx-auto mb-2 rounded-full">
+                                    <span class="text-xs">Scrub</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Main content remains the same -->
+            </div>
+        </main>
+
+        <!-- Bottom navigation remains the same -->
+    </div>
+
+    <script>
+        // Your existing subCatHtml and appending logic remains the same
+
+        // Updated sidebar interactivity logic
+        const categoryList = document.getElementById('categoryList');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const categoryTitle = document.getElementById('categoryTitle');
+
+        function setActiveCategory(item) {
+            // Remove active class from all items
+            categoryItems.forEach(i => {
+                i.classList.remove('active', 'bg-white');
+                i.classList.add('bg-gray-100');
+                i.querySelector('span').classList.remove('text-blue-600', 'font-medium');
+            });
+
+            // Add active class to clicked item
+            item.classList.add('active', 'bg-white');
+            item.classList.remove('bg-gray-100');
+            item.querySelector('span').classList.add('text-blue-600', 'font-medium');
+
+            // Update category title
+            categoryTitle.textContent = item.dataset.category;
+
+            // Reset all border radiuses
+            categoryItems.forEach(i => {
+                i.style.borderTopRightRadius = '0';
+                i.style.borderBottomRightRadius = '0';
+            });
+
+            // Apply border radius to adjacent items
+            const index = Array.from(categoryItems).indexOf(item);
+            if (index > 0) {
+                categoryItems[index - 1].style.borderBottomRightRadius = '10px';
+            }
+            if (index < categoryItems.length - 1) {
+                categoryItems[index + 1].style.borderTopRightRadius = '10px';
+            }
+        }
+
+        categoryItems.forEach(item => {
+            item.addEventListener('click', function () {
+                setActiveCategory(this);
+            });
+        });
+
+        // Set the first item as active by default on page load
+        window.addEventListener('load', () => {
+            setActiveCategory(categoryItems[0]);
+        });
+    </script>
+</body>
+
+</html>

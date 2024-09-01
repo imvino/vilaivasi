@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodHub - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+                <div>
+                    <h1 class="font-semibold text-lg">Deliver to</h1>
+                    <p class="text-gray-600 text-sm">Vgn Stafford Block-M <i class="fas fa-chevron-down text-xs ml-1"></i></p>
+                </div>
+            </div>
+            <div class="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center">
+                <i class="fas fa-user text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-grow overflow-y-auto bg-white">
+        <!-- Search Bar -->
+        <div class="px-4 py-3 bg-white sticky top-0 z-10">
+            <div class="flex items-center bg-gray-100 rounded-full p-2">
+                <i class="fas fa-search text-gray-400 ml-2 mr-3"></i>
+                <input type="text" placeholder="Restaurants, groceries, dishes" class="bg-transparent w-full focus:outline-none text-sm">
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="px-4 py-3">
+            <div class="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
+                <div class="flex-shrink-0 text-center">
+                    <img src="https://random.imagecdn.app/100/100?food" alt="All" class="w-16 h-16 rounded-full mb-1 border-2 border-orange-500">
+                    <span class="text-xs font-medium">All</span>
+                </div>
+                <div class="flex-shrink-0 text-center">
+                    <img src="https://random.imagecdn.app/100/100?grocery" alt="Grocery" class="w-16 h-16 rounded-full mb-1">
+                    <span class="text-xs font-medium">Grocery</span>
+                </div>
+                <div class="flex-shrink-0 text-center">
+                    <img src="https://random.imagecdn.app/100/100?pizza" alt="Pizza" class="w-16 h-16 rounded-full mb-1">
+                    <span class="text-xs font-medium">Pizza</span>
+                </div>
+                <div class="flex-shrink-0 text-center">
+                    <img src="https://random.imagecdn.app/100/100?burger" alt="Burger" class="w-16 h-16 rounded-full mb-1">
+                    <span class="text-xs font-medium">Burger</span>
+                </div>
+                <div class="flex-shrink-0 text-center">
+                    <img src="https://random.imagecdn.app/100/100?dessert" alt="Desserts" class="w-16 h-16 rounded-full mb-1">
+                    <span class="text-xs font-medium">Desserts</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Offer -->
+        <div class="px-4 py-3">
+            <div class="bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl p-4 text-white">
+                <h2 class="font-bold text-xl mb-1">50% OFF</h2>
+                <p class="text-sm mb-2">On your first 3 orders</p>
+                <button class="bg-white text-orange-500 px-4 py-2 rounded-full text-sm font-bold">Order Now</button>
+            </div>
+        </div>
+
+        <!-- Top Picks -->
+        <div class="px-4 py-3">
+            <h2 class="font-bold text-lg mb-3">Top Picks For You</h2>
+            <div class="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
+                <div class="flex-shrink-0 w-48">
+                    <img src="https://random.imagecdn.app/300/200?restaurant1" alt="Restaurant 1" class="w-full h-32 object-cover rounded-xl mb-2">
+                    <h3 class="font-semibold">Tasty Bites</h3>
+                    <p class="text-sm text-gray-500">American • 20-30 min</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span class="text-sm font-medium">4.5</span>
+                        <span class="text-sm text-gray-500 ml-2">$$ • 1.2 mi</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 w-48">
+                    <img src="https://random.imagecdn.app/300/200?restaurant2" alt="Restaurant 2" class="w-full h-32 object-cover rounded-xl mb-2">
+                    <h3 class="font-semibold">Spice Paradise</h3>
+                    <p class="text-sm text-gray-500">Indian • 25-35 min</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span class="text-sm font-medium">4.3</span>
+                        <span class="text-sm text-gray-500 ml-2">$$$ • 0.8 mi</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 w-48">
+                    <img src="https://random.imagecdn.app/300/200?restaurant3" alt="Restaurant 3" class="w-full h-32 object-cover rounded-xl mb-2">
+                    <h3 class="font-semibold">Sushi Express</h3>
+                    <p class="text-sm text-gray-500">Japanese • 15-25 min</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span class="text-sm font-medium">4.7</span>
+                        <span class="text-sm text-gray-500 ml-2">$$$$ • 1.5 mi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Brands -->
+        <div class="px-4 py-3">
+            <h2 class="font-bold text-lg mb-3">Popular Brands</h2>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="text-center">
+                    <img src="https://random.imagecdn.app/100/100?brand1" alt="Brand 1" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-xs font-medium">McDonald's</span>
+                </div>
+                <div class="text-center">
+                    <img src="https://random.imagecdn.app/100/100?brand2" alt="Brand 2" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-xs font-medium">KFC</span>
+                </div>
+                <div class="text-center">
+                    <img src="https://random.imagecdn.app/100/100?brand3" alt="Brand 3" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-xs font-medium">Subway</span>
+                </div>
+                <div class="text-center">
+                    <img src="https://random.imagecdn.app/100/100?brand4" alt="Brand 4" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-xs font-medium">Domino's</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Restaurants -->
+        <div class="px-4 py-3">
+            <h2 class="font-bold text-lg mb-3">All Restaurants</h2>
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <img src="https://random.imagecdn.app/120/120?restaurant4" alt="Restaurant 4" class="w-24 h-24 object-cover rounded-xl mr-4">
+                    <div>
+                        <h3 class="font-semibold">Green Leaf Cafe</h3>
+                        <p class="text-sm text-gray-500">Vegetarian • Salads • Healthy</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span class="text-sm font-medium">4.6</span>
+                            <span class="text-sm text-gray-500 ml-2">20-30 min • 1.0 mi</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <img src="https://random.imagecdn.app/120/120?restaurant5" alt="Restaurant 5" class="w-24 h-24 object-cover rounded-xl mr-4">
+                    <div>
+                        <h3 class="font-semibold">Burger Palace</h3>
+                        <p class="text-sm text-gray-500">American • Burgers • Fast Food</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span class="text-sm font-medium">4.2</span>
+                            <span class="text-sm text-gray-500 ml-2">15-25 min • 0.7 mi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bg-white border-t">
+        <ul class="flex justify-around">
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-orange-500">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-search text-xl mb-1"></i>
+                    <span class="text-xs">Search</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-shopping-bag text-xl mb-1"></i>
+                    <span class="text-xs">Orders</span>
+                </a>
+            </li>
+            <li class="flex-1">
+                <a href="#" class="flex flex-col items-center py-2 text-gray-400">
+                    <i class="fas fa-user text-xl mb-1"></i>
+                    <span class="text-xs">Account</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>

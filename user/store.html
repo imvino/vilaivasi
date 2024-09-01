@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alankar Supermarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#FF5722',
+                        'brand-secondary': '#FFA000',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="flex items-center justify-between p-4">
+                <button class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-lg font-semibold">560025 - Del</h1>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600">
+                        <i class="fas fa-share-alt text-xl"></i>
+                    </button>
+                    <button class="text-gray-600">
+                        <i class="fas fa-ellipsis-v text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Store Info -->
+        <div class="p-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white">
+            <h2 class="text-2xl font-bold">Alankar Supermarket</h2>
+            <div class="flex items-center mt-2">
+                <span class="text-yellow-300 mr-1">★</span>
+                <span class="font-semibold">4.0</span>
+                <span class="ml-1 text-sm">• 4,000+ Shoppers</span>
+            </div>
+            <div class="flex items-center mt-2 text-sm">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <span>1.31 km • Shanti Nagar, Bengaluru</span>
+            </div>
+            <div class="flex items-center mt-2 text-sm">
+                <i class="far fa-clock mr-2"></i>
+                <span>3-4 hrs • Free delivery above ₹299</span>
+            </div>
+        </div>
+
+        <!-- Exclusive Deals -->
+        <div class="m-4 p-4 bg-yellow-50 rounded-lg flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-percent text-yellow-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-yellow-800">Exclusive Store Deals</h3>
+                    <p class="text-sm text-yellow-600">Get guaranteed discounts</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-yellow-600"></i>
+        </div>
+
+        <!-- Delivery Options -->
+        <div class="flex border-b mb-4">
+            <button class="flex-1 py-3 text-center text-brand-primary border-b-2 border-brand-primary font-semibold">
+                <i class="fas fa-truck mr-2"></i>Delivery
+            </button>
+            <button class="flex-1 py-3 text-center text-gray-500">
+                <i class="fas fa-store mr-2"></i>In-store
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="px-4 mb-6">
+            <div class="flex">
+                <div class="flex-grow">
+                    <input type="text" placeholder="Search for items"
+                        class="w-full p-3 border rounded-l-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                </div>
+                <button class="bg-brand-primary text-white px-4 rounded-r-lg flex items-center">
+                    Categories <i class="fas fa-chevron-down ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Beverages Section -->
+        <div class="px-4 pb-20">
+            <h3 class="text-xl font-semibold mb-4">Beverages</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Sports & Energy Drinks"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Sports & Energy Drinks</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Tea"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Tea</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Water"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Water</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Coffee & Coffee Mixes"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Coffee & Coffee Mixes</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Cold Drinks & Sodas"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Cold Drinks & Sodas</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                        <img src="https://random.imagecdn.app/100/100" alt="Juices"
+                            class="w-full h-24 object-cover rounded-lg">
+                    </div>
+                    <p class="text-sm">Juices</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2">
+            <div class="max-w-md mx-auto flex justify-around">
+                <button class="text-gray-600 flex flex-col items-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">Home</span>
+                </button>
+                <button class="text-gray-600 flex flex-col items-center">
+                    <i class="fas fa-search text-xl"></i>
+                    <span class="text-xs mt-1">Search</span>
+                </button>
+                <button class="text-gray-600 flex flex-col items-center">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span class="text-xs mt-1">Cart</span>
+                </button>
+                <button class="text-gray-600 flex flex-col items-center">
+                    <i class="far fa-user text-xl"></i>
+                    <span class="text-xs mt-1">Account</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+</body>
+
+</html>

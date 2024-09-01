@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'app-primary': '#4A00E0',
+                        'app-secondary': '#8E2DE2',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white min-h-screen">
+
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-app-primary to-app-secondary text-white p-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    <div>
+                        <p class="text-xs opacity-75">Deliver to</p>
+                        <p class="text-sm font-semibold">2 Happiness St, Al Wasl, Dubai</p>
+                    </div>
+                </div>
+                <button class="p-2 bg-white bg-opacity-20 rounded-full">
+                    <i class="far fa-user text-lg"></i>
+                </button>
+            </div>
+            <div class="relative">
+                <input type="text" placeholder="Search for groceries, stores, etc."
+                    class="w-full p-3 pl-10 bg-white rounded-full text-gray-800 placeholder-gray-500">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </header>
+
+        <!-- Categories -->
+        <div class="p-4 overflow-x-auto">
+            <div class="flex space-x-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-1">
+                        <i class="fas fa-apple-alt text-purple-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Fruits</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-1">
+                        <i class="fas fa-carrot text-green-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Veggies</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                        <i class="fas fa-fish text-blue-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Seafood</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-1">
+                        <i class="fas fa-drumstick-bite text-red-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">Meat</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotions -->
+        <div class="px-4 mb-6">
+            <h2 class="text-lg font-semibold mb-3">Today's Deals</h2>
+            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg p-4 text-white">
+                <h3 class="text-xl font-bold mb-2">Summer Sale!</h3>
+                <p class="mb-2">Get up to 50% off on fresh produce</p>
+                <button class="bg-white text-orange-500 px-4 py-2 rounded-full text-sm font-semibold">Shop Now</button>
+            </div>
+        </div>
+
+        <!-- Featured Stores -->
+        <div class="px-4 mb-6">
+            <h2 class="text-lg font-semibold mb-3">Featured Stores</h2>
+            <div class="space-y-4">
+                <!-- Hems Fresh Minimart -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden flex">
+                    <img src="https://random.imagecdn.app/100/100" alt="Hems Fresh" class="w-24 h-24 object-cover">
+                    <div class="p-3 flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Hems Fresh Minimart</h3>
+                                <p class="text-xs text-gray-500">Jumeirah • Grocery</p>
+                                <div class="flex items-center mt-1">
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <span class="text-xs ml-1">4.9 (500+)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
+                                <i class="far fa-clock mr-1"></i>
+                                20 mins
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Al Maya -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden flex">
+                    <img src="https://random.imagecdn.app/100/100" alt="Al Maya" class="w-24 h-24 object-cover">
+                    <div class="p-3 flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold">Al Maya</h3>
+                                <p class="text-xs text-gray-500">Al Murooj • Grocery</p>
+                                <div class="flex items-center mt-1">
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <span class="text-xs ml-1">4.5 (500+)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
+                                <i class="far fa-clock mr-1"></i>
+                                60 mins
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+            <div class="max-w-md mx-auto flex justify-around">
+                <button class="p-4 text-app-primary">
+                    <i class="fas fa-home text-xl"></i>
+                </button>
+                <button class="p-4 text-gray-400">
+                    <i class="fas fa-search text-xl"></i>
+                </button>
+                <button class="p-4 text-gray-400">
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                </button>
+                <button class="p-4 text-gray-400">
+                    <i class="far fa-heart text-xl"></i>
+                </button>
+            </div>
+        </nav>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white shadow-lg">
+
+
+        <!-- Header -->
+        <header class="p-4 flex items-center justify-between">
+            <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></div>
+            <div class="flex-grow mx-4 relative">
+                <input type="text" placeholder="Search for groceries and more..."
+                    class="w-full py-2 px-4 bg-gray-100 rounded-full">
+                <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <i class="fas fa-qrcode"></i>
+        </header>
+
+        <!-- Delivery Info -->
+        <div class="px-4 py-2">
+            <div class="flex items-center text-sm">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <span class="font-bold">Deliver to:</span>
+                <span class="ml-1">Dubai Festival City, Dubai</span>
+                <span class="ml-auto text-blue-500">Change</span>
+            </div>
+        </div>
+
+        <!-- Delivery Options -->
+        <div class="px-4 py-2">
+            <div class="flex bg-gray-100 rounded-lg">
+                <button class="flex-1 py-2 px-4 bg-white rounded-lg shadow">
+                    <i class="fas fa-truck mr-2 text-blue-500"></i>Scheduled
+                </button>
+                <button class="flex-1 py-2 px-4">
+                    <i class="fas fa-motorcycle mr-2 text-blue-500"></i>NOW
+                </button>
+            </div>
+            <div class="flex justify-between mt-2 text-sm">
+                <div>
+                    <div class="font-bold">Get it by</div>
+                    <div>Tod. 4 PM</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold">Free Delivery</div>
+                    <div>Over 150 AED <i class="fas fa-info-circle ml-1 text-gray-400"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mastercard Promo -->
+        <div class="bg-gray-100 m-4 p-3 rounded-lg flex items-center">
+            <img src="https://random.imagecdn.app/40/40" alt="Mastercard" class="w-10 h-6 mr-3">
+            <p class="text-sm">Save with Mastercard. Use Code: MA40 for World & MA60 for World Elite.</p>
+        </div>
+
+        <!-- Welcome Back Banner -->
+        <div class="bg-blue-900 m-4 p-4 rounded-lg text-white">
+            <h2 class="text-2xl font-bold">WELCOME BACK!</h2>
+            <p>HOME & SCHOOL ESSENTIALS</p>
+            <p class="text-xl font-bold">Up to 65% Off</p>
+            <div class="flex justify-between mt-2">
+                <div class="bg-white rounded-full p-2 text-blue-900">
+                    <span class="line-through">5099</span>
+                    <span class="font-bold">3599</span>
+                    <span>AED</span>
+                </div>
+                <div class="bg-white rounded-full p-2 text-blue-900">
+                    <span class="line-through">17.25</span>
+                    <span class="font-bold">10.50</span>
+                    <span>AED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-3 gap-4 px-4">
+            <div class="text-center">
+                <div class="bg-gray-100 rounded-lg p-4 mb-2">
+                    <i class="fas fa-barcode text-blue-500 text-2xl"></i>
+                </div>
+                <p class="text-xs font-bold">Faster way</p>
+                <p class="text-xs">To Shop</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-gray-100 rounded-lg p-4 mb-2">
+                    <i class="fas fa-wallet text-blue-500 text-2xl"></i>
+                </div>
+                <p class="text-xs font-bold">Refunds</p>
+                <p class="text-xs">With wallet</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-gray-100 rounded-lg p-4 mb-2">
+                    <i class="fas fa-book-open text-blue-500 text-2xl"></i>
+                </div>
+                <p class="text-xs font-bold">Explore our</p>
+                <p class="text-xs">Store leaflet</p>
+            </div>
+        </div>
+
+        <!-- Category Circles -->
+        <div class="flex justify-between px-4 mt-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                    <span class="text-red-500 font-bold">50%</span>
+                </div>
+                <p class="text-xs">Payweek Sale</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                    <i class="fas fa-bolt text-yellow-500"></i>
+                </div>
+                <p class="text-xs">Electronic &<br>Appliances</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mb-1">
+                    <span class="text-white font-bold">CODE</span>
+                </div>
+                <p class="text-xs">Discount &<br>Bank Offers</p>
+            </div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                    <img src="https://random.imagecdn.app/40/40" alt="Fruits"
+                        class="w-12 h-12 object-cover rounded-full">
+                </div>
+                <p class="text-xs">Fruits &<br>Vegetables</p>
+            </div>
+        </div>
+
+        <!-- Product Categories -->
+        <div class="grid grid-cols-4 gap-4 px-4 mt-4">
+            <div class="text-center">
+                <img src="https://random.imagecdn.app/80/80" alt="Dairy"
+                    class="w-20 h-20 object-cover rounded-lg mx-auto">
+            </div>
+            <div class="text-center">
+                <img src="https://random.imagecdn.app/80/80" alt="Meat"
+                    class="w-20 h-20 object-cover rounded-lg mx-auto">
+            </div>
+            <div class="text-center">
+                <img src="https://random.imagecdn.app/80/80" alt="Nutella"
+                    class="w-20 h-20 object-cover rounded-lg mx-auto">
+            </div>
+            <div class="text-center">
+                <img src="https://random.imagecdn.app/80/80" alt="Snacks"
+                    class="w-20 h-20 object-cover rounded-lg mx-auto">
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-between items-center p-2">
+            <button class="text-blue-500 text-center">
+                <i class="fas fa-home"></i>
+                <p class="text-xs">Home</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-list"></i>
+                <p class="text-xs">Categories</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-tag"></i>
+                <p class="text-xs">Deals</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-shopping-cart"></i>
+                <p class="text-xs">Cart</p>
+            </button>
+            <button class="text-gray-400 text-center">
+                <i class="fas fa-ellipsis-h"></i>
+                <p class="text-xs">More</p>
+            </button>
+        </nav>
+    </div>
+</body>
+
+</html>
