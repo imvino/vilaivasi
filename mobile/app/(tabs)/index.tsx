@@ -83,24 +83,24 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name,
 );
 
 const FoodHub: React.FC = () => {
-    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    // const [keyboardVisible, setKeyboardVisible] = useState(false);
     const insets = useSafeAreaInsets();
 
-    useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            () => setKeyboardVisible(true)
-        );
-        const keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            () => setKeyboardVisible(false)
-        );
-
-        return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-        };
-    }, []);
+    // useEffect(() => {
+    //     const keyboardDidShowListener = Keyboard.addListener(
+    //         'keyboardDidShow',
+    //         () => setKeyboardVisible(true)
+    //     );
+    //     const keyboardDidHideListener = Keyboard.addListener(
+    //         'keyboardDidHide',
+    //         () => setKeyboardVisible(false)
+    //     );
+    //
+    //     return () => {
+    //         keyboardDidShowListener.remove();
+    //         keyboardDidHideListener.remove();
+    //     };
+    // }, []);
 
     const categories = [
         {n: 'Supermarkets', i: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'},
