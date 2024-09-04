@@ -1,5 +1,18 @@
-import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
-
+import {
+    View,
+    Text,
+    ScrollView,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    SafeAreaView,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard,
+    StatusBar, Dimensions
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -7,7 +20,13 @@ import { ThemedView } from '@/components/ThemedView';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useEffect, useState} from "react";
 
-const CategoryItem = ({ imageUrl, name, isSelected }) => (
+interface CategoryItemProps {
+    imageUrl: string;
+    name: string;
+    isSelected?: boolean;
+}
+
+const CategoryItem: React.FC<CategoryItemProps> = ({ imageUrl, name, isSelected }) => (
     <View style={styles.categoryItem}>
         <Image
             source={{ uri: imageUrl }}
@@ -17,7 +36,16 @@ const CategoryItem = ({ imageUrl, name, isSelected }) => (
     </View>
 );
 
-const RestaurantCard = ({ imageUrl, name, cuisine, rating, price, distance }) => (
+interface RestaurantCardProps {
+    imageUrl: string;
+    name: string;
+    cuisine: string;
+    rating: string;
+    price: string;
+    distance: string;
+}
+
+const RestaurantCard: React.FC<RestaurantCardProps> = ({ imageUrl, name, cuisine, rating, price, distance }) => (
     <View style={styles.restaurantCard}>
         <Image source={{ uri: imageUrl }} style={styles.restaurantImage} />
         <Text style={styles.restaurantName}>{name}</Text>
@@ -30,7 +58,16 @@ const RestaurantCard = ({ imageUrl, name, cuisine, rating, price, distance }) =>
     </View>
 );
 
-const RestaurantListItem = ({ imageUrl, name, cuisine, rating, time, distance }) => (
+interface RestaurantListItemProps {
+    imageUrl: string;
+    name: string;
+    cuisine: string;
+    rating: string;
+    time: string;
+    distance: string;
+}
+
+const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name, cuisine, rating, time, distance }) => (
     <View style={styles.listItemContainer}>
         <Image source={{ uri: imageUrl }} style={styles.listItemImage} />
         <View style={styles.listItemDetails}>
@@ -45,8 +82,9 @@ const RestaurantListItem = ({ imageUrl, name, cuisine, rating, time, distance })
     </View>
 );
 
-const FoodHub = () => {
+const FoodHub: React.FC = () => {
     const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
@@ -63,30 +101,32 @@ const FoodHub = () => {
             keyboardDidHideListener.remove();
         };
     }, []);
+
     const categories = [
         {n: 'Supermarkets', i: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'},
         {n: 'Restaurants', i: 'https://cdn.instashop.ae/d3c9063df070ce24f4435b19754dd99a_food-superstore-rounded---discounted.png'},
         {n: 'Pharmacies', i: 'https://cdn.instashop.ae/90aa6443a8d45149ecda841e62f13c52_pharmacy-superstore-rounded---discounted.png'},
         {n: 'Pet Shops', i: 'https://cdn.instashop.ae/09fbe895665ebbb0961548f580431b42_rounded-superstore-mockup-04.png'},
-        {n: 'Stationery & Party Supplies', i: 'https://cdn.instashop.ae/da8617baf4eaa560f24e29f2a98cc6df_StationeryAndPartySupplies.png'},
+        {n: 'Stationery & Party', i: 'https://cdn.instashop.ae/da8617baf4eaa560f24e29f2a98cc6df_StationeryAndPartySupplies.png'},
         {n: 'Baby Care & Toys', i: 'https://cdn.instashop.ae/3f2f4578ea1c96e9baefb21466f913a2_games-toys-rounded-vertical.png'},
         {n: 'Specialty & Ethnic', i: 'https://cdn.instashop.ae/a34d2e28fdb02844f1ba632119f2db36_rounded-superstore-mockup-15.png'},
         {n: 'Home & Living', i: 'https://cdn.instashop.ae/1ca8c037872d2d4e9a99a51b19d13b11_Home__Living'},
         {n: 'Bakeries & Cakes', i: 'https://cdn.instashop.ae/c2e2ecc7ab4ab9cbc1f18354b60be381_Bakeries__Cakes'},
         {n: 'Cosmetics & Beauty', i: 'https://cdn.instashop.ae/452a4ea8e6bbde18edd8770fa5d3df16_Cosmetics__Beauty'},
         {n: 'Perfumes', i: 'https://cdn.instashop.ae/d94f542febc83c273aa7558e7a234aab_Perfumes'},
-        {n: 'Flower Shops', i: 'https://cdn.instashop.ae/97537b332658a405b3489c60d8cc0dcd_Butchery_and_Seafood_SuperStore_Circle.png'},
-        {n: 'Butchery & Seafood', i: 'https://cdn.instashop.ae/babc941eeb72938e9d9e88342b463ece_rounded-superstore-mockup-03.png'},
-        {n: 'Fruits & Vegetables', i: 'https://cdn.instashop.ae/0e5cb122bdc860624f281d9290b0eaae_rounded-superstore-mockup-11.png'},
-        {n: 'Organic Shops', i: 'https://cdn.instashop.ae/0ad44d86ea79236cca6ff6583969d1e4_rounded-superstore-mockup-10.png'},
-        {n: 'Water', i: 'https://cdn.instashop.ae/39202face7d0bdff2ba7be54954408a8_rounded-superstore-mockup-14.png'},
-        {n: 'Fitness Nutrition', i: 'https://cdn.instashop.ae/33f11f3124cabe707c1cbcfd99256564_Electronics'},
+        {n: 'Flower Shops', i: 'https://cdn.instashop.ae/fb8173568cffb434ccdf4545735b691d_Flower_Shops'},
+        {n: 'Butchery & Seafood', i: 'https://cdn.instashop.ae/97537b332658a405b3489c60d8cc0dcd_Butchery_and_Seafood_SuperStore_Circle.png'},
+        {n: 'Fruits & Vegetables', i:  'https://cdn.instashop.ae/babc941eeb72938e9d9e88342b463ece_rounded-superstore-mockup-03.png'},
+        {n: 'Organic Shops', i:'https://cdn.instashop.ae/0e5cb122bdc860624f281d9290b0eaae_rounded-superstore-mockup-11.png' },
+        {n: 'Water', i: 'https://cdn.instashop.ae/0ad44d86ea79236cca6ff6583969d1e4_rounded-superstore-mockup-10.png'},
+        {n: 'Fitness Nutrition', i: 'https://cdn.instashop.ae/39202face7d0bdff2ba7be54954408a8_rounded-superstore-mockup-14.png'},
         {n: 'Electronics', i: 'https://cdn.instashop.ae/33f11f3124cabe707c1cbcfd99256564_Electronics'}
     ];
 
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoidingView}
@@ -117,18 +157,18 @@ const FoodHub = () => {
 
                     {/* Categories */}
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-                        {categories.map(({n,i})=>{ //isSelected={true}
-                            return <CategoryItem imageUrl={i} name={n} />
-                        })}
+                        {categories.map(({n, i}) => (
+                            <CategoryItem key={n} imageUrl={i} name={n} />
+                        ))}
                     </ScrollView>
 
                     {/* Featured Offer */}
-                    <View style={styles.offerContainer}>
-                        <Text style={styles.offerTitle}>50% OFF</Text>
-                        <Text style={styles.offerSubtitle}>On your first 3 orders</Text>
-                        <TouchableOpacity style={styles.orderButton}>
-                            <Text style={styles.orderButtonText}>Order Now</Text>
-                        </TouchableOpacity>
+                    <View style={styles.bannerContainer}>
+                        <Image
+                            source={{ uri: 'https://cdn.instashop.ae/475bd8500162ca2f53a24d2939f79379_FreeDelivery-12.gif' }}
+                            style={styles.bannerImage}
+                            resizeMode="cover"
+                        />
                     </View>
 
                     {/* Top Picks */}
@@ -185,6 +225,16 @@ const FoodHub = () => {
                             distance="0.7 mi"
                         />
                     </View>
+
+                    <View style={styles.offerImageContainer}>
+                        <TouchableOpacity>
+                            <Image
+                                source={{ uri: 'https://cdn.instashop.ae/3ff1ec82cb0049280ece95c6f0e74cf1_FreeDelivery-1920x200.png' }}
+                                style={styles.offerImage}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
 
                 {/* Bottom Navigation */}
@@ -221,6 +271,10 @@ const styles = StyleSheet.create({
     keyboardAvoidingView: {
         flex: 1,
     },
+    safeArea: {
+        flex: 1,
+        backgroundColor: 'white',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -229,6 +283,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#F3F4F6',
+        backgroundColor: 'white',
     },
     locationContainer: {
         flexDirection: 'row',
@@ -283,6 +338,13 @@ const styles = StyleSheet.create({
     categoryItem: {
         alignItems: 'center',
         marginRight: 16,
+        width: 80, // Fixed width for each category item
+    },
+    categoryName: {
+        fontSize: 12,
+        fontWeight: '500',
+        textAlign: 'center',
+        height: 32, // Fixed height for two lines of text
     },
     categoryImage: {
         width: 64,
@@ -294,28 +356,24 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#FF6347',
     },
-    categoryName: {
-        fontSize: 12,
-        fontWeight: '500',
-        maxWidth:100,
-        textAlign:'center'
+    bannerContainer: {
+        width: '100%',
+        aspectRatio: 1920 / 600, // Adjust this ratio based on the actual dimensions of your GIF
+        marginBottom: 16, // Add some space below the banner
     },
-    offerContainer: {
-        backgroundColor: '#FF6347',
-        borderRadius: 16,
-        margin: 16,
-        padding: 16,
+    bannerImage: {
+        width: '100%',
+        height: '100%',
     },
-    offerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 4,
+    offerImageContainer: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10, // Add some vertical margin if needed
     },
-    offerSubtitle: {
-        fontSize: 14,
-        color: 'white',
-        marginBottom: 12,
+    offerImage: {
+        width: Dimensions.get('window').width - 32, // Full width minus padding
+        height: (Dimensions.get('window').width - 32) * (200 / 1920), // Maintain aspect ratio
     },
     orderButton: {
         backgroundColor: 'white',
@@ -340,6 +398,7 @@ const styles = StyleSheet.create({
     restaurantsContainer: {
         marginLeft: -16,
         paddingLeft: 16,
+        marginBottom: 16,
     },
     restaurantCard: {
         width: 250,
