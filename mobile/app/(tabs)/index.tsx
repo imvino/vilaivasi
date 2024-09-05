@@ -239,24 +239,24 @@ const FoodHub: React.FC = () => {
 
                 {/* Bottom Navigation */}
                 {/*{!keyboardVisible && (*/}
-                {/*    <View style={styles.bottomNav}>*/}
-                {/*        <View style={styles.navItem}>*/}
-                {/*            <Ionicons name="home" size={24} color="#FF6347" />*/}
-                {/*            <Text style={styles.activeNavText}>Home</Text>*/}
-                {/*        </View>*/}
-                {/*        <View style={styles.navItem}>*/}
-                {/*            <Ionicons name="search-outline" size={24} color="#9CA3AF" />*/}
-                {/*            <Text style={styles.navText}>Search</Text>*/}
-                {/*        </View>*/}
-                {/*        <View style={styles.navItem}>*/}
-                {/*            <Ionicons name="receipt-outline" size={24} color="#9CA3AF" />*/}
-                {/*            <Text style={styles.navText}>Orders</Text>*/}
-                {/*        </View>*/}
-                {/*        <View style={styles.navItem}>*/}
-                {/*            <Ionicons name="person-outline" size={24} color="#9CA3AF" />*/}
-                {/*            <Text style={styles.navText}>Account</Text>*/}
-                {/*        </View>*/}
-                {/*    </View>*/}
+                    <View style={styles.bottomNav}>
+                        <View style={styles.navItem}>
+                            <Ionicons name="home" size={24} color="#FF6347" />
+                            <Text style={styles.activeNavText}>Home</Text>
+                        </View>
+                        <View style={styles.navItem}>
+                            <Ionicons name="search-outline" size={24} color="#9CA3AF" />
+                            <Text style={styles.navText}>Search</Text>
+                        </View>
+                        <View style={styles.navItem}>
+                            <Ionicons name="receipt-outline" size={24} color="#9CA3AF" />
+                            <Text style={styles.navText}>Orders</Text>
+                        </View>
+                        <View style={styles.navItem}>
+                            <Ionicons name="person-outline" size={24} color="#9CA3AF" />
+                            <Text style={styles.navText}>Account</Text>
+                        </View>
+                    </View>
                 {/*)}*/}
             </KeyboardAvoidingView>
         </SafeAreaView>
