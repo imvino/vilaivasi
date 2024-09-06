@@ -19,6 +19,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useEffect, useState} from "react";
+import {colors} from '@/assets/theme'
+import Header from "@/components/Header";
+import {categories} from "@/constants/category";
 
 interface CategoryItemProps {
     imageUrl: string;
@@ -82,183 +85,110 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name,
     </View>
 );
 
-const FoodHub: React.FC = () => {
-    // const [keyboardVisible, setKeyboardVisible] = useState(false);
+const Home: React.FC = () => {
     const insets = useSafeAreaInsets();
 
-    // useEffect(() => {
-    //     const keyboardDidShowListener = Keyboard.addListener(
-    //         'keyboardDidShow',
-    //         () => setKeyboardVisible(true)
-    //     );
-    //     const keyboardDidHideListener = Keyboard.addListener(
-    //         'keyboardDidHide',
-    //         () => setKeyboardVisible(false)
-    //     );
-    //
-    //     return () => {
-    //         keyboardDidShowListener.remove();
-    //         keyboardDidHideListener.remove();
-    //     };
-    // }, []);
-
-    const categories = [
-        {n: 'Supermarkets', i: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'},
-        {n: 'Restaurants', i: 'https://cdn.instashop.ae/d3c9063df070ce24f4435b19754dd99a_food-superstore-rounded---discounted.png'},
-        {n: 'Pharmacies', i: 'https://cdn.instashop.ae/90aa6443a8d45149ecda841e62f13c52_pharmacy-superstore-rounded---discounted.png'},
-        {n: 'Pet Shops', i: 'https://cdn.instashop.ae/09fbe895665ebbb0961548f580431b42_rounded-superstore-mockup-04.png'},
-        {n: 'Stationery & Party', i: 'https://cdn.instashop.ae/da8617baf4eaa560f24e29f2a98cc6df_StationeryAndPartySupplies.png'},
-        {n: 'Baby Care & Toys', i: 'https://cdn.instashop.ae/3f2f4578ea1c96e9baefb21466f913a2_games-toys-rounded-vertical.png'},
-        {n: 'Specialty & Ethnic', i: 'https://cdn.instashop.ae/a34d2e28fdb02844f1ba632119f2db36_rounded-superstore-mockup-15.png'},
-        {n: 'Home & Living', i: 'https://cdn.instashop.ae/1ca8c037872d2d4e9a99a51b19d13b11_Home__Living'},
-        {n: 'Bakeries & Cakes', i: 'https://cdn.instashop.ae/c2e2ecc7ab4ab9cbc1f18354b60be381_Bakeries__Cakes'},
-        {n: 'Cosmetics & Beauty', i: 'https://cdn.instashop.ae/452a4ea8e6bbde18edd8770fa5d3df16_Cosmetics__Beauty'},
-        {n: 'Perfumes', i: 'https://cdn.instashop.ae/d94f542febc83c273aa7558e7a234aab_Perfumes'},
-        {n: 'Flower Shops', i: 'https://cdn.instashop.ae/fb8173568cffb434ccdf4545735b691d_Flower_Shops'},
-        {n: 'Butchery & Seafood', i: 'https://cdn.instashop.ae/97537b332658a405b3489c60d8cc0dcd_Butchery_and_Seafood_SuperStore_Circle.png'},
-        {n: 'Fruits & Vegetables', i:  'https://cdn.instashop.ae/babc941eeb72938e9d9e88342b463ece_rounded-superstore-mockup-03.png'},
-        {n: 'Organic Shops', i:'https://cdn.instashop.ae/0e5cb122bdc860624f281d9290b0eaae_rounded-superstore-mockup-11.png' },
-        {n: 'Water', i: 'https://cdn.instashop.ae/0ad44d86ea79236cca6ff6583969d1e4_rounded-superstore-mockup-10.png'},
-        {n: 'Fitness Nutrition', i: 'https://cdn.instashop.ae/39202face7d0bdff2ba7be54954408a8_rounded-superstore-mockup-14.png'},
-        {n: 'Electronics', i: 'https://cdn.instashop.ae/33f11f3124cabe707c1cbcfd99256564_Electronics'}
-    ];
-
-
     return (
-        <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.keyboardAvoidingView}
-            >
-                {/* Header */}
-                <View style={styles.header}>
-                    <View style={styles.locationContainer}>
-                        <Ionicons name="location-outline" size={20} color="#FF6347" />
-                        <View style={styles.addressContainer}>
-                            <Text style={styles.deliverToText}>Deliver to</Text>
-                            <Text style={styles.addressText}>Vgn Stafford Block-M <Ionicons name="chevron-down-outline" size={12} color="#6B7280" /></Text>
-                        </View>
-                    </View>
-                    <View style={styles.userIconContainer}>
-                        <Ionicons name="person-outline" size={16} color="#6B7280" />
+        <SafeAreaView style={[styles.safeArea, {paddingTop: insets.top}]}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF"/>
+            {/*<KeyboardAvoidingView*/}
+            {/*    behavior={Platform.OS === "ios" ? "padding" : "height"}*/}
+            {/*    style={styles.keyboardAvoidingView}*/}
+            {/*>*/}
+            {/* Header */}
+            <Header/>
+
+            <ScrollView style={styles.scrollView}>
+                {/* Search Bar */}
+                <View style={styles.searchBarContainer}>
+                    <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>
+                    <TextInput
+                        placeholder="Restaurants, groceries, dishes"
+                        style={styles.searchInput}
+                    />
+                </View>
+
+                {/* Categories */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+                    {categories.map(({n, i}) => (
+                        <CategoryItem key={n} imageUrl={i} name={n}/>
+                    ))}
+                </ScrollView>
+
+                {/* Featured Offer */}
+                <View style={styles.bannerContainer}>
+                    <Image
+                        source={{uri: 'https://cdn.instashop.ae/475bd8500162ca2f53a24d2939f79379_FreeDelivery-12.gif'}}
+                        style={styles.bannerImage}
+                        resizeMode="cover"
+                    />
+                </View>
+
+                {/* Top Picks */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Top Picks For You</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.restaurantsContainer}>
+                        <RestaurantCard
+                            imageUrl="https://random.imagecdn.app/300/200?restaurant1"
+                            name="Tasty Bites"
+                            cuisine="American • 20-30 min"
+                            rating="4.5"
+                            price="$$"
+                            distance="1.2 mi"
+                        />
+                        <RestaurantCard
+                            imageUrl="https://random.imagecdn.app/300/200?restaurant2"
+                            name="Spice Paradise"
+                            cuisine="Indian • 25-35 min"
+                            rating="4.3"
+                            price="$$$"
+                            distance="0.8 mi"
+                        />
+                    </ScrollView>
+                </View>
+
+                {/* Popular Brands */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Popular Brands</Text>
+                    <View style={styles.popularBrandsContainer}>
+                        <CategoryItem imageUrl="https://random.imagecdn.app/100/100?mcdonalds" name="McDonald's"/>
+                        <CategoryItem imageUrl="https://random.imagecdn.app/100/100?kfc" name="KFC"/>
+                        <CategoryItem imageUrl="https://random.imagecdn.app/100/100?subway" name="Subway"/>
+                        <CategoryItem imageUrl="https://random.imagecdn.app/100/100?dominos" name="Domino's"/>
                     </View>
                 </View>
 
-                <ScrollView style={styles.scrollView}>
-                    {/* Search Bar */}
-                    <View style={styles.searchBarContainer}>
-                        <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon} />
-                        <TextInput
-                            placeholder="Restaurants, groceries, dishes"
-                            style={styles.searchInput}
-                        />
-                    </View>
+                {/* All Restaurants */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>All Restaurants</Text>
+                    <RestaurantListItem
+                        imageUrl="https://random.imagecdn.app/120/120"
+                        name="Green Leaf Cafe"
+                        cuisine="Vegetarian • Salads • Healthy"
+                        rating="4.6"
+                        time="20-30 min"
+                        distance="1.0 mi"
+                    />
+                    <RestaurantListItem
+                        imageUrl="https://random.imagecdn.app/120/120"
+                        name="Burger Palace"
+                        cuisine="American • Burgers • Fast Food"
+                        rating="4.2"
+                        time="15-25 min"
+                        distance="0.7 mi"
+                    />
+                </View>
 
-                    {/* Categories */}
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-                        {categories.map(({n, i}) => (
-                            <CategoryItem key={n} imageUrl={i} name={n} />
-                        ))}
-                    </ScrollView>
-
-                    {/* Featured Offer */}
-                    <View style={styles.bannerContainer}>
+                <View style={styles.offerImageContainer}>
+                    <TouchableOpacity>
                         <Image
-                            source={{ uri: 'https://cdn.instashop.ae/475bd8500162ca2f53a24d2939f79379_FreeDelivery-12.gif' }}
-                            style={styles.bannerImage}
-                            resizeMode="cover"
+                            source={{uri: 'https://cdn.instashop.ae/3ff1ec82cb0049280ece95c6f0e74cf1_FreeDelivery-1920x200.png'}}
+                            style={styles.offerImage}
+                            resizeMode="contain"
                         />
-                    </View>
-
-                    {/* Top Picks */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Top Picks For You</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.restaurantsContainer}>
-                            <RestaurantCard
-                                imageUrl="https://random.imagecdn.app/300/200?restaurant1"
-                                name="Tasty Bites"
-                                cuisine="American • 20-30 min"
-                                rating="4.5"
-                                price="$$"
-                                distance="1.2 mi"
-                            />
-                            <RestaurantCard
-                                imageUrl="https://random.imagecdn.app/300/200?restaurant2"
-                                name="Spice Paradise"
-                                cuisine="Indian • 25-35 min"
-                                rating="4.3"
-                                price="$$$"
-                                distance="0.8 mi"
-                            />
-                        </ScrollView>
-                    </View>
-
-                    {/* Popular Brands */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Popular Brands</Text>
-                        <View style={styles.popularBrandsContainer}>
-                            <CategoryItem imageUrl="https://random.imagecdn.app/100/100?mcdonalds" name="McDonald's" />
-                            <CategoryItem imageUrl="https://random.imagecdn.app/100/100?kfc" name="KFC" />
-                            <CategoryItem imageUrl="https://random.imagecdn.app/100/100?subway" name="Subway" />
-                            <CategoryItem imageUrl="https://random.imagecdn.app/100/100?dominos" name="Domino's" />
-                        </View>
-                    </View>
-
-                    {/* All Restaurants */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>All Restaurants</Text>
-                        <RestaurantListItem
-                            imageUrl="https://random.imagecdn.app/120/120"
-                            name="Green Leaf Cafe"
-                            cuisine="Vegetarian • Salads • Healthy"
-                            rating="4.6"
-                            time="20-30 min"
-                            distance="1.0 mi"
-                        />
-                        <RestaurantListItem
-                            imageUrl="https://random.imagecdn.app/120/120"
-                            name="Burger Palace"
-                            cuisine="American • Burgers • Fast Food"
-                            rating="4.2"
-                            time="15-25 min"
-                            distance="0.7 mi"
-                        />
-                    </View>
-
-                    <View style={styles.offerImageContainer}>
-                        <TouchableOpacity>
-                            <Image
-                                source={{ uri: 'https://cdn.instashop.ae/3ff1ec82cb0049280ece95c6f0e74cf1_FreeDelivery-1920x200.png' }}
-                                style={styles.offerImage}
-                                resizeMode="contain"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-
-                {/* Bottom Navigation */}
-                {/*{!keyboardVisible && (*/}
-                    <View style={styles.bottomNav}>
-                        <View style={styles.navItem}>
-                            <Ionicons name="home" size={24} color="#FF6347" />
-                            <Text style={styles.activeNavText}>Home</Text>
-                        </View>
-                        <View style={styles.navItem}>
-                            <Ionicons name="search-outline" size={24} color="#9CA3AF" />
-                            <Text style={styles.navText}>Search</Text>
-                        </View>
-                        <View style={styles.navItem}>
-                            <Ionicons name="receipt-outline" size={24} color="#9CA3AF" />
-                            <Text style={styles.navText}>Orders</Text>
-                        </View>
-                        <View style={styles.navItem}>
-                            <Ionicons name="person-outline" size={24} color="#9CA3AF" />
-                            <Text style={styles.navText}>Account</Text>
-                        </View>
-                    </View>
-                {/*)}*/}
-            </KeyboardAvoidingView>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -268,48 +198,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    keyboardAvoidingView: {
-        flex: 1,
-    },
+    // keyboardAvoidingView: {
+    //     flex: 1,
+    // },
     safeArea: {
         flex: 1,
         backgroundColor: 'white',
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F3F4F6',
-        backgroundColor: 'white',
-    },
-    locationContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    addressContainer: {
-        marginLeft: 8,
-    },
-    deliverToText: {
-        fontSize: 12,
-        color: '#6B7280',
-    },
-    addressText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#111827',
-    },
-    userIconContainer: {
-        backgroundColor: '#F3F4F6',
-        borderRadius: 16,
-        width: 32,
-        height: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    scrollView: {
+   scrollView: {
         flex: 1,
     },
     searchBarContainer: {
@@ -354,7 +250,7 @@ const styles = StyleSheet.create({
     },
     selectedCategoryImage: {
         borderWidth: 2,
-        borderColor: '#FF6347',
+        borderColor: colors.primary,
     },
     bannerContainer: {
         width: '100%',
@@ -383,7 +279,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     orderButtonText: {
-        color: '#FF6347',
+        color: colors.primary,
         fontWeight: 'bold',
     },
     sectionContainer: {
@@ -455,7 +351,7 @@ const styles = StyleSheet.create({
     },
     activeNavText: {
         fontSize: 12,
-        color: '#FF6347',
+        color: colors.primary,
         marginTop: 4,
     },
     listItemContainer: {
@@ -503,4 +399,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FoodHub;
+export default Home;

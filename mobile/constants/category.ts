@@ -1,0 +1,20 @@
+export const categories = [
+    {n: 'Supermarkets', i: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'},
+    {n: 'Restaurants', i: 'https://cdn.instashop.ae/d3c9063df070ce24f4435b19754dd99a_food-superstore-rounded---discounted.png'},
+    {n: 'Pharmacies', i: 'https://cdn.instashop.ae/90aa6443a8d45149ecda841e62f13c52_pharmacy-superstore-rounded---discounted.png'},
+    {n: 'Pet Shops', i: 'https://cdn.instashop.ae/09fbe895665ebbb0961548f580431b42_rounded-superstore-mockup-04.png'},
+    {n: 'Stationery & Party', i: 'https://cdn.instashop.ae/da8617baf4eaa560f24e29f2a98cc6df_StationeryAndPartySupplies.png'},
+    {n: 'Baby Care & Toys', i: 'https://cdn.instashop.ae/3f2f4578ea1c96e9baefb21466f913a2_games-toys-rounded-vertical.png'},
+    {n: 'Specialty & Ethnic', i: 'https://cdn.instashop.ae/a34d2e28fdb02844f1ba632119f2db36_rounded-superstore-mockup-15.png'},
+    {n: 'Home & Living', i: 'https://cdn.instashop.ae/1ca8c037872d2d4e9a99a51b19d13b11_Home__Living'},
+    {n: 'Bakeries & Cakes', i: 'https://cdn.instashop.ae/c2e2ecc7ab4ab9cbc1f18354b60be381_Bakeries__Cakes'},
+    {n: 'Cosmetics & Beauty', i: 'https://cdn.instashop.ae/452a4ea8e6bbde18edd8770fa5d3df16_Cosmetics__Beauty'},
+    {n: 'Perfumes', i: 'https://cdn.instashop.ae/d94f542febc83c273aa7558e7a234aab_Perfumes'},
+    {n: 'Flower Shops', i: 'https://cdn.instashop.ae/fb8173568cffb434ccdf4545735b691d_Flower_Shops'},
+    {n: 'Butchery & Seafood', i: 'https://cdn.instashop.ae/97537b332658a405b3489c60d8cc0dcd_Butchery_and_Seafood_SuperStore_Circle.png'},
+    {n: 'Fruits & Vegetables', i:  'https://cdn.instashop.ae/babc941eeb72938e9d9e88342b463ece_rounded-superstore-mockup-03.png'},
+    {n: 'Organic Shops', i:'https://cdn.instashop.ae/0e5cb122bdc860624f281d9290b0eaae_rounded-superstore-mockup-11.png' },
+    {n: 'Water', i: 'https://cdn.instashop.ae/0ad44d86ea79236cca6ff6583969d1e4_rounded-superstore-mockup-10.png'},
+    {n: 'Fitness Nutrition', i: 'https://cdn.instashop.ae/39202face7d0bdff2ba7be54954408a8_rounded-superstore-mockup-14.png'},
+    {n: 'Electronics', i: 'https://cdn.instashop.ae/33f11f3124cabe707c1cbcfd99256564_Electronics'}
+]

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
-
+import {colors} from '@/assets/theme'
 
 type IconType = 'Ionicons' | 'MaterialCommunityIcons';
 
@@ -22,7 +22,7 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: "#FF6347", // Tomato color for active tab
+                tabBarActiveTintColor: colors.primary, // Tomato color for active tab
                 tabBarInactiveTintColor: "#808080", // Gray color for inactive tabs
                 tabBarStyle: {
                     backgroundColor: 'white',

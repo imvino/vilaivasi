@@ -1,0 +1,70 @@
+{
+  "stores": [
+    {
+      "id": 1,
+      "category": "Grocery",
+      "location": {
+        "latitude": 13.1306561,
+        "longitude": 80.1264594
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 1440,
+      "minOrder": 0
+    },
+    {
+      "id": 2,
+      "category": "Grocery",
+      "location": {
+        "latitude": 13.1327916,
+        "longitude": 80.1235559
+      },
+      "deliveryCost": "paid",
+      "deliveryTime": 10,
+      "minOrder": 200
+    },
+    {
+      "id": 3,
+      "category": "Medicine",
+      "location": {
+        "latitude": 13.1237256,
+        "longitude": 80.114145
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 20,
+      "minOrder": 0
+    },
+    {
+      "id": 4,
+      "category": "Medicine",
+      "location": {
+        "latitude": 13.1287585,
+        "longitude": 80.1150868
+      },
+      "deliveryCost": "paid",
+      "deliveryTime": 15,
+      "minOrder": 100
+    },
+    {
+      "id": 5,
+      "category": "Fish & Meat",
+      "location": {
+        "latitude": 13.1276552,
+        "longitude": 80.1137706
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 1440,
+      "minOrder": 0
+    },
+    {
+      "id": 6,
+      "category": "Fish & Meat",
+      "location": {
+        "latitude": 13.1266987,
+        "longitude": 80.1138688
+      },
+      "deliveryCost": "paid",
+      "deliveryTime": 10,
+      "minOrder": 500
+    }
+  ]
+}
