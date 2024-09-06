@@ -2,69 +2,183 @@
   "stores": [
     {
       "id": 1,
+      "name": "Fresh Mart",
       "category": "Grocery",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1306561,
         "longitude": 80.1264594
       },
       "deliveryCost": "free",
       "deliveryTime": 1440,
-      "minOrder": 0
+      "minOrder": 0,
+      "rating": 4.5,
+      "ratingCount": 120,
+      "openingHours": "8:00 AM - 10:00 PM",
+      "services": ["In-store shopping", "In-store pickup", "Delivery"],
+      "phoneNumber": "+91 9876543210"
     },
     {
       "id": 2,
+      "name": "Quick Stop",
       "category": "Grocery",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1327916,
         "longitude": 80.1235559
       },
       "deliveryCost": "paid",
       "deliveryTime": 10,
-      "minOrder": 200
+      "minOrder": 200,
+      "rating": 4.2,
+      "ratingCount": 85,
+      "openingHours": "7:00 AM - 11:00 PM",
+      "services": ["In-store shopping", "Delivery"],
+      "phoneNumber": "+91 9876543211"
     },
     {
       "id": 3,
+      "name": "MediCare",
       "category": "Medicine",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1237256,
         "longitude": 80.114145
       },
       "deliveryCost": "free",
       "deliveryTime": 20,
-      "minOrder": 0
+      "minOrder": 0,
+      "rating": 4.7,
+      "ratingCount": 200,
+      "openingHours": "24 hours",
+      "services": ["In-store shopping", "Delivery", "24/7 service"],
+      "phoneNumber": "+91 9876543212"
     },
     {
       "id": 4,
+      "name": "QuickMeds",
       "category": "Medicine",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1287585,
         "longitude": 80.1150868
       },
       "deliveryCost": "paid",
-      "deliveryTime": 15,
-      "minOrder": 100
+      "deliveryTime": 60,
+      "minOrder": 100,
+      "rating": 4.3,
+      "ratingCount": 150,
+      "openingHours": "8:00 AM - 12:00 AM",
+      "services": ["In-store shopping", "Delivery", "Online consultations"],
+      "phoneNumber": "+91 9876543213"
     },
     {
       "id": 5,
+      "name": "Ocean Basket",
       "category": "Fish & Meat",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1276552,
         "longitude": 80.1137706
       },
       "deliveryCost": "free",
-      "deliveryTime": 1440,
-      "minOrder": 0
+      "deliveryTime": 30,
+      "minOrder": 500,
+      "rating": 4.6,
+      "ratingCount": 180,
+      "openingHours": "6:00 AM - 9:00 PM",
+      "services": ["In-store shopping", "Delivery", "Custom cuts"],
+      "phoneNumber": "+91 9876543214"
     },
     {
       "id": 6,
+      "name": "Meat Master",
       "category": "Fish & Meat",
+      "image": "https://random.imagecdn.app/500/500",
       "location": {
         "latitude": 13.1266987,
         "longitude": 80.1138688
       },
       "deliveryCost": "paid",
       "deliveryTime": 10,
-      "minOrder": 500
+      "minOrder": 300,
+      "rating": 4.4,
+      "ratingCount": 130,
+      "openingHours": "7:00 AM - 10:00 PM",
+      "services": ["In-store shopping", "Delivery", "Marination services"],
+      "phoneNumber": "+91 9876543215"
+    },
+    {
+      "id": 7,
+      "name": "Green Grocer",
+      "category": "Grocery",
+      "image": "https://random.imagecdn.app/500/500",
+      "location": {
+        "latitude": 13.1296561,
+        "longitude": 80.1254594
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 45,
+      "minOrder": 250,
+      "rating": 4.1,
+      "ratingCount": 90,
+      "openingHours": "9:00 AM - 9:00 PM",
+      "services": ["In-store shopping", "Delivery", "Organic produce"],
+      "phoneNumber": "+91 9876543216"
+    },
+    {
+      "id": 8,
+      "name": "Pharma Plus",
+      "category": "Medicine",
+      "image": "https://random.imagecdn.app/500/500",
+      "location": {
+        "latitude": 13.1247256,
+        "longitude": 80.115145
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 25,
+      "minOrder": 150,
+      "rating": 4.5,
+      "ratingCount": 170,
+      "openingHours": "8:00 AM - 11:00 PM",
+      "services": ["In-store shopping", "Delivery", "Prescription refills"],
+      "phoneNumber": "+91 9876543217"
+    },
+    {
+      "id": 9,
+      "name": "Seafood Express",
+      "category": "Fish & Meat",
+      "image": "https://random.imagecdn.app/500/500",
+      "location": {
+        "latitude": 13.1286552,
+        "longitude": 80.1147706
+      },
+      "deliveryCost": "paid",
+      "deliveryTime": 20,
+      "minOrder": 400,
+      "rating": 2.3,
+      "ratingCount": 110,
+      "openingHours": "7:00 AM - 8:00 PM",
+      "services": ["In-store shopping", "Delivery", "Live seafood"],
+      "phoneNumber": "+91 9876543218"
+    },
+    {
+      "id": 10,
+      "name": "Super Savers",
+      "category": "Grocery",
+      "image": "https://random.imagecdn.app/500/500",
+      "location": {
+        "latitude": 13.1317916,
+        "longitude": 80.1245559
+      },
+      "deliveryCost": "free",
+      "deliveryTime": 90,
+      "minOrder": 1000,
+      "rating": 4.0,
+      "ratingCount": 200,
+      "openingHours": "10:00 AM - 10:00 PM",
+      "services": ["In-store shopping", "Bulk purchases", "Delivery"],
+      "phoneNumber": "+91 9876543219"
     }
   ]
 }

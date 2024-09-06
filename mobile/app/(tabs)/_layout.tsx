@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
 import {colors} from '@/assets/theme'
+import {Platform} from "react-native";
 
 type IconType = 'Ionicons' | 'MaterialCommunityIcons';
 
@@ -28,6 +29,8 @@ export default function TabLayout() {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
                     borderTopColor: '#E0E0E0',
+                    // height: Platform.OS === 'android' ? 65 : "auto",
+                    // paddingBottom: Platform.OS === 'android' ? 10 :  0,
                 },
                 headerShown: false,
             }}
