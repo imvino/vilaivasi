@@ -22,6 +22,7 @@ import {useEffect, useState} from "react";
 import {colors} from '@/assets/theme'
 import Header from "@/components/Header";
 import {categories} from "@/constants/category";
+import {Link} from "expo-router";
 
 interface CategoryItemProps {
     imageUrl: string;
@@ -30,13 +31,20 @@ interface CategoryItemProps {
 }
 
 const CategoryItem: React.FC<CategoryItemProps> = ({ imageUrl, name, isSelected }) => (
-    <View style={styles.categoryItem}>
+
+        <Link href={{
+            pathname: '/list',
+            params: { title: name }
+        }}>
+            <View style={styles.categoryItem}>
         <Image
             source={{ uri: imageUrl }}
             style={[styles.categoryImage, isSelected && styles.selectedCategoryImage]}
         />
         <Text style={styles.categoryName}>{name}</Text>
-    </View>
+            </View>
+        </Link>
+
 );
 
 interface RestaurantCardProps {
@@ -237,7 +245,7 @@ const styles = StyleSheet.create({
         width: 80, // Fixed width for each category item
     },
     categoryName: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: '500',
         textAlign: 'center',
         height: 32, // Fixed height for two lines of text
@@ -247,6 +255,7 @@ const styles = StyleSheet.create({
         height: 64,
         borderRadius: 32,
         marginBottom: 4,
+        marginTop:3
     },
     selectedCategoryImage: {
         borderWidth: 2,

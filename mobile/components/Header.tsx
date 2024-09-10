@@ -1,9 +1,11 @@
 import {StyleSheet, Text, View} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {colors} from "@/assets/theme";
+import {Link} from "expo-router";
 
 export default function Header() {
     return <View style={styles.header}>
+        <Link href="/manageLoc" style={styles.locationLink}>
         <View style={styles.locationContainer}>
             <Ionicons name='location' size={20} color={colors.primary}/>
             <View style={styles.addressContainer}>
@@ -12,9 +14,11 @@ export default function Header() {
                                                                                 color='#6B7280'/></Text>
             </View>
         </View>
+        </Link>
         <View style={styles.userIconContainer}>
             <Ionicons name='person-outline' size={16} color='#6B7280'/>
         </View>
+
     </View>;
 }
 
@@ -29,6 +33,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#F3F4F6',
         backgroundColor: 'white',
     },
+    locationLink:{flex:1},
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',

@@ -17,6 +17,7 @@ import storeData from '../../constants/storeData.json';
 import MapView, {Circle, Marker} from "react-native-maps";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
+import {router} from "expo-router";
 
 interface ChipButtonProps {
   title: string;
@@ -282,7 +283,7 @@ const Home: React.FC = () => {
           >
             <MaterialIcons name="filter-list" size={24} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity
+          <TouchableOpacity onPress={()=>router.push("/list")}
               style={[styles.bottomBtn,styles.listViewButton]}
               // onPress={() => setIsListView(!isListView)}
           >

@@ -67,7 +67,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Cart',
                     tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon name={focused ? 'document-text' : 'document-text-outline'} color={color} type={'Ionicons'} />
+                        <TabBarIcon name={focused ? 'cart' : 'cart-outline'} color={color} type={'Ionicons'} />
                     ),
                 }}
             />
