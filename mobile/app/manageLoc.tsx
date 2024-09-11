@@ -30,11 +30,11 @@ const AddressSelection = () => {
     const insets = useSafeAreaInsets();
 
     return (
-        <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+        <SafeAreaView style={[styles.safeArea]}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <Stack.Screen
                 options={{
-                    title: 'Enter your area or apartment name',
+                    title: 'Ashok Nagar,Chennai',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
                             <Ionicons name="arrow-back" size={24} color="black" />
@@ -42,37 +42,37 @@ const AddressSelection = () => {
                     ),
                     headerStyle: {
                         backgroundColor: '#FFFFFF',
+                        height:10
                     },
                     headerTintColor: '#000000',
                     headerShadowVisible: false,
                 }}
             />
+            {/* Search Bar */}
+            <View style={styles.searchBarContainer}>
+                <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>
+                <TextInput
+                    placeholder="Restaurants, groceries, dishes"
+                    style={styles.searchInput}
+                />
+            </View>
+
+            {/* Action Buttons */}
+            <TouchableOpacity style={styles.actionButton} onPress={()=>router.push('/MapLocation')}>
+                <View style={styles.actionButtonContent}>
+                    <Ionicons name="location" size={20} color="#F97316" />
+                    <Text style={styles.actionButtonText}>Use my current location</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#F97316" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+                <View style={styles.actionButtonContent}>
+                    <Ionicons name="add" size={20} color="#F97316" />
+                    <Text style={styles.actionButtonText}>Add new address</Text>
+                </View>
+            </TouchableOpacity>
 
             <ScrollView style={styles.scrollView}>
-                {/* Search Bar */}
-                <View style={styles.searchBarContainer}>
-                    <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>
-                    <TextInput
-                        placeholder="Restaurants, groceries, dishes"
-                        style={styles.searchInput}
-                    />
-                </View>
-
-                {/* Action Buttons */}
-                <TouchableOpacity style={styles.actionButton}>
-                    <View style={styles.actionButtonContent}>
-                        <Ionicons name="location" size={20} color="#F97316" />
-                        <Text style={styles.actionButtonText}>Use my current location</Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={20} color="#F97316" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                    <View style={styles.actionButtonContent}>
-                        <Ionicons name="add" size={20} color="#F97316" />
-                        <Text style={styles.actionButtonText}>Add new address</Text>
-                    </View>
-                </TouchableOpacity>
-
                 {/* Saved Addresses */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>SAVED ADDRESSES</Text>
@@ -81,6 +81,21 @@ const AddressSelection = () => {
                         title:"Hospital",
                         address:"Raadha Rajendran Hospital, Mela Ilandaikulam, Alandur, Chennai, Tamil Nadu 600016, India",
                         distance:"2.8 km"
+                    })}
+                    {renderAddress({
+                        title: "OYO",
+                        address: "fab hotel tree service apartment, Parthasarathi Puram, T. Nagar, Chennai, Tamil Nadu 600017, India. (3)",
+                        distance: "3.4 km"
+                    })}
+                    {renderAddress({
+                        title: "OYO",
+                        address: "fab hotel tree service apartment, Parthasarathi Puram, T. Nagar, Chennai, Tamil Nadu 600017, India. (3)",
+                        distance: "3.4 km"
+                    })}
+                    {renderAddress({
+                        title: "OYO",
+                        address: "fab hotel tree service apartment, Parthasarathi Puram, T. Nagar, Chennai, Tamil Nadu 600017, India. (3)",
+                        distance: "3.4 km"
                     })}
                     {renderAddress({
                         title: "OYO",
