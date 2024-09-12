@@ -14,8 +14,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
-import MapView, { Region } from "react-native-maps";
-import {router, Stack} from "expo-router";
+import MapView, { Region} from "react-native-maps";
+import {Link, router, Stack} from "expo-router";
+import  ContentLoader, { Rect, Circle }  from "react-content-loader/native";
+import AnimatedMarker from "@/components/AnimatedMarker";
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -150,6 +152,22 @@ const MapLocation: React.FC = () => {
         }
     }, [isLoading]);
 
+    const AddressLoader = () => (
+        <ContentLoader
+            speed={1}
+            width={Dimensions.get('window').width - 32}
+            height={100}
+            viewBox={`0 0 ${Dimensions.get('window').width - 32} 100`}
+            backgroundColor="#f3f3f3"
+            foregroundColor="#ecebeb"
+        >
+            <Rect x="0" y="0" rx="4" ry="4" width="70%" height="20" />
+            <Rect x="0" y="30" rx="3" ry="3" width="100%" height="10" />
+            <Rect x="0" y="50" rx="3" ry="3" width="90%" height="10" />
+            <Rect x="0" y="70" rx="3" ry="3" width="80%" height="10" />
+        </ContentLoader>
+    );
+
     if (isLoading) {
         return (
             <SafeAreaView style={styles.safeArea}>
@@ -211,23 +229,11 @@ const MapLocation: React.FC = () => {
                 <View style={styles.markerFixed}>
                     <Ionicons name="location" size={40} color="#FF5722" />
                     {isCurrentLocation && (
-                        <Animated.View style={[
-                            styles.markerPing,
-                            {
-                                transform: [
-                                    {
-                                        scale: pingAnimation.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [0.5, 1.5],
-                                        }),
-                                    },
-                                ],
-                                opacity: pingAnimation.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [0.8, 0],
-                                }),
-                            },
-                        ]} />
+                        <AnimatedMarker
+                            size={40}
+                            color="#FF5722"
+                            isAnimating={isCurrentLocation}
+                        />
                     )}
                 </View>
             </View>
@@ -242,15 +248,8 @@ const MapLocation: React.FC = () => {
             <View style={styles.addressBar}>
                 <View>
                     {isFetchingAddress ? (
-                        <View style={styles.bottomLoadingContainer}>
-                            <Ionicons name="location" size={24} color="#FF5722" />
-                            <Text style={styles.loadingText}>Please wait...</Text>
-                            <View style={styles.progressBarContainer}>
-                                <View style={[styles.progressBar, { width: `${loadingProgress}%` }]} />
-                            </View>
-                            <Text style={styles.loadingSubtext}>FETCHING ACCURATE LOCATION...</Text>
-                        </View>
-                    ): (
+                        <AddressLoader />
+                    ) : (
                         <>
                             <View style={styles.addressHeader}>
                                 <Ionicons name="location" size={24} color="#FF5722" />
@@ -265,9 +264,18 @@ const MapLocation: React.FC = () => {
                         </>
                     )}
                 </View>
-                <TouchableOpacity style={styles.confirmButton}>
-                    <Text style={styles.confirmButtonText}>CONFIRM LOCATION</Text>
-                </TouchableOpacity>
+                <Link href={{
+                    pathname: "/AddressDetailsScreen",
+                    params: {
+                    address: address,
+                    latitude: region ? region.latitude.toString() : '',
+                    longitude: region ? region.longitude.toString() : ''
+                }
+                }} asChild>
+                    <TouchableOpacity style={styles.confirmButton}>
+                        <Text style={styles.confirmButtonText}>CONFIRM LOCATION</Text>
+                    </TouchableOpacity>
+                </Link>
             </View>
         </SafeAreaView>
     );
