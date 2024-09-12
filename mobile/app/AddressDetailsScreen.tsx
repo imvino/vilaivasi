@@ -1,27 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     TextInput,
     StyleSheet,
     TouchableOpacity,
-    Dimensions,
     ScrollView,
     KeyboardAvoidingView,
     Platform,
     StatusBar
 } from 'react-native';
-import {router, Stack, useLocalSearchParams} from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AnimatedMarker from "@/components/AnimatedMarker";
-
-const { width } = Dimensions.get('window');
+import {gray} from "colorette";
 
 const AddressDetailsScreen = () => {
-    const { address, latitude, longitude } = useLocalSearchParams();
+    const { address, latitude, longitude } = useLocalSearchParams<{ address: string; latitude: string; longitude: string }>();
     const insets = useSafeAreaInsets();
+    const [houseNumber, setHouseNumber] = useState('Kamala flats');
+    const [apartmentDetails, setApartmentDetails] = useState('');
 
     const region = {
         latitude: parseFloat(latitude),
@@ -48,79 +48,70 @@ const AddressDetailsScreen = () => {
                     ),
                     headerStyle: {
                         backgroundColor: '#FFFFFF',
-                        height:10
+                        height: 10
                     },
                     headerTintColor: '#000000',
                     headerShadowVisible: false,
                 }}
             />
-            <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom }]}>
-                <MapView
-                    style={styles.map}
-                    initialRegion={region}
-                    scrollEnabled={false}
-                    zoomEnabled={false}
-                    rotateEnabled={false}
-                    pitchEnabled={false}
-                >
-                    <Marker coordinate={region}>
-                        <AnimatedMarker />
-                    </Marker>
-                </MapView>
+            <MapView
+                style={styles.map}
+                initialRegion={region}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
+                pitchEnabled={false}
+            >
+                <Marker coordinate={region}>
+                    <AnimatedMarker />
+                </Marker>
+            </MapView>
 
-                <View style={styles.card}>
-                    <View style={styles.addressHeader}>
-                        <Ionicons name="location" size={24} color="#FF5722" />
-                        <Text style={styles.addressTitle}>3-2</Text>
-                    </View>
-                    <Text style={styles.addressDetails}>{address}</Text>
+            <View style={styles.card}>
+                <View style={styles.addressHeader}>
+                    <Ionicons name="location" size={24} color="#FF5722" />
+                    <Text style={styles.addressTitle}>3-2</Text>
+                </View>
+                <Text style={styles.addressDetails}>{address}</Text>
+            </View>
+            <ScrollView contentContainerStyle={[styles.card, styles.scrollContent, { paddingBottom: insets.bottom }]}>
+                <Text style={styles.helpText}>A detailed address will help our Delivery Partner reach your doorstep easily</Text>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.inputLabel}>HOUSE / FLAT / FLOOR NO.</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Kamala flats"
-                        />
-                    </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>HOUSE / FLAT / FLOOR NO.</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Kamala flats"
+                        value={houseNumber}
+                        onChangeText={setHouseNumber}
+                    />
+                </View>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.inputLabel}>APARTMENT / ROAD / AREA (OPTIONAL)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter details"
-                        />
-                    </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>APARTMENT / ROAD / AREA (OPTIONAL)</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter details"
+                        value={apartmentDetails}
+                        onChangeText={setApartmentDetails}
+                    />
+                </View>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.inputLabel}>DIRECTIONS TO REACH (OPTIONAL)</Text>
-                        <TouchableOpacity style={styles.voiceButton}>
-                            <Ionicons name="mic" size={24} color="#FF5722" />
-                            <Text style={styles.voiceButtonText}>Tap to record voice directions</Text>
+                <View style={styles.saveAsContainer}>
+                    <Text style={styles.saveAsLabel}>SAVE AS</Text>
+                    <View style={styles.saveAsOptions}>
+                        <TouchableOpacity style={styles.saveAsChip}>
+                            <Ionicons name="home-outline" size={20} color="#4B5563" />
+                            <Text style={styles.saveAsChipText}>Home</Text>
                         </TouchableOpacity>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="e.g. Ring the bell on the red gate"
-                            multiline={true}
-                            numberOfLines={3}
-                        />
-                    </View>
-
-                    <View style={styles.saveAsContainer}>
-                        <Text style={styles.saveAsLabel}>SAVE AS</Text>
-                        <View style={styles.saveAsOptions}>
-                            <TouchableOpacity style={styles.saveAsChip}>
-                                <Ionicons name="home-outline" size={20} color="#4B5563" />
-                                <Text style={styles.saveAsChipText}>Home</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.saveAsChip}>
-                                <Ionicons name="briefcase-outline" size={20} color="#4B5563" />
-                                <Text style={styles.saveAsChipText}>Work</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.saveAsChip}>
-                                <Ionicons name="people-outline" size={20} color="#4B5563" />
-                                <Text style={styles.saveAsChipText}>Friends and Family</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity style={styles.saveAsChip}>
+                            <Ionicons name="briefcase-outline" size={20} color="#4B5563" />
+                            <Text style={styles.saveAsChipText}>Work</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.saveAsChip}>
+                            <Ionicons name="people-outline" size={20} color="#4B5563" />
+                            <Text style={styles.saveAsChipText}>Friends and Family</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
@@ -137,6 +128,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     scrollContent: {
+        paddingTop: 0,
         flexGrow: 1,
     },
     map: {
@@ -144,6 +136,7 @@ const styles = StyleSheet.create({
     },
     card: {
         padding: 16,
+        paddingBottom:0
     },
     addressHeader: {
         flexDirection: 'row',
@@ -159,6 +152,13 @@ const styles = StyleSheet.create({
         color: '#4B5563',
         marginBottom: 16,
     },
+    helpText: {
+        color: 'black',
+        marginBottom: 16,
+        backgroundColor: 'rgba(255,145,34,0.7)',
+        padding:10,
+        borderRadius:8
+    },
     inputContainer: {
         marginBottom: 16,
     },
@@ -173,18 +173,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
-    },
-    voiceButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF5F5',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    voiceButtonText: {
-        color: '#FF5722',
-        marginLeft: 8,
     },
     saveAsContainer: {
         marginBottom: 16,

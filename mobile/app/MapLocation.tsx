@@ -7,16 +7,14 @@ import {
     StyleSheet,
     StatusBar,
     TouchableOpacity,
-    ActivityIndicator,
-    Animated,
     Dimensions,
+    ViewStyle,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
-import MapView, { Region} from "react-native-maps";
-import {Link, router, Stack} from "expo-router";
-import  ContentLoader, { Rect, Circle }  from "react-content-loader/native";
+import MapView, { Region } from "react-native-maps";
+import { Link, router, Stack } from "expo-router";
+import ContentLoader, { Rect } from "react-content-loader/native";
 import AnimatedMarker from "@/components/AnimatedMarker";
 
 const { width, height } = Dimensions.get('window');
@@ -25,56 +23,28 @@ const LATITUDE_DELTA = 0.005;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const MapLocation: React.FC = () => {
-    const insets = useSafeAreaInsets();
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [region, setRegion] = useState<Region | null>(null);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [address, setAddress] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFetchingAddress, setIsFetchingAddress] = useState<boolean>(false);
     const [isCurrentLocation, setIsCurrentLocation] = useState<boolean>(true);
     const mapRef = useRef<MapView | null>(null);
-    const pingAnimation = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         getCurrentLocation();
     }, []);
-
-    useEffect(() => {
-        if (isCurrentLocation) {
-            startPingAnimation();
-        } else {
-            pingAnimation.setValue(0);
-        }
-    }, [isCurrentLocation]);
-
-    const startPingAnimation = () => {
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(pingAnimation, {
-                    toValue: 1,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(pingAnimation, {
-                    toValue: 0,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-            ])
-        ).start();
-    };
 
     const getCurrentLocation = async () => {
         setIsLoading(true);
         try {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
+                console.error('Permission to access location was denied');
                 return;
             }
 
-            let location = await Location.getCurrentPositionAsync({});
+            const location = await Location.getCurrentPositionAsync({});
             setLocation(location);
             const newRegion = {
                 latitude: location.coords.latitude,
@@ -86,7 +56,7 @@ const MapLocation: React.FC = () => {
             setIsCurrentLocation(true);
             await fetchAddress(location.coords.latitude, location.coords.longitude);
         } catch (error) {
-            setErrorMsg('Error fetching location');
+            console.error('Error fetching location:', error);
         } finally {
             setIsLoading(false);
         }
@@ -95,7 +65,7 @@ const MapLocation: React.FC = () => {
     const fetchAddress = async (latitude: number, longitude: number) => {
         setIsFetchingAddress(true);
         try {
-            let addressResponse = await Location.reverseGeocodeAsync({ latitude, longitude });
+            const addressResponse = await Location.reverseGeocodeAsync({ latitude, longitude });
             if (addressResponse.length > 0) {
                 const addr = addressResponse[0];
                 setAddress(`${addr.name}, ${addr.street}, ${addr.city}, ${addr.region} ${addr.postalCode}, ${addr.country}`);
@@ -126,7 +96,7 @@ const MapLocation: React.FC = () => {
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
             };
-            mapRef.current.animateToRegion(newRegion);
+            mapRef.current?.animateToRegion(newRegion);
             setIsCurrentLocation(true);
             fetchAddress(location.coords.latitude, location.coords.longitude);
         }
@@ -186,28 +156,25 @@ const MapLocation: React.FC = () => {
     }
 
     return (
-        <SafeAreaView style={[styles.safeArea]}>
+        <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <Stack.Screen
                 options={{
                     title: 'Select delivery location',
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()} style={{
-                            padding: 10,
-                        }}>
+                        <TouchableOpacity onPress={() => router.back()} style={{ padding: 10 }}>
                             <Ionicons name="arrow-back" size={24} color="black" />
                         </TouchableOpacity>
                     ),
                     headerStyle: {
                         backgroundColor: '#FFFFFF',
-                        height:10
+                        height: 10
                     },
                     headerTintColor: '#000000',
                     headerShadowVisible: false,
                 }}
             />
 
-            {/* Search Bar */}
             <View style={styles.searchBarContainer}>
                 <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon} />
                 <TextInput
@@ -216,7 +183,6 @@ const MapLocation: React.FC = () => {
                 />
             </View>
 
-            {/* Map Container */}
             <View style={styles.mapContainer}>
                 {region && (
                     <MapView
@@ -227,24 +193,21 @@ const MapLocation: React.FC = () => {
                     />
                 )}
                 <View style={styles.markerFixed}>
-                    <Ionicons name="location" size={40} color="#FF5722" />
-                    {isCurrentLocation && (
+                    {isCurrentLocation ? (
                         <AnimatedMarker
                             size={40}
                             color="#FF5722"
                             isAnimating={isCurrentLocation}
                         />
-                    )}
+                    ) : <Ionicons name="location" size={40} color="#FF5722" />}
                 </View>
             </View>
 
-            {/* Locate Me Button */}
             <TouchableOpacity style={styles.locateButton} onPress={resetToUserLocation}>
                 <Ionicons name="locate" size={24} color="#FF5722" />
                 <Text style={styles.locateButtonText}>LOCATE ME</Text>
             </TouchableOpacity>
 
-            {/* Bottom Address Bar */}
             <View style={styles.addressBar}>
                 <View>
                     {isFetchingAddress ? (
@@ -267,10 +230,10 @@ const MapLocation: React.FC = () => {
                 <Link href={{
                     pathname: "/AddressDetailsScreen",
                     params: {
-                    address: address,
-                    latitude: region ? region.latitude.toString() : '',
-                    longitude: region ? region.longitude.toString() : ''
-                }
+                        address: address,
+                        latitude: region ? region.latitude.toString() : '',
+                        longitude: region ? region.longitude.toString() : ''
+                    }
                 }} asChild>
                     <TouchableOpacity style={styles.confirmButton}>
                         <Text style={styles.confirmButtonText}>CONFIRM LOCATION</Text>
@@ -280,7 +243,6 @@ const MapLocation: React.FC = () => {
         </SafeAreaView>
     );
 };
-
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -317,23 +279,6 @@ const styles = StyleSheet.create({
         color: '#4B5563',
         fontSize: 12,
     },
-    loadingContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingIndicator: {
-        marginVertical: 20,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginLeft: 16,
-    },
     searchBarContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -357,7 +302,7 @@ const styles = StyleSheet.create({
     },
     map: {
         ...StyleSheet.absoluteFillObject,
-    },
+    } as ViewStyle,
     markerFixed: {
         position: 'absolute',
         top: '50%',
@@ -365,18 +310,6 @@ const styles = StyleSheet.create({
         marginLeft: -20,
         marginTop: -40,
         zIndex: 2,
-    },
-    markerPing: {
-        position: 'absolute',
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: 'rgba(255, 87, 34, 0.3)',
-        top: '50%',
-        left: '50%',
-        marginLeft: -25,
-        marginTop: -25,
-        zIndex: 1,
     },
     locateButton: {
         position: 'absolute',
