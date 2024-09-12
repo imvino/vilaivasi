@@ -22,7 +22,7 @@ import {useEffect, useState} from "react";
 import {colors} from '@/assets/theme'
 import Header from "@/components/Header";
 import {categories} from "@/constants/category";
-import {Link} from "expo-router";
+import {Link, router} from "expo-router";
 
 interface CategoryItemProps {
     imageUrl: string;
@@ -79,7 +79,7 @@ interface RestaurantListItemProps {
 }
 
 const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name, cuisine, rating, time, distance }) => (
-    <View style={styles.listItemContainer}>
+    <TouchableOpacity style={styles.listItemContainer} onPress={()=>router.push('/StorePage')}>
         <Image source={{ uri: imageUrl }} style={styles.listItemImage} />
         <View style={styles.listItemDetails}>
             <Text style={styles.listItemName}>{name}</Text>
@@ -90,7 +90,7 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name,
                 <Text style={styles.listItemTimeDistance}>{time} • {distance}</Text>
             </View>
         </View>
-    </View>
+    </TouchableOpacity>
 );
 
 const Home: React.FC = () => {
