@@ -1,23 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-    View,
+    Dimensions,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
     Text,
     TextInput,
-    SafeAreaView,
-    StyleSheet,
-    StatusBar,
     TouchableOpacity,
-    Dimensions,
+    View,
     ViewStyle,
 } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
+import {Ionicons} from "@expo/vector-icons";
 import * as Location from 'expo-location';
-import MapView, { Region } from "react-native-maps";
-import { Link, router, Stack } from "expo-router";
-import ContentLoader, { Rect } from "react-content-loader/native";
+import MapView, {Region} from "react-native-maps";
+import {Link, router, Stack} from "expo-router";
+import ContentLoader, {Rect} from "react-content-loader/native";
 import AnimatedMarker from "@/components/AnimatedMarker";
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.005;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
@@ -38,7 +38,7 @@ const MapLocation: React.FC = () => {
     const getCurrentLocation = async () => {
         setIsLoading(true);
         try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+            let {status} = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 console.error('Permission to access location was denied');
                 return;
@@ -65,7 +65,7 @@ const MapLocation: React.FC = () => {
     const fetchAddress = async (latitude: number, longitude: number) => {
         setIsFetchingAddress(true);
         try {
-            const addressResponse = await Location.reverseGeocodeAsync({ latitude, longitude });
+            const addressResponse = await Location.reverseGeocodeAsync({latitude, longitude});
             if (addressResponse.length > 0) {
                 const addr = addressResponse[0];
                 setAddress(`${addr.name}, ${addr.street}, ${addr.city}, ${addr.region} ${addr.postalCode}, ${addr.country}`);
@@ -78,14 +78,23 @@ const MapLocation: React.FC = () => {
     };
 
     const handleRegionChangeComplete = (newRegion: Region) => {
-        setRegion(newRegion);
-        const isAtCurrentLocation =
-            location &&
-            Math.abs(newRegion.latitude - location.coords.latitude) < 0.0001 &&
-            Math.abs(newRegion.longitude - location.coords.longitude) < 0.0001;
+        if (region) {
+            const latDiff = Math.abs(newRegion.latitude - region.latitude);
+            const lonDiff = Math.abs(newRegion.longitude - region.longitude);
+            if (latDiff > 0.0001 || lonDiff > 0.0001) {
+                console.log('moved');
+                setRegion(newRegion);
+                const isAtCurrentLocation =
+                    location &&
+                    Math.abs(newRegion.latitude - location.coords.latitude) < 0.0001 &&
+                    Math.abs(newRegion.longitude - location.coords.longitude) < 0.0001;
 
-        setIsCurrentLocation(isAtCurrentLocation);
-        fetchAddress(newRegion.latitude, newRegion.longitude);
+                setIsCurrentLocation(isAtCurrentLocation);
+                fetchAddress(newRegion.latitude, newRegion.longitude);
+            }
+        }
+
+
     };
 
     const resetToUserLocation = () => {
@@ -131,39 +140,23 @@ const MapLocation: React.FC = () => {
             backgroundColor="#f3f3f3"
             foregroundColor="#ecebeb"
         >
-            <Rect x="0" y="0" rx="4" ry="4" width="70%" height="20" />
-            <Rect x="0" y="30" rx="3" ry="3" width="100%" height="10" />
-            <Rect x="0" y="50" rx="3" ry="3" width="90%" height="10" />
-            <Rect x="0" y="70" rx="3" ry="3" width="80%" height="10" />
+            <Rect x="0" y="0" rx="4" ry="4" width="70%" height="20"/>
+            <Rect x="0" y="30" rx="3" ry="3" width="100%" height="10"/>
+            <Rect x="0" y="50" rx="3" ry="3" width="90%" height="10"/>
+            <Rect x="0" y="70" rx="3" ry="3" width="80%" height="10"/>
         </ContentLoader>
     );
 
-    if (isLoading) {
-        return (
-            <SafeAreaView style={styles.safeArea}>
-                <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-                <View style={styles.mapPlaceholder} />
-                <View style={styles.bottomLoadingContainer}>
-                    <Ionicons name="location" size={24} color="#FF5722" />
-                    <Text style={styles.loadingText}>Please wait...</Text>
-                    <View style={styles.progressBarContainer}>
-                        <View style={[styles.progressBar, { width: `${loadingProgress}%` }]} />
-                    </View>
-                    <Text style={styles.loadingSubtext}>FETCHING ACCURATE LOCATION...</Text>
-                </View>
-            </SafeAreaView>
-        );
-    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF"/>
             <Stack.Screen
                 options={{
                     title: 'Select delivery location',
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()} style={{ padding: 10 }}>
-                            <Ionicons name="arrow-back" size={24} color="black" />
+                        <TouchableOpacity onPress={() => router.back()} style={{padding: 10}}>
+                            <Ionicons name="arrow-back" size={24} color="black"/>
                         </TouchableOpacity>
                     ),
                     headerStyle: {
@@ -175,71 +168,86 @@ const MapLocation: React.FC = () => {
                 }}
             />
 
-            <View style={styles.searchBarContainer}>
-                <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon} />
-                <TextInput
-                    placeholder="Search for a building, street name or area"
-                    style={styles.searchInput}
-                />
-            </View>
-
-            <View style={styles.mapContainer}>
-                {region && (
-                    <MapView
-                        ref={mapRef}
-                        style={styles.map}
-                        initialRegion={region}
-                        onRegionChangeComplete={handleRegionChangeComplete}
+            {isLoading ? <><View style={styles.mapPlaceholder}/>
+                    <View style={styles.bottomLoadingContainer}>
+                        <Ionicons name="location" size={24} color="#FF5722"/>
+                        <Text style={styles.loadingText}>Please wait...</Text>
+                        <View style={styles.progressBarContainer}>
+                            <View style={[styles.progressBar, {width: `${loadingProgress}%`}]}/>
+                        </View>
+                        <Text style={styles.loadingSubtext}>FETCHING ACCURATE LOCATION...</Text>
+                    </View></> :
+                <><View style={styles.searchBarContainer}>
+                    <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>
+                    <TextInput
+                        placeholder="Search for a building, street name or area"
+                        style={styles.searchInput}
                     />
-                )}
-                <View style={styles.markerFixed}>
-                    {isCurrentLocation ? (
-                        <AnimatedMarker
-                            size={40}
-                            color="#FF5722"
-                            isAnimating={isCurrentLocation}
-                        />
-                    ) : <Ionicons name="location" size={40} color="#FF5722" />}
                 </View>
-            </View>
 
-            <TouchableOpacity style={styles.locateButton} onPress={resetToUserLocation}>
-                <Ionicons name="locate" size={24} color="#FF5722" />
-                <Text style={styles.locateButtonText}>LOCATE ME</Text>
-            </TouchableOpacity>
+                    <View style={styles.mapContainer}>
+                        {region && (
+                            <MapView
+                                ref={mapRef}
+                                style={styles.map}
+                                initialRegion={region}
+                                onRegionChangeComplete={handleRegionChangeComplete}
+                                mapType="standard"
+                                userInterfaceStyle="light"
+                            />
+                        )}
+                        <View style={styles.markerFixed}>
+                            {isCurrentLocation ? (
+                                <AnimatedMarker
+                                    size={40}
+                                    color="#FF5722"
+                                    isAnimating={isCurrentLocation}
+                                />
+                            ) : <Ionicons name="location" size={40} color="#FF5722"/>}
+                        </View>
+                    </View>
 
-            <View style={styles.addressBar}>
-                <View>
-                    {isFetchingAddress ? (
-                        <AddressLoader />
-                    ) : (
-                        <>
-                            <View style={styles.addressHeader}>
-                                <Ionicons name="location" size={24} color="#FF5722" />
-                                <Text style={styles.addressTitle}>Anna Nagar</Text>
-                                <TouchableOpacity>
-                                    <Text style={styles.changeButton}>CHANGE</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={styles.addressDetails}>
-                                {address || 'Address not available'}
-                            </Text>
-                        </>
-                    )}
-                </View>
-                <Link href={{
-                    pathname: "/AddressDetailsScreen",
-                    params: {
-                        address: address,
-                        latitude: region ? region.latitude.toString() : '',
-                        longitude: region ? region.longitude.toString() : ''
-                    }
-                }} asChild>
-                    <TouchableOpacity style={styles.confirmButton}>
-                        <Text style={styles.confirmButtonText}>CONFIRM LOCATION</Text>
+                    <TouchableOpacity style={styles.locateButton} onPress={resetToUserLocation}>
+                        <Ionicons name="locate" size={24} color="#FF5722"/>
+                        <Text style={styles.locateButtonText}>LOCATE ME</Text>
                     </TouchableOpacity>
-                </Link>
-            </View>
+
+                    <View style={styles.addressBar}>
+                        <View>
+                            {isFetchingAddress ? (
+                                <AddressLoader/>
+                            ) : (
+                                <>
+                                    <View style={styles.addressHeader}>
+                                        <Ionicons name="location" size={24} color="#FF5722"/>
+                                        <Text style={styles.addressTitle}>Anna Nagar</Text>
+                                        <TouchableOpacity>
+                                            <Text style={styles.changeButton}>CHANGE</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={styles.addressDetails}>
+                                        {address || 'Address not available'}
+                                    </Text>
+                                </>
+                            )}
+                        </View>
+                        <Link href={{
+                            pathname: "/AddressDetailsScreen",
+                            params: {
+                                address: address,
+                                latitude: region ? region.latitude.toString() : '',
+                                longitude: region ? region.longitude.toString() : ''
+                            }
+                        }} asChild>
+                            <TouchableOpacity style={styles.confirmButton}>
+                                <Text style={styles.confirmButtonText}>CONFIRM LOCATION</Text>
+                            </TouchableOpacity>
+                        </Link>
+                    </View>
+                </>
+            }
+
+
         </SafeAreaView>
     );
 };
