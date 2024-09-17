@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -8,19 +8,23 @@ import {
     StyleSheet,
     Dimensions,
     Animated,
+    Platform,
+    StatusBar,
 } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
+const CARD_MARGIN_BOTTOM = 16;
 
 const YasinQasab = () => {
     const [selectedCategory, setSelectedCategory] = useState('Picks for you');
     const scrollViewRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const [cardHeight, setCardHeight] = useState(0);
 
     useScrollToTop(scrollViewRef);
 
@@ -33,17 +37,53 @@ const YasinQasab = () => {
         { id: 5, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
     ];
 
+    const headerTranslateY = scrollY.interpolate({
+        inputRange: [0, HEADER_HEIGHT],
+        outputRange: [0, -HEADER_HEIGHT],
+        extrapolate: 'clamp',
+    });
+
     const categoryBarTranslateY = scrollY.interpolate({
-        inputRange: [0, HEADER_HEIGHT - CATEGORY_BAR_HEIGHT],
-        outputRange: [HEADER_HEIGHT, 0],
+        inputRange: [0, HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT],
+        outputRange: [HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM, 0],
+        extrapolate: 'clamp',
+    });
+
+    const categoryBarOpacity = scrollY.interpolate({
+        inputRange: [
+            HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT - 20,
+            HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT
+        ],
+        outputRange: [0, 1],
         extrapolate: 'clamp',
     });
 
     const scrollToCategory = (category) => {
         setSelectedCategory(category);
-        const yOffset = categories.indexOf(category) * 300; // Adjust this value based on your layout
-        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT, animated: true });
+        const yOffset = categories.indexOf(category) * 300; // Adjust based on your layout
+        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM, animated: true });
     };
+
+    const renderCategoryBar = (isFloating = false) => (
+        <View style={[styles.categoryBar, isFloating && styles.floatingCategoryBar]}>
+            <TouchableOpacity style={styles.burgerMenu}>
+                <Ionicons name="menu" size={24} color="black" />
+            </TouchableOpacity>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {categories.map((category) => (
+                    <TouchableOpacity
+                        key={category}
+                        style={[styles.categoryItem, selectedCategory === category && styles.selectedCategory]}
+                        onPress={() => scrollToCategory(category)}
+                    >
+                        <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
+                            {category}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -78,14 +118,20 @@ const YasinQasab = () => {
                 )}
                 scrollEventThrottle={16}
             >
-                <View style={styles.header}>
-                    <View style={styles.storeInfoCard}>
+                <Animated.View style={[styles.header, { transform: [{ translateY: headerTranslateY }] }]}>
+                    <View
+                        style={styles.storeInfoCard}
+                        onLayout={(event) => {
+                            const { height } = event.nativeEvent.layout;
+                            setCardHeight(height);
+                        }}
+                    >
                         <TouchableOpacity style={styles.infoButton}>
                             <Ionicons name="information-circle-outline" size={24} color="#666" />
                         </TouchableOpacity>
                         <View style={styles.storeInfoHeader}>
                             <Image
-                                source={{uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'}}
+                                source={{uri: 'https://example.com/yasin-qasab-logo.png'}}
                                 style={styles.logo}
                             />
                             <View style={styles.storeInfoText}>
@@ -116,28 +162,33 @@ const YasinQasab = () => {
                             <Text style={styles.promoText}>Free delivery on your first order</Text>
                         </View>
                     </View>
+                </Animated.View>
+
+                <View style={styles.contentContainer}>
+                    {renderCategoryBar()}
+
+                    {categories.map((category) => (
+                        <View key={category}>
+                            <Text style={styles.categoryTitle}>{category}</Text>
+                            {products
+                                .filter((product) => product.category === category)
+                                .map((product) => (
+                                    <View key={product.id} style={styles.productItem}>
+                                        <Image
+                                            source={{uri: `https://example.com/${product.image}`}}
+                                            style={styles.productImage}
+                                        />
+                                        <View style={styles.productInfo}>
+                                            <Text style={styles.productName}>{product.name}</Text>
+                                            <Text style={styles.productWeight}>1 Kg</Text>
+                                            <Text style={styles.productPrice}>IQD {product.price}</Text>
+                                        </View>
+                                    </View>
+                                ))}
+                        </View>
+                    ))}
                 </View>
 
-                {categories.map((category) => (
-                    <View key={category}>
-                        <Text style={styles.categoryTitle}>{category}</Text>
-                        {products
-                            .filter((product) => product.category === category)
-                            .map((product) => (
-                                <View key={product.id} style={styles.productItem}>
-                                    <Image
-                                        source={{uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'}}
-                                        style={styles.productImage}
-                                    />
-                                    <View style={styles.productInfo}>
-                                        <Text style={styles.productName}>{product.name}</Text>
-                                        <Text style={styles.productWeight}>1 Kg</Text>
-                                        <Text style={styles.productPrice}>IQD {product.price}</Text>
-                                    </View>
-                                </View>
-                            ))}
-                    </View>
-                ))}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>Add IQD 5000 to start your order</Text>
                 </View>
@@ -145,23 +196,14 @@ const YasinQasab = () => {
 
             <Animated.View
                 style={[
-                    styles.categoryBar,
-                    { transform: [{ translateY: categoryBarTranslateY }] },
+                    styles.floatingCategoryBarContainer,
+                    {
+                        transform: [{ translateY: categoryBarTranslateY }],
+                        opacity: categoryBarOpacity,
+                    }
                 ]}
             >
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {categories.map((category) => (
-                        <TouchableOpacity
-                            key={category}
-                            style={[styles.categoryItem, selectedCategory === category && styles.selectedCategory]}
-                            onPress={() => scrollToCategory(category)}
-                        >
-                            <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
-                                {category}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                {renderCategoryBar(true)}
             </Animated.View>
         </View>
     );
@@ -171,6 +213,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     headerButton: {
         padding: 10,
@@ -184,9 +227,11 @@ const styles = StyleSheet.create({
     header: {
         height: HEADER_HEIGHT,
         backgroundColor: '#FFF0F5',
+        zIndex: 1,
     },
     storeInfoCard: {
         margin: 16,
+        marginBottom: CARD_MARGIN_BOTTOM,
         padding: 16,
         backgroundColor: 'white',
         borderRadius: 8,
@@ -198,6 +243,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+    },
+    contentContainer: {
+        paddingTop: HEADER_HEIGHT-150,
     },
     infoButton: {
         position: 'absolute',
@@ -269,15 +317,29 @@ const styles = StyleSheet.create({
         color: '#FF6347',
     },
     categoryBar: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
         height: CATEGORY_BAR_HEIGHT,
         backgroundColor: 'white',
         borderBottomWidth: 1,
         borderBottomColor: '#E5E7EB',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    floatingCategoryBar: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: 2,
+    },
+    floatingCategoryBarContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 2,
+    },
+    burgerMenu: {
+        padding: 10,
     },
     categoryItem: {
         paddingHorizontal: 16,
