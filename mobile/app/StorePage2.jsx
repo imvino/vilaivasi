@@ -15,10 +15,8 @@ import { router, Stack } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const { width, height } = Dimensions.get('window');
 const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
-const CARD_MARGIN_BOTTOM = 16;
 
 const YasinQasab = () => {
     const [selectedCategory, setSelectedCategory] = useState('Picks for you');
@@ -37,31 +35,11 @@ const YasinQasab = () => {
         { id: 5, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
     ];
 
-    const headerTranslateY = scrollY.interpolate({
-        inputRange: [0, HEADER_HEIGHT],
-        outputRange: [0, -HEADER_HEIGHT],
-        extrapolate: 'clamp',
-    });
-
-    const categoryBarTranslateY = scrollY.interpolate({
-        inputRange: [0, HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT],
-        outputRange: [HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM, 0],
-        extrapolate: 'clamp',
-    });
-
-    const categoryBarOpacity = scrollY.interpolate({
-        inputRange: [
-            HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT - 20,
-            HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM - CATEGORY_BAR_HEIGHT
-        ],
-        outputRange: [0, 1],
-        extrapolate: 'clamp',
-    });
 
     const scrollToCategory = (category) => {
         setSelectedCategory(category);
         const yOffset = categories.indexOf(category) * 300; // Adjust based on your layout
-        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight + CARD_MARGIN_BOTTOM, animated: true });
+        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight , animated: true });
     };
 
     const renderCategoryBar = (isFloating = false) => (
@@ -118,7 +96,7 @@ const YasinQasab = () => {
                 )}
                 scrollEventThrottle={16}
             >
-                <Animated.View style={[styles.header, { transform: [{ translateY: headerTranslateY }] }]}>
+                <Animated.View style={[styles.header]}>
                     <View
                         style={styles.storeInfoCard}
                         onLayout={(event) => {
@@ -131,7 +109,7 @@ const YasinQasab = () => {
                         </TouchableOpacity>
                         <View style={styles.storeInfoHeader}>
                             <Image
-                                source={{uri: 'https://example.com/yasin-qasab-logo.png'}}
+                                source={{uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'}}
                                 style={styles.logo}
                             />
                             <View style={styles.storeInfoText}>
@@ -175,7 +153,7 @@ const YasinQasab = () => {
                                 .map((product) => (
                                     <View key={product.id} style={styles.productItem}>
                                         <Image
-                                            source={{uri: `https://example.com/${product.image}`}}
+                                            source={{uri: `https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png`}}
                                             style={styles.productImage}
                                         />
                                         <View style={styles.productInfo}>
@@ -193,18 +171,6 @@ const YasinQasab = () => {
                     <Text style={styles.footerText}>Add IQD 5000 to start your order</Text>
                 </View>
             </Animated.ScrollView>
-
-            <Animated.View
-                style={[
-                    styles.floatingCategoryBarContainer,
-                    {
-                        transform: [{ translateY: categoryBarTranslateY }],
-                        opacity: categoryBarOpacity,
-                    }
-                ]}
-            >
-                {renderCategoryBar(true)}
-            </Animated.View>
         </View>
     );
 };
@@ -231,7 +197,6 @@ const styles = StyleSheet.create({
     },
     storeInfoCard: {
         margin: 16,
-        marginBottom: CARD_MARGIN_BOTTOM,
         padding: 16,
         backgroundColor: 'white',
         borderRadius: 8,
