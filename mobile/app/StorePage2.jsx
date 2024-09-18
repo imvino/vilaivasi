@@ -6,10 +6,8 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    Dimensions,
     Animated,
-    Platform,
-    StatusBar, findNodeHandle,
+    findNodeHandle,
 } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
@@ -19,7 +17,7 @@ const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
 const SCROLL_THRESHOLD = 20;
 
-const YasinQasab = () => {
+const StorePage2 = () => {
     const [selectedCategory, setSelectedCategory] = useState('Picks for you');
     const [isScrolling, setIsScrolling] = useState(false);
     const scrollViewRef = useRef(null);
@@ -51,10 +49,9 @@ const YasinQasab = () => {
             setIsMeasured(true);
         };
 
-        // Use requestAnimationFrame to ensure the layout has been calculated
         const timeoutId = setTimeout(() => {
             requestAnimationFrame(measureAllCategories);
-        }, 500); // Add a small delay to ensure refs are set
+        }, 500);
 
         return () => clearTimeout(timeoutId);
     }, []);
@@ -72,7 +69,6 @@ const YasinQasab = () => {
 
         return () => scrollY.removeListener(listenerId);
     }, [scrollY, cardHeight, isScrolling, isMeasured]);
-
 
     const updateSelectedCategory = (scrollPosition) => {
         let newSelectedCategory = categories[0];
@@ -93,7 +89,6 @@ const YasinQasab = () => {
                 y: categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT,
                 animated: true
             });
-            // Reset isScrolling after animation is complete
             setTimeout(() => {
                 setIsScrolling(false);
                 lastScrollPosition.current = categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT;
@@ -150,20 +145,20 @@ const YasinQasab = () => {
                 options={{
                     title: 'Yasin Qasab',
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
                             <Ionicons name="arrow-back" size={24} color="black" />
                         </TouchableOpacity>
                     ),
-                        headerRight: () => (
-                            <View style={styles.headerRightContainer}>
-                                <TouchableOpacity style={styles.headerButton}>
-                                    <Ionicons name="share-outline" size={24} color="black" />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.headerButton}>
-                                    <Ionicons name="search-outline" size={24} color="black" />
-                                </TouchableOpacity>
-                            </View>
-                        ),
+                    headerRight: () => (
+                        <View style={styles.headerRightContainer}>
+                            <TouchableOpacity style={styles.headerButton}>
+                                <Ionicons name="share-outline" size={24} color="black" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton}>
+                                <Ionicons name="search-outline" size={24} color="black" />
+                            </TouchableOpacity>
+                        </View>
+                    ),
                     headerStyle: {
                         backgroundColor: '#FFFFFF',
                         height: 10
@@ -403,7 +398,7 @@ const styles = StyleSheet.create({
     },
     floatingCategoryBarContainer: {
         position: 'absolute',
-        top: 0, // Adjust based on your header height
+        top: 0,
         left: 0,
         right: 0,
         zIndex: 2,
@@ -480,4 +475,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default YasinQasab;
+export default StorePage2;

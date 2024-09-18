@@ -57,7 +57,7 @@ interface RestaurantCardProps {
 }
 
 const RestaurantCard: React.FC<RestaurantCardProps> = ({ imageUrl, name, cuisine, rating, price, distance }) => (
-    <TouchableOpacity style={styles.restaurantCard} onPress={()=>router.push('/StorePage2')}>
+    <TouchableOpacity style={styles.restaurantCard} onPress={()=>router.push('/StorePage3')}>
         <Image source={{ uri: imageUrl }} style={styles.restaurantImage} />
         <Text style={styles.restaurantName}>{name}</Text>
         <Text style={styles.cuisineText}>{cuisine}</Text>
@@ -79,7 +79,7 @@ interface RestaurantListItemProps {
 }
 
 const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name, cuisine, rating, time, distance }) => (
-    <TouchableOpacity style={styles.listItemContainer} onPress={()=>router.push('/StorePage')}>
+    <TouchableOpacity style={styles.listItemContainer} onPress={()=>router.push('/StorePage2')}>
         <Image source={{ uri: imageUrl }} style={styles.listItemImage} />
         <View style={styles.listItemDetails}>
             <Text style={styles.listItemName}>{name}</Text>
