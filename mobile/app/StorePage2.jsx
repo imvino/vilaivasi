@@ -9,7 +9,7 @@ import {
     Dimensions,
     Animated,
     Platform,
-    StatusBar,
+    StatusBar, findNodeHandle,
 } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
@@ -24,7 +24,7 @@ const YasinQasab = () => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [cardHeight, setCardHeight] = useState(0);
     const [showFloatingBar, setShowFloatingBar] = useState(false);
-
+    const categoryRefs = useRef({});
     useScrollToTop(scrollViewRef);
 
     const categories = ['Picks for you', 'Chicken', 'Kofta', 'Beef', 'Lamb'];
@@ -34,6 +34,10 @@ const YasinQasab = () => {
         { id: 3, name: 'Chicken Kebab', price: 13000, category: 'Chicken', image: 'chicken_kebab.jpg' },
         { id: 4, name: 'Chi Kofta', price: 15000, category: 'Kofta', image: 'chi_kofta.jpg' },
         { id: 5, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
+        { id: 6, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
+        { id: 7, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
+        { id: 8, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
+        { id: 9, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
     ];
 
     useEffect(() => {
@@ -46,8 +50,14 @@ const YasinQasab = () => {
 
     const scrollToCategory = (category) => {
         setSelectedCategory(category);
-        const yOffset = categories.indexOf(category) * 300; // Adjust based on your layout
-        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight, animated: true });
+        if (categoryRefs.current[category]) {
+            categoryRefs.current[category].measureLayout(
+                findNodeHandle(scrollViewRef.current),
+                (x, y) => {
+                    scrollViewRef.current?.scrollTo({ y: y-CATEGORY_BAR_HEIGHT, animated: true });
+                }
+            );
+        }
     };
 
     const renderCategoryBar = (isFloating = false) => (
@@ -77,22 +87,26 @@ const YasinQasab = () => {
                 options={{
                     title: 'Yasin Qasab',
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+                        <TouchableOpacity onPress={() => router.back()}>
                             <Ionicons name="arrow-back" size={24} color="black" />
                         </TouchableOpacity>
                     ),
-                    headerRight: () => (
-                        <View style={styles.headerRightContainer}>
-                            <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name="share-outline" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name="search-outline" size={24} color="black" />
-                            </TouchableOpacity>
-                        </View>
-                    ),
-                    headerTitleAlign: 'center',
-                    headerShown: true,
+                        headerRight: () => (
+                            <View style={styles.headerRightContainer}>
+                                <TouchableOpacity style={styles.headerButton}>
+                                    <Ionicons name="share-outline" size={24} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.headerButton}>
+                                    <Ionicons name="search-outline" size={24} color="black" />
+                                </TouchableOpacity>
+                            </View>
+                        ),
+                    headerStyle: {
+                        backgroundColor: '#FFFFFF',
+                        height: 10
+                    },
+                    headerTintColor: '#000000',
+                    headerShadowVisible: false,
                 }}
             />
             <Animated.ScrollView
@@ -154,7 +168,9 @@ const YasinQasab = () => {
                     {renderCategoryBar()}
 
                     {categories.map((category) => (
-                        <View key={category}>
+                        <View key={category}
+                              ref={(ref) => (categoryRefs.current[category] = ref)}
+                        >
                             <Text style={styles.categoryTitle}>{category}</Text>
                             {products
                                 .filter((product) => product.category === category)
