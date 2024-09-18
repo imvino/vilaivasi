@@ -17,14 +17,19 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
+const SCROLL_THRESHOLD = 20;
 
 const YasinQasab = () => {
     const [selectedCategory, setSelectedCategory] = useState('Picks for you');
+    const [isScrolling, setIsScrolling] = useState(false);
     const scrollViewRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
     const [cardHeight, setCardHeight] = useState(0);
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const categoryRefs = useRef({});
+    const categoryOffsets = useRef({});
+    const [isMeasured, setIsMeasured] = useState(false);
+    const lastScrollPosition = useRef(0);
     useScrollToTop(scrollViewRef);
 
     const categories = ['Picks for you', 'Chicken', 'Kofta', 'Beef', 'Lamb'];
@@ -41,22 +46,80 @@ const YasinQasab = () => {
     ];
 
     useEffect(() => {
+        const measureAllCategories = () => {
+            categories.forEach(measureCategoryLayout);
+            setIsMeasured(true);
+        };
+
+        // Use requestAnimationFrame to ensure the layout has been calculated
+        const timeoutId = setTimeout(() => {
+            requestAnimationFrame(measureAllCategories);
+        }, 500); // Add a small delay to ensure refs are set
+
+        return () => clearTimeout(timeoutId);
+    }, []);
+
+    useEffect(() => {
+        if (!isMeasured) return;
+
         const listenerId = scrollY.addListener(({ value }) => {
-            setShowFloatingBar(value > cardHeight+20);
+            setShowFloatingBar(value > cardHeight + 20);
+            if (!isScrolling && Math.abs(value - lastScrollPosition.current) > SCROLL_THRESHOLD) {
+                updateSelectedCategory(value);
+                lastScrollPosition.current = value;
+            }
         });
 
         return () => scrollY.removeListener(listenerId);
-    }, [scrollY, cardHeight]);
+    }, [scrollY, cardHeight, isScrolling, isMeasured]);
+
+
+    const updateSelectedCategory = (scrollPosition) => {
+        let newSelectedCategory = categories[0];
+        for (let i = categories.length - 1; i >= 0; i--) {
+            if (scrollPosition >= (categoryOffsets.current[categories[i]] || 0) - CATEGORY_BAR_HEIGHT) {
+                newSelectedCategory = categories[i];
+                break;
+            }
+        }
+        setSelectedCategory(newSelectedCategory);
+    };
 
     const scrollToCategory = (category) => {
+        setIsScrolling(true);
         setSelectedCategory(category);
-        if (categoryRefs.current[category]) {
-            categoryRefs.current[category].measureLayout(
-                findNodeHandle(scrollViewRef.current),
-                (x, y) => {
-                    scrollViewRef.current?.scrollTo({ y: y-CATEGORY_BAR_HEIGHT, animated: true });
-                }
-            );
+        if (categoryOffsets.current[category] !== undefined) {
+            scrollViewRef.current?.scrollTo({
+                y: categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT,
+                animated: true
+            });
+            // Reset isScrolling after animation is complete
+            setTimeout(() => {
+                setIsScrolling(false);
+                lastScrollPosition.current = categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT;
+            }, 500);
+        } else {
+            console.warn(`Offset not found for category: ${category}`);
+            setIsScrolling(false);
+        }
+    };
+
+    const measureCategoryLayout = (category) => {
+        if (categoryRefs.current[category] && scrollViewRef.current) {
+            const scrollViewHandle = findNodeHandle(scrollViewRef.current);
+            if (scrollViewHandle) {
+                categoryRefs.current[category].measureLayout(
+                    scrollViewHandle,
+                    (x, y) => {
+                        categoryOffsets.current[category] = y;
+                    },
+                    (error) => {
+                        console.error(`Error measuring layout for ${category}:`, error);
+                    }
+                );
+            } else {
+                console.warn(`ScrollView node handle not found for ${category}`);
+            }
         }
     };
 
@@ -117,6 +180,12 @@ const YasinQasab = () => {
                     { useNativeDriver: true }
                 )}
                 scrollEventThrottle={16}
+                onScrollBeginDrag={() => setIsScrolling(true)}
+                onScrollEndDrag={() => setIsScrolling(false)}
+                onMomentumScrollEnd={() => {
+                    setIsScrolling(false);
+                    updateSelectedCategory(scrollY._value);
+                }}
             >
                 <Animated.View style={[styles.header]}>
                     <View
@@ -169,7 +238,12 @@ const YasinQasab = () => {
 
                     {categories.map((category) => (
                         <View key={category}
-                              ref={(ref) => (categoryRefs.current[category] = ref)}
+                              ref={(ref) => {
+                                  if (ref && !categoryRefs.current[category]) {
+                                      categoryRefs.current[category] = ref;
+                                      measureCategoryLayout(category);
+                                  }
+                              }}
                         >
                             <Text style={styles.categoryTitle}>{category}</Text>
                             {products
