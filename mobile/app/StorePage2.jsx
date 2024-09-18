@@ -63,6 +63,11 @@ const YasinQasab = () => {
         </View>
     );
 
+    const categoryBarOpacity = scrollY.interpolate({
+        inputRange: [cardHeight,cardHeight+CATEGORY_BAR_HEIGHT],
+        outputRange: [0, 1],
+        extrapolate: 'clamp',
+    });
     return (
         <View style={styles.container}>
             <Stack.Screen
@@ -171,6 +176,24 @@ const YasinQasab = () => {
                     <Text style={styles.footerText}>Add IQD 5000 to start your order</Text>
                 </View>
             </Animated.ScrollView>
+            <Animated.View
+                style={[
+                    styles.floatingCategoryBarContainer,
+                    {
+                        opacity: categoryBarOpacity,
+                        transform: [
+                            {
+                                translateY: categoryBarOpacity.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [-CATEGORY_BAR_HEIGHT, 0],
+                                })
+                            }
+                        ]
+                    }
+                ]}
+            >
+                {renderCategoryBar(true)}
+            </Animated.View>
         </View>
     );
 };
@@ -295,13 +318,25 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 2,
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
     },
     floatingCategoryBarContainer: {
         position: 'absolute',
-        top: 0,
+        top: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
         left: 0,
         right: 0,
         zIndex: 2,
+        backgroundColor: 'white', // Ensure solid background
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     burgerMenu: {
         padding: 10,
