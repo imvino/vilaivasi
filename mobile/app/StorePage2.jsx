@@ -23,6 +23,7 @@ const YasinQasab = () => {
     const scrollViewRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
     const [cardHeight, setCardHeight] = useState(0);
+    const [showFloatingBar, setShowFloatingBar] = useState(false);
 
     useScrollToTop(scrollViewRef);
 
@@ -35,11 +36,18 @@ const YasinQasab = () => {
         { id: 5, name: 'Boneless Beef Thigh', price: 30000, category: 'Beef', image: 'beef_thigh.jpg' },
     ];
 
+    useEffect(() => {
+        const listenerId = scrollY.addListener(({ value }) => {
+            setShowFloatingBar(value > cardHeight+20);
+        });
+
+        return () => scrollY.removeListener(listenerId);
+    }, [scrollY, cardHeight]);
 
     const scrollToCategory = (category) => {
         setSelectedCategory(category);
         const yOffset = categories.indexOf(category) * 300; // Adjust based on your layout
-        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight , animated: true });
+        scrollViewRef.current?.scrollTo({ y: yOffset + HEADER_HEIGHT + cardHeight, animated: true });
     };
 
     const renderCategoryBar = (isFloating = false) => (
@@ -63,11 +71,6 @@ const YasinQasab = () => {
         </View>
     );
 
-    const categoryBarOpacity = scrollY.interpolate({
-        inputRange: [cardHeight,cardHeight+CATEGORY_BAR_HEIGHT],
-        outputRange: [0, 1],
-        extrapolate: 'clamp',
-    });
     return (
         <View style={styles.container}>
             <Stack.Screen
@@ -176,24 +179,11 @@ const YasinQasab = () => {
                     <Text style={styles.footerText}>Add IQD 5000 to start your order</Text>
                 </View>
             </Animated.ScrollView>
-            <Animated.View
-                style={[
-                    styles.floatingCategoryBarContainer,
-                    {
-                        opacity: categoryBarOpacity,
-                        transform: [
-                            {
-                                translateY: categoryBarOpacity.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [-CATEGORY_BAR_HEIGHT, 0],
-                                })
-                            }
-                        ]
-                    }
-                ]}
-            >
-                {renderCategoryBar(true)}
-            </Animated.View>
+            {showFloatingBar && (
+                <Animated.View style={[styles.floatingCategoryBarContainer]}>
+                    {renderCategoryBar(true)}
+                </Animated.View>
+            )}
         </View>
     );
 };
@@ -202,7 +192,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     headerButton: {
         padding: 10,
@@ -324,11 +313,11 @@ const styles = StyleSheet.create({
     },
     floatingCategoryBarContainer: {
         position: 'absolute',
-        top: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
+        top: 0, // Adjust based on your header height
         left: 0,
         right: 0,
         zIndex: 2,
-        backgroundColor: 'white', // Ensure solid background
+        backgroundColor: 'white',
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
