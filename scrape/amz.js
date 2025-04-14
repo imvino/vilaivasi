@@ -14,7 +14,7 @@ const fs = require('fs');
   // Create context with more human-like settings
   const context = await browser.newContext({
     userAgent:
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     viewport: { width: 1366, height: 768 },
     deviceScaleFactor: 1,
     hasTouch: false,
@@ -62,7 +62,7 @@ const fs = require('fs');
 
     // Extract and verify text
     const locationSpan = page.locator(
-      'span.nav-progressive-content.nav-line-2'
+        'span.nav-progressive-content.nav-line-2'
     );
     const locationText = await locationSpan.textContent();
 
@@ -91,9 +91,9 @@ const fs = require('fs');
       const maxScrollAttempts = 15; // Adjust as needed
 
       while (
-        currentHeight > previousHeight &&
-        scrollAttempts < maxScrollAttempts
-      ) {
+          currentHeight > previousHeight &&
+          scrollAttempts < maxScrollAttempts
+          ) {
         previousHeight = currentHeight;
 
         // Perform smooth scrolling
@@ -115,9 +115,9 @@ const fs = require('fs');
         });
 
         console.log(
-          `Scroll attempt ${
-            scrollAttempts + 1
-          }: Found ${productCount} products, page height: ${currentHeight}`
+            `Scroll attempt ${
+                scrollAttempts + 1
+            }: Found ${productCount} products, page height: ${currentHeight}`
         );
         scrollAttempts++;
       }
@@ -150,14 +150,14 @@ const fs = require('fs');
           const priceElement = element.querySelector('.a-price-whole');
           if (priceElement) {
             price = parseInt(
-              priceElement.textContent.replace(/[^0-9]/g, ''),
-              10
+                priceElement.textContent.replace(/[^0-9]/g, ''),
+                10
             );
           }
 
           // Try to find the MRP (if exists)
           const mrpElement = element.querySelector(
-            '.a-price.a-text-price[data-a-strike="true"] .a-offscreen, .a-price.a-text-price[data-a-strike="true"] span[aria-hidden="true"]'
+              '.a-price.a-text-price[data-a-strike="true"] .a-offscreen, .a-price.a-text-price[data-a-strike="true"] span[aria-hidden="true"]'
           );
           if (mrpElement) {
             // Extract number from text like "₹735"
@@ -179,60 +179,60 @@ const fs = require('fs');
 
       // Filter out products without price for final results
       const productsWithPrice = pageProducts.filter(
-        (product) => product.price !== null
+          (product) => product.price !== null
       );
 
       console.log(
-        `Total products found on page ${currentPage}: ${pageProducts.length}`
+          `Total products found on page ${currentPage}: ${pageProducts.length}`
       );
       console.log(
-        `Products with price information: ${productsWithPrice.length}`
+          `Products with price information: ${productsWithPrice.length}`
       );
 
-      // Check if we found fewer than expected products
+      // Modified logic for handling fewer than expected products
       if (pageProducts.length < expectedProductsPerPage) {
         console.log(
-          `\n⚠️ WARNING: Found only ${pageProducts.length} products on page ${currentPage}, expected ${expectedProductsPerPage}`
+            `\nInfo: Found only ${pageProducts.length} products on page ${currentPage}, expected ${expectedProductsPerPage}`
         );
         console.log(
-          'Pausing pagination process. Please check the data and restart if needed.'
+            'This is likely the last page or contains fewer products than expected.'
         );
 
-        // Save the current page products
+        // Still add the products from this page to our collection
         allProducts = [...allProducts, ...productsWithPrice];
 
-        // Save data and exit the loop
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        // Save data for this page too
         fs.writeFileSync(
-          `amazon-products-incomplete-${timestamp}.json`,
-          JSON.stringify(allProducts, null, 2)
+            `amazon-products-page-${currentPage}.json`,
+            JSON.stringify(productsWithPrice, null, 2)
         );
         console.log(
-          `Exported ${allProducts.length} products to amazon-products-incomplete-${timestamp}.json`
+            `Saved data for page ${currentPage} with ${productsWithPrice.length} products`
         );
 
-        // Exit the pagination loop
-        break;
+        // We'll still check if there's a next button, but we won't
+        // automatically break the pagination loop just because we found
+        // fewer products
+      } else {
+        // Add products to our collection
+        allProducts = [...allProducts, ...productsWithPrice];
+
+        // Save data after each page
+        fs.writeFileSync(
+            `amazon-products-page-${currentPage}.json`,
+            JSON.stringify(productsWithPrice, null, 2)
+        );
+        console.log(
+            `Saved data for page ${currentPage} with ${productsWithPrice.length} products`
+        );
       }
-
-      // Add products to our collection
-      allProducts = [...allProducts, ...productsWithPrice];
-
-      // Save data after each page
-      fs.writeFileSync(
-        `amazon-products-page-${currentPage}.json`,
-        JSON.stringify(productsWithPrice, null, 2)
-      );
-      console.log(
-        `Saved data for page ${currentPage} with ${productsWithPrice.length} products`
-      );
 
       // Check if there's a next page button
       const hasNext = await page.evaluate(() => {
         const nextButton = document.querySelector('a.s-pagination-next');
         return (
-          nextButton !== null &&
-          !nextButton.classList.contains('s-pagination-disabled')
+            nextButton !== null &&
+            !nextButton.classList.contains('s-pagination-disabled')
         );
       });
 
@@ -248,7 +248,7 @@ const fs = require('fs');
 
         currentPage++;
       } else {
-        console.log('\nReached the last page. No more pages to process.');
+        console.log('\nReached the last page. No more pages to process. Scraping is complete.');
         hasNextPage = false;
       }
     }
@@ -256,12 +256,13 @@ const fs = require('fs');
     // Export all data to a consolidated file
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     fs.writeFileSync(
-      `amazon-products-all-${timestamp}.json`,
-      JSON.stringify(allProducts, null, 2)
+        `amazon-products-all-${timestamp}.json`,
+        JSON.stringify(allProducts, null, 2)
     );
     console.log(
-      `\nExported ${allProducts.length} products from ${currentPage} pages to amazon-products-all-${timestamp}.json`
+        `\nExported ${allProducts.length} products from ${currentPage} pages to amazon-products-all-${timestamp}.json`
     );
+    console.log('\nScraping process completed successfully.');
   } catch (error) {
     console.error('Error occurred:', error);
 
@@ -269,11 +270,11 @@ const fs = require('fs');
     if (allProducts.length > 0) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       fs.writeFileSync(
-        `amazon-products-error-${timestamp}.json`,
-        JSON.stringify(allProducts, null, 2)
+          `amazon-products-error-${timestamp}.json`,
+          JSON.stringify(allProducts, null, 2)
       );
       console.log(
-        `Saved ${allProducts.length} products collected before error to amazon-products-error-${timestamp}.json`
+          `Saved ${allProducts.length} products collected before error to amazon-products-error-${timestamp}.json`
       );
     }
   } finally {
