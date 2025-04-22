@@ -3,6 +3,10 @@ const { chromium } = require('playwright');
 const { Pool } = require('pg');
 const { getProductInfo } = require('./flipHelper');
 
+// Add command line argument parsing for resume functionality
+const resumeBrand = process.argv[2] || null;
+console.log(resumeBrand ? `Resuming from brand: ${resumeBrand}` : 'Starting from the beginning');
+
 // Database configuration
 const pool = new Pool({
   user: 'postgres',
@@ -234,7 +238,7 @@ async function processPage(page, pageUrl, pageNum, sortOption, client) {
   await extractAndProcessPageData(page, pageUrl, 'sort', pageNum, sortOption, client);
 }
 
-// Common function to extract and process page data
+// Improved function with better error handling
 async function extractAndProcessPageData(page, pageUrl, pageType, pageNum, sortOptionOrBrand, client) {
   let pageName = pageType === 'sort'
       ? `${sortOptionOrBrand} - page ${pageNum}`
@@ -278,157 +282,194 @@ async function extractAndProcessPageData(page, pageUrl, pageType, pageNum, sortO
     }
   });
 
-  // Navigate to the page
-  console.log(`Navigating to: ${pageUrl}`);
-  await page.goto(pageUrl, {
-    waitUntil: 'networkidle',
-    timeout: 60000,
-  });
+  // Navigate to the page with improved error handling
+  try {
+    console.log(`Navigating to: ${pageUrl}`);
+    // Increased timeout and retry mechanism
+    await page.goto(pageUrl, {
+      waitUntil: 'networkidle',
+      timeout: 90000, // Increased timeout to 90s
+    });
+  } catch (navigationError) {
+    console.log(`Navigation timeout for ${pageName}. Retrying with domcontentloaded...`);
+    try {
+      // Retry with a less strict waitUntil option
+      await page.goto(pageUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60000,
+      });
+      // Give some extra time for the page to load fully
+      await page.waitForTimeout(10000);
+    } catch (retryError) {
+      console.log(`Failed to navigate to ${pageName} after retry:`, retryError.message);
+      // Clean up event listeners before exiting
+      page.removeAllListeners('response');
+      return false; // Signal that this page failed
+    }
+  }
 
   // Scroll to the bottom of the page to load all content and avoid scrape blocks
-  await scrollToBottom(page);
+  try {
+    await scrollToBottom(page);
+  } catch (scrollError) {
+    console.log(`Error scrolling on ${pageName}:`, scrollError.message);
+    // Continue anyway - we might still have some data
+  }
 
   // If we still don't have state data, try to get it from the page
   if (!stateData) {
     console.log('Trying to get state data directly from page...');
-    stateData = await page.evaluate(() => {
-      if (window.__INITIAL_STATE__) {
-        return window.__INITIAL_STATE__;
-      }
-      return null;
-    });
+    try {
+      stateData = await page.evaluate(() => {
+        if (window.__INITIAL_STATE__) {
+          return window.__INITIAL_STATE__;
+        }
+        return null;
+      });
+    } catch (evalError) {
+      console.log('Error getting state data from page:', evalError.message);
+    }
   }
 
   // If we still don't have state data, reload the page one more time
   if (!stateData) {
     console.log('State data not found, reloading page...');
-    await page.reload({ waitUntil: 'networkidle', timeout: 60000 });
-    await page.waitForTimeout(3000);
+    try {
+      await page.reload({ waitUntil: 'networkidle', timeout: 60000 });
+      await page.waitForTimeout(5000); // Increased wait time
 
-    // Try to get state data again
-    stateData = await page.evaluate(() => {
-      if (window.__INITIAL_STATE__) {
-        return window.__INITIAL_STATE__;
-      }
-      return null;
-    });
+      // Try to get state data again
+      stateData = await page.evaluate(() => {
+        if (window.__INITIAL_STATE__) {
+          return window.__INITIAL_STATE__;
+        }
+        return null;
+      });
+    } catch (reloadError) {
+      console.log('Error reloading page:', reloadError.message);
+    }
   }
 
   if (stateData) {
     console.log('Processing state data...');
 
-    // Start a transaction for this page
-    await client.query('BEGIN');
+    try {
+      // Start a transaction for this page
+      await client.query('BEGIN');
 
-    // Extract products data based on page type
-    const productData = (() => {
-      const allProducts = [];
+      // Extract products data based on page type
+      const productData = (() => {
+        const allProducts = [];
 
-      if (pageType === 'sort') {
-        // Category page extraction logic
-        if (stateData?.pageDataV4?.page?.data?.[10003]) {
-          // Loop through all items in data[10003]
-          for (let i = 1; i <= 20; i++) {
-            const products = stateData.pageDataV4.page.data[10003][i]?.widget?.data?.products;
+        if (pageType === 'sort') {
+          // Category page extraction logic
+          if (stateData?.pageDataV4?.page?.data?.[10003]) {
+            // Loop through all items in data[10003]
+            for (let i = 1; i <= 20; i++) {
+              const products = stateData.pageDataV4.page.data[10003][i]?.widget?.data?.products;
 
-            // If products exist, process them
-            if (products && Array.isArray(products)) {
-              const mappedProducts = products.map((v) => v.productInfo);
-              allProducts.push(...mappedProducts);
+              // If products exist, process them
+              if (products && Array.isArray(products)) {
+                const mappedProducts = products.map((v) => v.productInfo);
+                allProducts.push(...mappedProducts);
+              }
+            }
+          }
+        } else {
+          // Brand search page extraction logic
+          if (stateData?.pageDataV4?.page?.data?.SEARCH_RESULT_DATA) {
+            const searchData = stateData.pageDataV4.page.data.SEARCH_RESULT_DATA;
+
+            // Check if search results contain products
+            if (searchData.products && Array.isArray(searchData.products)) {
+              allProducts.push(...searchData.products);
+              console.log(`Found ${searchData.products.length} products in SEARCH_RESULT_DATA.products`);
             }
           }
         }
+
+        // If we didn't find products in the expected path, look in alternative paths
+        if (allProducts.length === 0) {
+          console.log('Product data not found at expected path, checking alternatives...');
+
+          // Fallback: Look through all keys in page.data to find products
+          if (stateData?.pageDataV4?.page?.data) {
+            console.log('Searching for products in alternative paths...');
+            const dataKeys = Object.keys(stateData.pageDataV4.page.data);
+            for (const key of dataKeys) {
+              const section = stateData.pageDataV4.page.data[key];
+              if (Array.isArray(section)) {
+                for (let i = 0; i < section.length; i++) {
+                  const widget = section[i]?.widget;
+                  const products = widget?.data?.products;
+                  if (products && Array.isArray(products)) {
+                    const mappedProducts = products.map((v) => v.productInfo || v);
+                    allProducts.push(...mappedProducts);
+                    console.log(`Found ${mappedProducts.length} products in path: ${key}[${i}]`);
+                  }
+                }
+              } else if (typeof section === 'object' && section !== null) {
+                // Check if this object has numeric keys
+                const sectionKeys = Object.keys(section);
+                for (const sectionKey of sectionKeys) {
+                  const subSection = section[sectionKey];
+                  // Check for products in widget data
+                  if (subSection?.widget?.data?.products) {
+                    const products = subSection.widget.data.products;
+                    const mappedProducts = products.map((v) => v.productInfo || v);
+                    allProducts.push(...mappedProducts);
+                    console.log(`Found ${mappedProducts.length} products in path: ${key}.${sectionKey}`);
+                  }
+
+                  // Check for direct products array (search results)
+                  if (subSection?.products && Array.isArray(subSection.products)) {
+                    allProducts.push(...subSection.products);
+                    console.log(`Found ${subSection.products.length} products in path: ${key}.${sectionKey}.products`);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        try {
+          // Apply getProductInfo to each product with error handling
+          return allProducts.map((v) => {
+            try {
+              // Handle different product data structures
+              const productValue = v.value || v;
+              return getProductInfo(productValue);
+            } catch (error) {
+              console.error('Error processing product:', error);
+              return null;
+            }
+          }).filter(p => p !== null); // Remove any null results
+        } catch (error) {
+          console.error('Error mapping products:', error);
+          return [];
+        }
+      })();
+
+      if (productData && productData.length > 0) {
+        console.log(`Found ${productData.length} product groups on ${pageName}`);
+
+        // Save products directly to database
+        await saveProductsToDB(client, productData);
+
+        // Add new brands if any (without updating counts yet)
+        await insertNewBrands(client);
+
+        console.log(`${pageName} data saved to database!`);
+
+        // Commit transaction for this page
+        await client.query('COMMIT');
       } else {
-        // Brand search page extraction logic
-        if (stateData?.pageDataV4?.page?.data?.SEARCH_RESULT_DATA) {
-          const searchData = stateData.pageDataV4.page.data.SEARCH_RESULT_DATA;
-
-          // Check if search results contain products
-          if (searchData.products && Array.isArray(searchData.products)) {
-            allProducts.push(...searchData.products);
-            console.log(`Found ${searchData.products.length} products in SEARCH_RESULT_DATA.products`);
-          }
-        }
+        console.log(`No products found on ${pageName}`);
+        // Rollback empty transaction
+        await client.query('ROLLBACK');
       }
-
-      // If we didn't find products in the expected path, look in alternative paths
-      if (allProducts.length === 0) {
-        console.log('Product data not found at expected path, checking alternatives...');
-
-        // Fallback: Look through all keys in page.data to find products
-        if (stateData?.pageDataV4?.page?.data) {
-          console.log('Searching for products in alternative paths...');
-          const dataKeys = Object.keys(stateData.pageDataV4.page.data);
-          for (const key of dataKeys) {
-            const section = stateData.pageDataV4.page.data[key];
-            if (Array.isArray(section)) {
-              for (let i = 0; i < section.length; i++) {
-                const widget = section[i]?.widget;
-                const products = widget?.data?.products;
-                if (products && Array.isArray(products)) {
-                  const mappedProducts = products.map((v) => v.productInfo || v);
-                  allProducts.push(...mappedProducts);
-                  console.log(`Found ${mappedProducts.length} products in path: ${key}[${i}]`);
-                }
-              }
-            } else if (typeof section === 'object' && section !== null) {
-              // Check if this object has numeric keys
-              const sectionKeys = Object.keys(section);
-              for (const sectionKey of sectionKeys) {
-                const subSection = section[sectionKey];
-                // Check for products in widget data
-                if (subSection?.widget?.data?.products) {
-                  const products = subSection.widget.data.products;
-                  const mappedProducts = products.map((v) => v.productInfo || v);
-                  allProducts.push(...mappedProducts);
-                  console.log(`Found ${mappedProducts.length} products in path: ${key}.${sectionKey}`);
-                }
-
-                // Check for direct products array (search results)
-                if (subSection?.products && Array.isArray(subSection.products)) {
-                  allProducts.push(...subSection.products);
-                  console.log(`Found ${subSection.products.length} products in path: ${key}.${sectionKey}.products`);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      try {
-        // Apply getProductInfo to each product with error handling
-        return allProducts.map((v) => {
-          try {
-            // Handle different product data structures
-            const productValue = v.value || v;
-            return getProductInfo(productValue);
-          } catch (error) {
-            console.error('Error processing product:', error);
-            return null;
-          }
-        }).filter(p => p !== null); // Remove any null results
-      } catch (error) {
-        console.error('Error mapping products:', error);
-        return [];
-      }
-    })();
-
-    if (productData && productData.length > 0) {
-      console.log(`Found ${productData.length} product groups on ${pageName}`);
-
-      // Save products directly to database
-      await saveProductsToDB(client, productData);
-
-      // Add new brands if any (without updating counts yet)
-      await insertNewBrands(client);
-
-      console.log(`${pageName} data saved to database!`);
-
-      // Commit transaction for this page
-      await client.query('COMMIT');
-    } else {
-      console.log(`No products found on ${pageName}`);
-      // Rollback empty transaction
+    } catch (dbError) {
+      console.error(`Database error for ${pageName}:`, dbError);
       await client.query('ROLLBACK');
     }
   } else {
@@ -442,40 +483,45 @@ async function extractAndProcessPageData(page, pageUrl, pageType, pageNum, sortO
   // For brand searches, check pagination to determine if there are more pages
   if (pageType === 'brand') {
     // Check page information using the provided selector
-    const paginationInfo = await page.evaluate(() => {
-      // Try to find the pagination info using the provided selector
-      const paginationElement = document.querySelector('._1G0WLw > span:nth-of-type(1)');
+    try {
+      const paginationInfo = await page.evaluate(() => {
+        // Try to find the pagination info using the provided selector
+        const paginationElement = document.querySelector('._1G0WLw > span:nth-of-type(1)');
 
-      if (paginationElement) {
-        const paginationText = paginationElement.textContent || '';
-        // Extract current page and total pages from text like "Page 1 of 4"
-        const match = paginationText.match(/Page\s+(\d+)\s+of\s+(\d+)/i);
+        if (paginationElement) {
+          const paginationText = paginationElement.textContent || '';
+          // Extract current page and total pages from text like "Page 1 of 4"
+          const match = paginationText.match(/Page\s+(\d+)\s+of\s+(\d+)/i);
 
-        if (match && match.length >= 3) {
-          return {
-            currentPage: parseInt(match[1], 10),
-            totalPages: parseInt(match[2], 10)
-          };
+          if (match && match.length >= 3) {
+            return {
+              currentPage: parseInt(match[1], 10),
+              totalPages: parseInt(match[2], 10)
+            };
+          }
         }
+
+        // No pagination info found
+        return { currentPage: null, totalPages: null };
+      });
+
+      // Determine if we should continue to the next page
+      let hasNextPage = false;
+
+      if (paginationInfo.currentPage && paginationInfo.totalPages) {
+        // If we have page info, check if we're not at the last page
+        console.log(`Current page ${paginationInfo.currentPage} of ${paginationInfo.totalPages}`);
+        hasNextPage = paginationInfo.currentPage < paginationInfo.totalPages;
+      } else {
+        console.log('No pagination information found, assuming no more pages');
+        hasNextPage = false;
       }
 
-      // No pagination info found
-      return { currentPage: null, totalPages: null };
-    });
-
-    // Determine if we should continue to the next page
-    let hasNextPage = false;
-
-    if (paginationInfo.currentPage && paginationInfo.totalPages) {
-      // If we have page info, check if we're not at the last page
-      console.log(`Current page ${paginationInfo.currentPage} of ${paginationInfo.totalPages}`);
-      hasNextPage = paginationInfo.currentPage < paginationInfo.totalPages;
-    } else {
-      console.log('No pagination information found, assuming no more pages');
-      hasNextPage = false;
+      return hasNextPage;
+    } catch (paginationError) {
+      console.log('Error checking pagination:', paginationError.message);
+      return false; // Assume no more pages if we can't determine
     }
-
-    return hasNextPage;
   }
 }
 
@@ -484,7 +530,7 @@ async function processBrandSearchPage(page, brandName, pageUrl, pageNum, client)
   return await extractAndProcessPageData(page, pageUrl, 'brand', pageNum, brandName, client);
 }
 
-// Function to process all brand searches
+// Modified function to process all brand searches with resume capability
 async function processBrandSearches(page, client) {
   console.log('\n========= Starting brand-specific searches =========\n');
 
@@ -494,12 +540,25 @@ async function processBrandSearches(page, client) {
 
   console.log(`Found ${brands.length} brands to search for`);
 
+  // Determine where to start based on resumeBrand
+  let startIndex = 0;
+  if (resumeBrand) {
+    const brandIndex = brands.findIndex(b => b === resumeBrand);
+    if (brandIndex !== -1) {
+      startIndex = brandIndex;
+      console.log(`Found resume brand ${resumeBrand} at index ${startIndex}`);
+    } else {
+      console.log(`Resume brand ${resumeBrand} not found, starting from the beginning`);
+    }
+  }
+
   // Track execution time for brand searches
   const brandSearchStartTime = Date.now();
 
-  // Process each brand sequentially
-  for (const brandName of brands) {
-    console.log(`\n========= Processing brand search for: ${brandName} =========\n`);
+  // Process each brand sequentially starting from the resume point
+  for (let i = startIndex; i < brands.length; i++) {
+    const brandName = brands[i];
+    console.log(`\n========= Processing brand search for: ${brandName} (${i+1}/${brands.length}) =========\n`);
 
     // Track time for this brand
     const brandStartTime = Date.now();
@@ -507,6 +566,7 @@ async function processBrandSearches(page, client) {
     // Start with page 1
     let pageNum = 1;
     let hasNextPage = true;
+    let maxRetries = 3; // Maximum number of retries for a failed page
 
     // Process pages until there are no more pages
     while (hasNextPage) {
@@ -514,8 +574,32 @@ async function processBrandSearches(page, client) {
       const baseUrl = `https://www.flipkart.com/search?q=${encodeURIComponent(brandName)}&marketplace=GROCERY`;
       const pageUrl = pageNum === 1 ? baseUrl : `${baseUrl}&page=${pageNum}`;
 
-      // Process this page and check if there's a next page
-      hasNextPage = await processBrandSearchPage(page, brandName, pageUrl, pageNum, client);
+      // Process this page with retry logic
+      let retryCount = 0;
+      let pageSuccess = false;
+
+      while (!pageSuccess && retryCount < maxRetries) {
+        try {
+          // Process this page and check if there's a next page
+          hasNextPage = await processBrandSearchPage(page, brandName, pageUrl, pageNum, client);
+          pageSuccess = true;
+        } catch (pageError) {
+          retryCount++;
+          console.log(`Error processing page ${pageNum} for brand ${brandName}, retry ${retryCount}/${maxRetries}`);
+          console.error(pageError);
+
+          if (retryCount >= maxRetries) {
+            console.log(`Maximum retries reached for ${brandName} page ${pageNum}, moving to next brand`);
+            hasNextPage = false;
+            break;
+          }
+
+          // Wait longer between retries
+          const retryDelay = 5000 + Math.floor(Math.random() * 5000);
+          console.log(`Waiting ${retryDelay/1000} seconds before retry...`);
+          await page.waitForTimeout(retryDelay);
+        }
+      }
 
       // If there's a next page, move to the next one
       if (hasNextPage) {
@@ -527,6 +611,9 @@ async function processBrandSearches(page, client) {
         await page.waitForTimeout(delay);
       }
     }
+
+    // Add a checkpoint message that can be used to resume from
+    console.log(`\n========= CHECKPOINT: Completed brand ${brandName} =========\n`)
 
     // Calculate execution time for this brand
     const brandExecutionTime = (Date.now() - brandStartTime) / 1000;
@@ -579,59 +666,100 @@ async function processBrandSearches(page, client) {
     // Enable request interception
     await page.route('**', (route) => route.continue());
 
-    // Define all sort options to process
-    const sortOptions = ['popularity', 'relevance', 'price_asc', 'price_desc', 'discount'];
+    // If resuming from brand search, skip sort processing
+    if (resumeBrand) {
+      console.log('Resuming from brand search, skipping sort options...');
 
-    // First, set pincode once at the beginning
-    const initialUrl = `https://www.flipkart.com/grocery/pr?sid=73z&marketplace=GROCERY&p[]=facets.rating[]=4★+%26+above&sort=popularity`;
+      // First, set pincode once at the beginning
+      const initialUrl = `https://www.flipkart.com/grocery/pr?sid=73z&marketplace=GROCERY`;
 
-    console.log(`Navigating to: ${initialUrl}`);
-    await page.goto(initialUrl, {
-      waitUntil: 'networkidle',
-      timeout: 60000,
-    });
+      console.log(`Navigating to: ${initialUrl}`);
+      await page.goto(initialUrl, {
+        waitUntil: 'networkidle',
+        timeout: 60000,
+      });
 
-    // Set pincode if needed - this will happen only once for the entire session
-    const pincodeWasSet = await setPincodeIfNeeded(page);
+      // Set pincode if needed - this will happen only once for the entire session
+      const pincodeWasSet = await setPincodeIfNeeded(page);
 
-    // Process each sort option sequentially using the same page
-    for (const sortOption of sortOptions) {
-      console.log(`\n========= Starting to process sort option: ${sortOption} =========\n`);
+      // Go directly to brand searches
+      await processBrandSearches(page, client);
+    } else {
+      // Define all sort options to process
+      const sortOptions = ['popularity', 'relevance', 'price_asc', 'price_desc', 'discount'];
 
-      // Track execution time for this sort option
-      const sortStartTime = Date.now();
+      // First, set pincode once at the beginning
+      const initialUrl = `https://www.flipkart.com/grocery/pr?sid=73z&marketplace=GROCERY&p[]=facets.rating[]=4★+%26+above&sort=popularity`;
 
-      // Process each page from 1 to 25
-      for (let pageNum = 1; pageNum <= 25; pageNum++) {
-        // Build the URL with page number
-        const baseUrl = `https://www.flipkart.com/grocery/pr?sid=73z&marketplace=GROCERY&p[]=facets.rating[]=4★+%26+above&sort=${sortOption}`;
-        const pageUrl = pageNum === 1 ? baseUrl : `${baseUrl}&page=${pageNum}`;
+      console.log(`Navigating to: ${initialUrl}`);
+      await page.goto(initialUrl, {
+        waitUntil: 'networkidle',
+        timeout: 60000,
+      });
 
-        // Process this page
-        await processPage(page, pageUrl, pageNum, sortOption, client);
+      // Set pincode if needed - this will happen only once for the entire session
+      const pincodeWasSet = await setPincodeIfNeeded(page);
 
-        // Add a shorter random delay between pages (2-3 seconds)
-        const delay = 2000 + Math.floor(Math.random() * 1000);
-        console.log(`Waiting ${delay/1000} seconds before moving to next page...`);
-        await page.waitForTimeout(delay);
+      // Process each sort option sequentially using the same page
+      for (const sortOption of sortOptions) {
+        console.log(`\n========= Starting to process sort option: ${sortOption} =========\n`);
+
+        // Track execution time for this sort option
+        const sortStartTime = Date.now();
+
+        // Process each page from 1 to 25
+        for (let pageNum = 1; pageNum <= 25; pageNum++) {
+          // Build the URL with page number
+          const baseUrl = `https://www.flipkart.com/grocery/pr?sid=73z&marketplace=GROCERY&p[]=facets.rating[]=4★+%26+above&sort=${sortOption}`;
+          const pageUrl = pageNum === 1 ? baseUrl : `${baseUrl}&page=${pageNum}`;
+
+          // Process this page with retry logic
+          let maxRetries = 3;
+          let retryCount = 0;
+          let pageSuccess = false;
+
+          while (!pageSuccess && retryCount < maxRetries) {
+            try {
+              await processPage(page, pageUrl, pageNum, sortOption, client);
+              pageSuccess = true;
+            } catch (pageError) {
+              retryCount++;
+              console.log(`Error processing ${sortOption} page ${pageNum}, retry ${retryCount}/${maxRetries}`);
+
+              if (retryCount >= maxRetries) {
+                console.log(`Maximum retries reached for ${sortOption} page ${pageNum}, moving on`);
+                break;
+              }
+
+              // Wait between retries
+              const retryDelay = 5000 + Math.floor(Math.random() * 5000);
+              console.log(`Waiting ${retryDelay/1000} seconds before retry...`);
+              await page.waitForTimeout(retryDelay);
+            }
+          }
+
+          // Add a shorter random delay between pages (2-3 seconds)
+          const delay = 2000 + Math.floor(Math.random() * 1000);
+          console.log(`Waiting ${delay/1000} seconds before moving to next page...`);
+          await page.waitForTimeout(delay);
+        }
+
+        // Calculate execution time for this sort option
+        const sortExecutionTime = (Date.now() - sortStartTime) / 1000;
+        const sortMinutes = Math.floor(sortExecutionTime / 60);
+        const sortSeconds = Math.floor(sortExecutionTime % 60);
+        console.log(`\n========= Completed ${sortOption} sort =========`);
+        console.log(`Total time for ${sortOption}: ${sortMinutes} minutes and ${sortSeconds} seconds`);
+
+        // Add a longer delay between sort options (2-3 seconds)
+        const sortDelay = 1000 + Math.floor(Math.random() * 5000);
+        console.log(`\nWaiting ${sortDelay/1000} seconds before starting next sort option...\n`);
+        await new Promise(resolve => setTimeout(resolve, sortDelay));
       }
 
-      // Calculate execution time for this sort option
-      const sortExecutionTime = (Date.now() - sortStartTime) / 1000;
-      const sortMinutes = Math.floor(sortExecutionTime / 60);
-      const sortSeconds = Math.floor(sortExecutionTime % 60);
-      console.log(`\n========= Completed ${sortOption} sort =========`);
-      console.log(`Total time for ${sortOption}: ${sortMinutes} minutes and ${sortSeconds} seconds`);
-
-      // Add a longer delay between sort options (2-3 seconds)
-      const sortDelay = 2000 + Math.floor(Math.random() * 5000);
-      console.log(`\nWaiting ${sortDelay/1000} seconds before starting next sort option...\n`);
-      await new Promise(resolve => setTimeout(resolve, sortDelay));
+      // After processing all sort options, process brand searches
+      await processBrandSearches(page, client);
     }
-
-    // After processing all sort options, process brand searches
-    // This reuses the same session to maintain the pincode setting
-    await processBrandSearches(page, client);
 
     // Start final transaction for updating brand counts
     await client.query('BEGIN');
