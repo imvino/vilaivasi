@@ -531,7 +531,7 @@ async function processBrandSearchPage(page, brandName, pageUrl, pageNum, client)
 }
 
 // Modified function to process all brand searches with resume capability
-async function processBrandSearches(page, client) {
+async function processBrandSearches(page, client, globalStartTime) {
   console.log('\n========= Starting brand-specific searches =========\n');
 
   // Get all brands from the database
@@ -567,9 +567,10 @@ async function processBrandSearches(page, client) {
     let pageNum = 1;
     let hasNextPage = true;
     let maxRetries = 3; // Maximum number of retries for a failed page
+    const MAX_PAGES = 6; // Maximum page limit for brand scraping
 
-    // Process pages until there are no more pages
-    while (hasNextPage) {
+    // Process pages until there are no more pages or we reach the max page limit
+    while (hasNextPage && pageNum <= MAX_PAGES) {
       // Build the URL with page number
       const baseUrl = `https://www.flipkart.com/search?q=${encodeURIComponent(brandName)}&marketplace=GROCERY`;
       const pageUrl = pageNum === 1 ? baseUrl : `${baseUrl}&page=${pageNum}`;
@@ -585,8 +586,16 @@ async function processBrandSearches(page, client) {
           pageSuccess = true;
         } catch (pageError) {
           retryCount++;
-          console.log(`Error processing page ${pageNum} for brand ${brandName}, retry ${retryCount}/${maxRetries}`);
+          const errorMsg = `Error processing page ${pageNum} for brand ${brandName}, retry ${retryCount}/${maxRetries}: ${pageError.message}`;
+          console.log(errorMsg);
           console.error(pageError);
+
+          // Send Telegram alert for errors
+          try {
+            telegramAlert(errorMsg);
+          } catch (telegramError) {
+            console.error('Failed to send Telegram alert:', telegramError);
+          }
 
           if (retryCount >= maxRetries) {
             console.log(`Maximum retries reached for ${brandName} page ${pageNum}, moving to next brand`);
@@ -605,6 +614,12 @@ async function processBrandSearches(page, client) {
       if (hasNextPage) {
         pageNum++;
 
+        // If we've reached the max page limit, break the loop
+        if (pageNum > MAX_PAGES) {
+          console.log(`Reached maximum page limit (${MAX_PAGES}) for brand ${brandName}`);
+          break;
+        }
+
         // Add a short random delay between pages (1-2 seconds)
         const delay = 1000 + Math.floor(Math.random() * 1000);
         console.log(`Waiting ${delay/1000} seconds before moving to next page...`);
@@ -612,13 +627,22 @@ async function processBrandSearches(page, client) {
       }
     }
 
-    // Add a checkpoint message that can be used to resume from
-    console.log(`\n========= CHECKPOINT: Completed brand ${brandName} =========\n`)
-
-    // Calculate execution time for this brand
+    // Calculate execution time for this brand at the end of processing
     const brandExecutionTime = (Date.now() - brandStartTime) / 1000;
+    const minutes = Math.floor(brandExecutionTime / 60);
+    const seconds = Math.floor(brandExecutionTime % 60);
+
+    // Add a checkpoint message that can be used to resume from
+    console.log(`\n========= CHECKPOINT: Completed brand ${brandName} =========\n`);
     console.log(`\n========= Completed ${brandName} brand search =========`);
-    console.log(`Total time for ${brandName}: ${Math.floor(brandExecutionTime / 60)} minutes and ${Math.floor(brandExecutionTime % 60)} seconds`);
+    console.log(`Total time for ${brandName}: ${minutes} minutes and ${seconds} seconds`);
+
+    // Log the total execution time so far
+    const totalTimeSoFar = (Date.now() - globalStartTime) / 1000;
+    const totalMinutesSoFar = Math.floor(totalTimeSoFar / 60);
+    const totalSecondsSoFar = Math.floor(totalTimeSoFar % 60);
+    console.log(`Total execution time so far: ${totalMinutesSoFar} minutes and ${totalSecondsSoFar} seconds`);
+    console.log(`Completed ${i+1}/${brands.length} brands (${((i+1)/brands.length*100).toFixed(2)}%)`);
 
     // Add a random delay between brands (2-5 seconds)
     const brandDelay = 2000 + Math.floor(Math.random() * 3000);
@@ -634,10 +658,22 @@ async function processBrandSearches(page, client) {
   console.log(`Total brand search execution time: ${minutes} minutes and ${seconds} seconds`);
 }
 
+// Add a function declaration for telegramAlert at the top level
+// This assumes you have already implemented this function elsewhere
+// If not implemented yet, this is just a placeholder that will call your implementation
+function telegramAlert(message) {
+  // Your telegramAlert implementation will be called here
+  // This is a placeholder function that assumes you have implemented telegramAlert elsewhere
+  console.log(`[TELEGRAM ALERT]: ${message}`);
+  // Your actual implementation would be called here
+}
+
 // Main function to scrape data and save to DB
 (async () => {
   const client = await pool.connect();
   let browser = null;
+  let context = null;
+  let page = null;
 
   // Track total execution time
   const startTime = Date.now();
@@ -653,7 +689,7 @@ async function processBrandSearches(page, client) {
     });
 
     // Create a single browser context for the entire session
-    const context = await browser.newContext({
+    context = await browser.newContext({
       userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       viewport: { width: 1366, height: 768 },
@@ -661,7 +697,7 @@ async function processBrandSearches(page, client) {
     });
 
     // Create a single page that will be reused
-    const page = await context.newPage();
+    page = await context.newPage();
 
     // Enable request interception
     await page.route('**', (route) => route.continue());
@@ -683,7 +719,7 @@ async function processBrandSearches(page, client) {
       const pincodeWasSet = await setPincodeIfNeeded(page);
 
       // Go directly to brand searches
-      await processBrandSearches(page, client);
+      await processBrandSearches(page, client, startTime);
     } else {
       // Define all sort options to process
       const sortOptions = ['popularity', 'relevance', 'price_asc', 'price_desc', 'discount'];
@@ -724,7 +760,15 @@ async function processBrandSearches(page, client) {
               pageSuccess = true;
             } catch (pageError) {
               retryCount++;
-              console.log(`Error processing ${sortOption} page ${pageNum}, retry ${retryCount}/${maxRetries}`);
+              const errorMsg = `Error processing ${sortOption} page ${pageNum}, retry ${retryCount}/${maxRetries}: ${pageError.message}`;
+              console.log(errorMsg);
+
+              // Send Telegram alert for errors
+              try {
+                telegramAlert(errorMsg);
+              } catch (telegramError) {
+                console.error('Failed to send Telegram alert:', telegramError);
+              }
 
               if (retryCount >= maxRetries) {
                 console.log(`Maximum retries reached for ${sortOption} page ${pageNum}, moving on`);
@@ -752,13 +796,13 @@ async function processBrandSearches(page, client) {
         console.log(`Total time for ${sortOption}: ${sortMinutes} minutes and ${sortSeconds} seconds`);
 
         // Add a longer delay between sort options (2-3 seconds)
-        const sortDelay = 1000 + Math.floor(Math.random() * 5000);
+        const sortDelay = 2000 + Math.floor(Math.random() * 5000);
         console.log(`\nWaiting ${sortDelay/1000} seconds before starting next sort option...\n`);
         await new Promise(resolve => setTimeout(resolve, sortDelay));
       }
 
       // After processing all sort options, process brand searches
-      await processBrandSearches(page, client);
+      await processBrandSearches(page, client, startTime);
     }
 
     // Start final transaction for updating brand counts
@@ -790,17 +834,27 @@ async function processBrandSearches(page, client) {
     } catch (rollbackError) {
       console.error('Error during rollback:', rollbackError);
     }
+
+    // Send telegram alert for the main error
+    try {
+      telegramAlert(`Main process error: ${error.message}`);
+    } catch (telegramError) {
+      console.error('Failed to send Telegram alert:', telegramError);
+    }
+
     console.error('Error during scraping and saving process:', error);
+
+    // Keep browser open on error - only close page/context
+    // This allows you to inspect the browser manually if needed
+    console.log('Browser is being kept open for manual inspection');
   } finally {
     // Release the client back to the pool
     client.release();
 
-    // Close browser if it was opened
-    if (browser) {
-      await browser.close();
-    }
-
-    // Close the pool
+    // Close the pool but keep the browser open if there was an error
     pool.end();
+
+    // Print helpful message about manually closing browser
+    console.log('Script execution finished. If browser is still open, you can close it manually when done inspecting.');
   }
 })();
