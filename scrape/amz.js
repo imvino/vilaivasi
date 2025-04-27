@@ -1,8 +1,34 @@
 const { chromium } = require('playwright');
-const fs = require('fs');
+const { Pool } = require('pg');
+
+// PostgreSQL connection
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'flipkart',
+  password: 'postgres',
+  port: 5432,
+});
 
 (async () => {
-  // Configure browser with reasonable fingerprint settings
+
+  await pool.query(`
+      CREATE TABLE IF NOT EXISTS products_amazon (
+        id INTEGER PRIMARY KEY,
+        product_id VARCHAR(255) UNIQUE NOT NULL,
+        title TEXT NOT NULL,
+        image_url TEXT,
+        product_url TEXT,
+        mrp DECIMAL(10, 2),
+        price DECIMAL(10, 2),
+        qty_info TEXT,
+        brand_name VARCHAR(255),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+  // Configure browser
   const browser = await chromium.launch({
     headless: false,
     args: [
@@ -11,31 +37,25 @@ const fs = require('fs');
     ],
   });
 
-  // Create context with more human-like settings
   const context = await browser.newContext({
-    userAgent:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     viewport: { width: 1366, height: 768 },
     deviceScaleFactor: 1,
     hasTouch: false,
   });
 
   const page = await context.newPage();
-  let allProducts = [];
   let currentPage = 1;
-  const expectedProductsPerPage = 24;
+  const maxPages = 5;
 
   try {
-    // Add human-like delays
-    const humanDelay = () => Math.floor(Math.random() * 500) + 500;
-
     // Navigate to Amazon
     await page.goto('https://www.amazon.in/s?i=nowstore', {
       waitUntil: 'domcontentloaded',
       timeout: 60000,
     });
 
-    await page.waitForTimeout(humanDelay());
+    await page.waitForTimeout(2000);
 
     // Click location button
     const locationButton = page.locator('#nav-global-location-popover-link');
@@ -44,242 +64,215 @@ const fs = require('fs');
 
     // Wait for popup
     await page.waitForSelector('#GLUXZipUpdateInput');
-    await page.waitForTimeout(humanDelay());
+    await page.waitForTimeout(1000);
 
     // Fill pincode
     const pincodeInput = page.locator('#GLUXZipUpdateInput');
     await pincodeInput.click();
     await pincodeInput.fill('600001');
 
-    await page.waitForTimeout(humanDelay());
+    await page.waitForTimeout(1000);
 
     // Click apply
     const applyButton = page.locator('#GLUXZipUpdate span.a-button-text');
     await applyButton.click();
 
     // Wait for update
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2000);
 
-    // Extract and verify text
-    const locationSpan = page.locator(
-        'span.nav-progressive-content.nav-line-2'
-    );
-    const locationText = await locationSpan.textContent();
-
-    if (locationText.includes('600001')) {
-      console.log('Verified: ' + locationText.trim());
-    } else {
-      console.log('Not found: ' + locationText.trim());
+    // Handle "Done" button if it appears
+    try {
+      const doneButton = page.locator('#GLUXConfirmClose');
+      if (await doneButton.isVisible()) {
+        await doneButton.click();
+      }
+    } catch (err) {
+      console.log('No Done button found');
     }
 
-    // Process pages until there is no more "next" button
-    let hasNextPage = true;
+    await page.waitForTimeout(2000);
 
-    while (hasNextPage) {
-      console.log(`\n===== Processing Page ${currentPage} =====`);
+    // Process pages
+    while (currentPage <= maxPages) {
+      console.log(`Processing Page ${currentPage}`);
 
-      // Wait for product listings to load
+      // Wait for product listings
       await page.waitForSelector('[data-asin]');
 
-      // Scroll through the entire page to ensure all products are loaded
-      console.log('Scrolling through the page to load all products...');
-
-      // Scroll slowly through the page with human-like behavior
+      // Scroll through the page
       let previousHeight = 0;
       let currentHeight = await page.evaluate(() => document.body.scrollHeight);
-      let scrollAttempts = 0;
-      const maxScrollAttempts = 15; // Adjust as needed
 
-      while (
-          currentHeight > previousHeight &&
-          scrollAttempts < maxScrollAttempts
-          ) {
+      while (currentHeight > previousHeight) {
         previousHeight = currentHeight;
 
-        // Perform smooth scrolling
         await page.evaluate(() => {
-          // Scroll down by a random amount between 500 and 1000 pixels
-          const scrollAmount = Math.floor(Math.random() * 500) + 500;
-          window.scrollBy(0, scrollAmount);
+          window.scrollBy(0, 500);
         });
 
-        // Wait for lazy-loaded content
         await page.waitForTimeout(1000);
-
-        // Get new height
         currentHeight = await page.evaluate(() => document.body.scrollHeight);
-
-        // Get current product count
-        const productCount = await page.evaluate(() => {
-          return document.querySelectorAll('[data-asin]').length;
-        });
-
-        console.log(
-            `Scroll attempt ${
-                scrollAttempts + 1
-            }: Found ${productCount} products, page height: ${currentHeight}`
-        );
-        scrollAttempts++;
       }
 
-      // Final scroll to bottom to make sure we get everything
-      await page.evaluate(() => {
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-
-      // Wait for any final lazy-loaded content
-      await page.waitForTimeout(2000);
-
-      // Extract product information (price, MRP, ASIN)
-      console.log('Extracting product information...');
-
-      const pageProducts = await page.evaluate(() => {
-        const productData = [];
-
-        // Get all product elements with data-asin
+      // Extract product information
+      const products = await page.evaluate(() => {
+        const items = [];
         const productElements = document.querySelectorAll('[data-asin]');
 
         productElements.forEach((element) => {
           const asin = element.getAttribute('data-asin');
           if (!asin || asin.trim() === '') return;
 
+          let title = '';
+          let imageUrl = '';
+          let productUrl = '';
           let price = null;
           let mrp = null;
+          let brand = '';
 
-          // Try to find the price
+          // Image
+          const imgElem = element.querySelector('img.s-image');
+          if (imgElem) imageUrl = imgElem.getAttribute('src');
+
+          // URL
+          const linkElem = element.querySelector('a.a-link-normal');
+          if (linkElem) productUrl = 'https://www.amazon.in' + linkElem.getAttribute('href');
+
+          // Price
           const priceElement = element.querySelector('.a-price-whole');
           if (priceElement) {
-            price = parseInt(
-                priceElement.textContent.replace(/[^0-9]/g, ''),
-                10
-            );
+            price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, ''));
           }
 
-          // Try to find the MRP (if exists)
-          const mrpElement = element.querySelector(
-              '.a-price.a-text-price[data-a-strike="true"] .a-offscreen, .a-price.a-text-price[data-a-strike="true"] span[aria-hidden="true"]'
-          );
+          // MRP
+          const mrpElement = element.querySelector('.a-price.a-text-price[data-a-strike="true"] .a-offscreen');
           if (mrpElement) {
-            // Extract number from text like "₹735"
             const mrpText = mrpElement.textContent;
-            mrp = parseInt(mrpText.replace(/[^0-9]/g, ''), 10);
+            mrp = parseFloat(mrpText.replace(/[^0-9.]/g, ''));
           }
 
-          // Add all products with ASIN
-          productData.push({
-            asin,
-            price: price || null,
-            mrp: mrp || null,
-            page: window.location.href,
+          // Title
+          const titleElem = element.querySelector('.a-size-base-plus.a-color-base');
+          if (titleElem) title = titleElem.textContent.trim();
+
+          items.push({
+            product_id: asin,
+            title: title || 'Unknown Product',
+            image_url: imageUrl,
+            product_url: productUrl,
+            mrp: mrp,
+            price: price,
+            qty_info: '',
+            brand_name: brand
           });
         });
 
-        return productData;
+        return items;
       });
 
-      // Filter out products without price for final results
-      const productsWithPrice = pageProducts.filter(
-          (product) => product.price !== null
-      );
+      // Process each product with manual ID handling
+      for (const product of products) {
+        if (product.product_id && product.title) {
+          try {
+            // Check if the product already exists
+            const checkQuery = 'SELECT id FROM products_amazon WHERE product_id = $1';
+            const checkResult = await pool.query(checkQuery, [product.product_id]);
+            const productExists = checkResult.rows.length > 0;
 
-      console.log(
-          `Total products found on page ${currentPage}: ${pageProducts.length}`
-      );
-      console.log(
-          `Products with price information: ${productsWithPrice.length}`
-      );
+            const now = new Date();
 
-      // Modified logic for handling fewer than expected products
-      if (pageProducts.length < expectedProductsPerPage) {
-        console.log(
-            `\nInfo: Found only ${pageProducts.length} products on page ${currentPage}, expected ${expectedProductsPerPage}`
-        );
-        console.log(
-            'This is likely the last page or contains fewer products than expected.'
-        );
+            if (productExists) {
+              // Update existing product - don't touch the id
+              await pool.query(`
+                UPDATE products_amazon SET
+                  title = $2,
+                  image_url = $3,
+                  product_url = $4,
+                  mrp = $5,
+                  price = $6,
+                  qty_info = $7,
+                  brand_name = $8,
+                  updated_at = $9
+                WHERE product_id = $1
+              `, [
+                product.product_id,
+                product.title,
+                product.image_url,
+                product.product_url,
+                product.mrp,
+                product.price,
+                product.qty_info,
+                product.brand_name,
+                now
+              ]);
 
-        // Still add the products from this page to our collection
-        allProducts = [...allProducts, ...productsWithPrice];
+              console.log(`Updated product ID: ${product.product_id}`);
+            } else {
+              // Find the maximum ID and ensure sequential insertion
+              const maxIdQuery = 'SELECT COALESCE(MAX(id), 0) as max_id FROM products_amazon';
+              const maxIdResult = await pool.query(maxIdQuery);
+              const nextId = maxIdResult.rows[0].max_id + 1;
 
-        // Save data for this page too
-        fs.writeFileSync(
-            `amazon-products-page-${currentPage}.json`,
-            JSON.stringify(productsWithPrice, null, 2)
-        );
-        console.log(
-            `Saved data for page ${currentPage} with ${productsWithPrice.length} products`
-        );
+              // Insert new product with explicit ID
+              await pool.query(`
+                INSERT INTO products_amazon (
+                  id, product_id, title, image_url, product_url, mrp, price, 
+                  qty_info, brand_name, created_at, updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+              `, [
+                nextId,
+                product.product_id,
+                product.title,
+                product.image_url,
+                product.product_url,
+                product.mrp,
+                product.price,
+                product.qty_info,
+                product.brand_name,
+                now,
+                now
+              ]);
 
-        // We'll still check if there's a next button, but we won't
-        // automatically break the pagination loop just because we found
-        // fewer products
-      } else {
-        // Add products to our collection
-        allProducts = [...allProducts, ...productsWithPrice];
-
-        // Save data after each page
-        fs.writeFileSync(
-            `amazon-products-page-${currentPage}.json`,
-            JSON.stringify(productsWithPrice, null, 2)
-        );
-        console.log(
-            `Saved data for page ${currentPage} with ${productsWithPrice.length} products`
-        );
+              console.log(`Inserted new product with ID: ${nextId}, product_id: ${product.product_id}`);
+            }
+          } catch (err) {
+            console.error(`Error saving product ${product.product_id}:`, err.message);
+          }
+        }
       }
 
-      // Check if there's a next page button
-      const hasNext = await page.evaluate(() => {
-        const nextButton = document.querySelector('a.s-pagination-next');
-        return (
-            nextButton !== null &&
-            !nextButton.classList.contains('s-pagination-disabled')
-        );
-      });
+      console.log(`Processed ${products.length} products from page ${currentPage}`);
 
-      if (hasNext) {
-        console.log(`\nMoving to page ${currentPage + 1}...`);
+      // Check if there's a next page and we haven't reached our limit
+      if (currentPage < maxPages) {
+        const hasNext = await page.evaluate(() => {
+          const nextButton = document.querySelector('a.s-pagination-next');
+          return nextButton !== null && !nextButton.classList.contains('s-pagination-disabled');
+        });
 
-        // Click next button
-        await page.click('a.s-pagination-next');
-
-        // Wait for the new page to load
-        await page.waitForTimeout(3000);
-        await page.waitForSelector('[data-asin]', { timeout: 10000 });
-
-        currentPage++;
+        if (hasNext) {
+          await page.click('a.s-pagination-next');
+          await page.waitForTimeout(3000);
+          currentPage++;
+        } else {
+          console.log('No more pages available');
+          break;
+        }
       } else {
-        console.log('\nReached the last page. No more pages to process. Scraping is complete.');
-        hasNextPage = false;
+        console.log(`Reached maximum page limit (${maxPages})`);
+        break;
       }
     }
 
-    // Export all data to a consolidated file
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    fs.writeFileSync(
-        `amazon-products-all-${timestamp}.json`,
-        JSON.stringify(allProducts, null, 2)
-    );
-    console.log(
-        `\nExported ${allProducts.length} products from ${currentPage} pages to amazon-products-all-${timestamp}.json`
-    );
-    console.log('\nScraping process completed successfully.');
+    console.log('Scraping completed successfully');
+
   } catch (error) {
     console.error('Error occurred:', error);
-
-    // Save whatever data we have so far
-    if (allProducts.length > 0) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      fs.writeFileSync(
-          `amazon-products-error-${timestamp}.json`,
-          JSON.stringify(allProducts, null, 2)
-      );
-      console.log(
-          `Saved ${allProducts.length} products collected before error to amazon-products-error-${timestamp}.json`
-      );
-    }
   } finally {
-    // Leave browser open for verification
-    // await browser.close(); // Uncomment this line to close the browser automatically
-    console.log('\nScript completed. Browser left open for verification.');
+    await pool.end();
+    // Comment this out if you want to keep the browser open
+    // await browser.close();
+    console.log('Script completed. Browser left open for verification.');
   }
 })();
