@@ -10,7 +10,128 @@ const pool = new Pool({
   port: 5432,
 });
 
+// Function to calculate smart quantity based on price per unit
+function calculateSmartQuantity(price, pricePerUnitStr, title) {
+  if (!pricePerUnitStr || !price) {
+    return { smartQty: null, pivotQualifier: null, pivotValue: null, pricePerUnit: null };
+  }
+
+  // Extract numbers and unit from the price per unit string
+  // Format examples: (₹149₹149/l) or (₹49.20₹49.20/100 g)
+  const regex = /₹([\d,.]+)\/(?:(\d+)\s*)?([a-zA-Z]+)/;
+  const match = pricePerUnitStr.match(regex);
+
+  if (!match) {
+    return { smartQty: null, pivotQualifier: null, pivotValue: null, pricePerUnit: null };
+  }
+
+  // Extract components
+  const ppu = parseFloat(match[1].replace(/,/g, ''));
+  const pivotValue = match[2] ? parseInt(match[2]) : 1;
+  let pivotQualifier = match[3].toLowerCase();
+
+  // Normalize units
+  if (pivotQualifier === 'l') pivotQualifier = 'L';
+  if (pivotQualifier === 'count') pivotQualifier = 'Units';
+  if (pivotQualifier === 'millilitre') pivotQualifier = 'ml';
+
+  // Check if the title contains count/quantity information
+  let titleQty = null;
+  let titleUnit = null;
+
+  // Look for count pattern like "144 Count" or "72 X Pack of 2"
+  const countPattern = /(\d+)\s*(?:count|piece|capsule|tablet|wipe|pack)/i;
+  const countMatch = title ? title.match(countPattern) : null;
+
+  // Look for quantity pattern like "500 g" or "1 L"
+  const qtyPattern = /(\d+(?:\.\d+)?)\s*(g|kg|ml|l|liter|litre)/i;
+  const qtyMatch = title ? title.match(qtyPattern) : null;
+
+  if (pivotQualifier === 'Units' && countMatch) {
+    // Use count from title directly
+    titleQty = parseInt(countMatch[1]);
+    titleUnit = 'Units';
+  } else if (qtyMatch) {
+    titleQty = parseFloat(qtyMatch[1]);
+    titleUnit = qtyMatch[2].toLowerCase();
+    // Normalize units from title
+    if (titleUnit === 'liter' || titleUnit === 'litre') titleUnit = 'L';
+  }
+
+  // Calculate total raw units
+  const totalUnits = (price / ppu) * pivotValue;
+
+  let quantity;
+  let unit;
+
+  switch (pivotQualifier) {
+    case 'L':
+      // If less than 1L, convert to ml
+      if (totalUnits < 1) {
+        quantity = totalUnits * 1000;
+        unit = 'ml';
+      } else {
+        quantity = totalUnits;
+        unit = 'L';
+      }
+      break;
+
+    case 'ml':
+      if (totalUnits >= 1000) {
+        quantity = totalUnits / 1000;
+        unit = 'L';
+      } else {
+        quantity = totalUnits;
+        unit = 'ml';
+      }
+      break;
+
+    case 'kg':
+      // If less than 1kg, convert to g
+      if (totalUnits < 1) {
+        quantity = totalUnits * 1000;
+        unit = 'g';
+      } else {
+        quantity = totalUnits;
+        unit = 'kg';
+      }
+      break;
+
+    case 'g':
+      if (totalUnits >= 1000) {
+        quantity = totalUnits / 1000;
+        unit = 'kg';
+      } else {
+        quantity = totalUnits;
+        unit = 'g';
+      }
+      break;
+
+    default:
+      quantity = totalUnits;
+      unit = pivotQualifier || 'unit'; // fallback
+  }
+
+  // If we have count information from the title for "Units" and the calculated quantity is close enough,
+  // use the exact count from the title
+  if (titleQty && titleUnit === 'Units' && pivotQualifier === 'Units') {
+    // Use count from title if it's within 10% of the calculated value
+    const diff = Math.abs(quantity - titleQty) / titleQty;
+    if (diff < 0.1) {
+      quantity = titleQty;
+    }
+  }
+
+  return {
+    smartQty: `${quantity.toFixed(2)} ${unit}`,
+    pivotQualifier,
+    pivotValue,
+    pricePerUnit: ppu
+  };
+}
+
 (async () => {
+  // Table schema already defined with all needed columns
 
   await pool.query(`
       CREATE TABLE IF NOT EXISTS products_amazon (
@@ -23,6 +144,10 @@ const pool = new Pool({
         price DECIMAL(10, 2),
         qty_info TEXT,
         brand_name VARCHAR(255),
+        smart_qty VARCHAR(255),
+        pivot_qualifier VARCHAR(50),
+        pivot_value INTEGER,
+        price_per_unit DECIMAL(10, 3),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
@@ -128,7 +253,8 @@ const pool = new Pool({
           let productUrl = '';
           let price = null;
           let mrp = null;
-          let brand = '';
+          let brand = null;
+          let pricePerUnitText = '';
 
           // Image
           const imgElem = element.querySelector('img.s-image');
@@ -155,6 +281,14 @@ const pool = new Pool({
           const titleElem = element.querySelector('.a-size-base-plus.a-color-base');
           if (titleElem) title = titleElem.textContent.trim();
 
+          // Brand - using the provided selector
+          const brandElem = element.querySelector('.s-featured-result-item span.a-size-base-plus, .s-widget-container > span span.a-size-base-plus');
+          if (brandElem) brand = brandElem.textContent.trim();
+
+          // Price per unit - using the provided selector
+          const ppuElem = element.querySelector('div.a-spacing-none:nth-of-type(3) .a-link-normal > span.a-color-secondary');
+          if (ppuElem) pricePerUnitText = ppuElem.textContent.trim();
+
           items.push({
             product_id: asin,
             title: title || 'Unknown Product',
@@ -162,8 +296,9 @@ const pool = new Pool({
             product_url: productUrl,
             mrp: mrp,
             price: price,
-            qty_info: '',
-            brand_name: brand
+            qty_info: pricePerUnitText || '',
+            brand_name: brand,
+            price_per_unit_text: pricePerUnitText || ''
           });
         });
 
@@ -174,6 +309,9 @@ const pool = new Pool({
       for (const product of products) {
         if (product.product_id && product.title) {
           try {
+            // Calculate smart quantity
+            const quantityInfo = calculateSmartQuantity(product.price, product.price_per_unit_text, product.title);
+
             // Check if the product already exists
             const checkQuery = 'SELECT id FROM products_amazon WHERE product_id = $1';
             const checkResult = await pool.query(checkQuery, [product.product_id]);
@@ -190,9 +328,13 @@ const pool = new Pool({
                   product_url = $4,
                   mrp = $5,
                   price = $6,
-                  qty_info = $7,
+                  qty_info = NULL,
                   brand_name = $8,
-                  updated_at = $9
+                  smart_qty = $9,
+                  pivot_qualifier = $10,
+                  pivot_value = $11,
+                  price_per_unit = $12,
+                  updated_at = $13
                 WHERE product_id = $1
               `, [
                 product.product_id,
@@ -201,12 +343,16 @@ const pool = new Pool({
                 product.product_url,
                 product.mrp,
                 product.price,
-                product.qty_info,
+                null,
                 product.brand_name,
+                quantityInfo.smartQty,
+                quantityInfo.pivotQualifier,
+                quantityInfo.pivotValue,
+                quantityInfo.pricePerUnit,
                 now
               ]);
 
-              console.log(`Updated product ID: ${product.product_id}`);
+              console.log(`Updated product ID: ${product.product_id}, Smart Qty: ${quantityInfo.smartQty}`);
             } else {
               // Find the maximum ID and ensure sequential insertion
               const maxIdQuery = 'SELECT COALESCE(MAX(id), 0) as max_id FROM products_amazon';
@@ -217,9 +363,10 @@ const pool = new Pool({
               await pool.query(`
                 INSERT INTO products_amazon (
                   id, product_id, title, image_url, product_url, mrp, price, 
-                  qty_info, brand_name, created_at, updated_at
+                  qty_info, brand_name, smart_qty, pivot_qualifier, pivot_value, price_per_unit,
+                  created_at, updated_at
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
               `, [
                 nextId,
                 product.product_id,
@@ -228,13 +375,17 @@ const pool = new Pool({
                 product.product_url,
                 product.mrp,
                 product.price,
-                product.qty_info,
+                null,
                 product.brand_name,
+                quantityInfo.smartQty,
+                quantityInfo.pivotQualifier,
+                quantityInfo.pivotValue,
+                quantityInfo.pricePerUnit,
                 now,
                 now
               ]);
 
-              console.log(`Inserted new product with ID: ${nextId}, product_id: ${product.product_id}`);
+              console.log(`Inserted new product with ID: ${nextId}, product_id: ${product.product_id}, Smart Qty: ${quantityInfo.smartQty}`);
             }
           } catch (err) {
             console.error(`Error saving product ${product.product_id}:`, err.message);
