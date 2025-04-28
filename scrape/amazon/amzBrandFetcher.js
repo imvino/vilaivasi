@@ -1,10 +1,7 @@
 const { chromium } = require('playwright');
 const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
 
 // Config - you can adjust these as needed
-const CHECKPOINT_FILE = path.join(__dirname, 'brand_checkpoint.json');
 const BATCH_SIZE = 20; // Process brands in batches to reduce memory usage
 const HEADLESS = false; // Run browser in headless mode for better performance
 const REQUEST_TIMEOUT = 15000; // Timeout for requests
@@ -75,7 +72,7 @@ async function main() {
         await setupPage.close();
 
         // Step 2: Get the list of brands from the database
-        const brandsResult = await pool.query('SELECT id, name FROM brands where name not iLIKE \'%Flipkart%\' ORDER BY name ASC');
+        const brandsResult = await pool.query('SELECT id, name FROM brands WHERE name NOT ILIKE \'%Flipkart%\' ORDER BY name ASC');
         let allBrands = brandsResult.rows;
 
         // Filter out brands to skip
@@ -102,67 +99,45 @@ async function main() {
             existingBrandNames.add(normalizeBrandName(row.name).toLowerCase());
         });
 
-        console.log(`Found ${existingBrandNames.size} brands already in database`);
+        console.log(`Found ${existingBrandNames.size} brands already in database - will skip these`);
 
-        // Step 4: Load checkpoint if exists
-        let lastProcessedIndices = Array(NUM_TABS).fill(-1);
-        if (fs.existsSync(CHECKPOINT_FILE)) {
-            try {
-                const checkpointData = JSON.parse(fs.readFileSync(CHECKPOINT_FILE, 'utf8'));
-                if (Array.isArray(checkpointData.lastProcessedIndices)) {
-                    lastProcessedIndices = checkpointData.lastProcessedIndices;
-                } else if (typeof checkpointData.lastProcessedIndex === 'number') {
-                    // Backward compatibility with old checkpoint format
-                    lastProcessedIndices[0] = checkpointData.lastProcessedIndex;
-                }
-                console.log(`Resuming from checkpoint: ${JSON.stringify(lastProcessedIndices)}`);
-            } catch (error) {
-                console.error('Error reading checkpoint file:', error);
-                // Continue with default lastProcessedIndices = [-1, -1, -1]
-            }
-        }
+        // Filter out brands already processed
+        const brandsToProcess = allBrands.filter(brand =>
+            !existingBrandNames.has(normalizeBrandName(brand.name).toLowerCase())
+        );
 
-        // Step 5: Distribute brands among tabs and process in parallel
-        // Calculate the portion of brands each tab will handle
-        const brandsPerTab = Math.ceil(allBrands.length / NUM_TABS);
+        console.log(`After filtering, ${brandsToProcess.length} brands remain to be processed`);
 
-        // Create and process all tabs in parallel
+        // Distribute remaining brands among tabs
+        const brandsPerTab = Math.ceil(brandsToProcess.length / NUM_TABS);
+
+        // Process in parallel tabs
         const tabPromises = [];
         for (let tabIndex = 0; tabIndex < NUM_TABS; tabIndex++) {
             const startBrandIndex = tabIndex * brandsPerTab;
-            const endBrandIndex = Math.min((tabIndex + 1) * brandsPerTab, allBrands.length);
+            const endBrandIndex = Math.min((tabIndex + 1) * brandsPerTab, brandsToProcess.length);
 
-            // Skip if this tab has already processed all its brands
-            if (lastProcessedIndices[tabIndex] >= endBrandIndex - 1) {
-                console.log(`Tab ${tabIndex + 1} has already completed all its assigned brands`);
-                continue;
-            }
+            // Skip if this tab has no brands to process
+            if (startBrandIndex >= endBrandIndex) continue;
 
             // Process this tab's brands
             tabPromises.push(
                 processTabBrands(
                     context,
                     pool,
-                    allBrands,
+                    brandsToProcess,
                     startBrandIndex,
                     endBrandIndex,
                     tabIndex,
-                    lastProcessedIndices,
                     existingBrandIds,
                     existingBrandNames
                 )
             );
         }
 
-        // Wait for all tabs to complete
         await Promise.all(tabPromises);
 
         console.log("All brands processed successfully!");
-        // Clean up checkpoint file when done
-        if (fs.existsSync(CHECKPOINT_FILE)) {
-            fs.unlinkSync(CHECKPOINT_FILE);
-            console.log("Checkpoint file removed.");
-        }
 
     } catch (error) {
         console.error('Error:', error);
@@ -176,11 +151,10 @@ async function main() {
 async function processTabBrands(
     context,
     pool,
-    allBrands,
+    brandsToProcess,
     startBrandIndex,
     endBrandIndex,
     tabIndex,
-    lastProcessedIndices,
     existingBrandIds,
     existingBrandNames
 ) {
@@ -189,13 +163,10 @@ async function processTabBrands(
     const page = await context.newPage();
     await setPincode(page);  // Set pincode for this tab
 
-    // Resume from the last processed index for this tab
-    let lastProcessedIndex = lastProcessedIndices[tabIndex];
-
     // Process brands in batches
-    for (let startIdx = Math.max(startBrandIndex, lastProcessedIndex + 1); startIdx < endBrandIndex; startIdx += BATCH_SIZE) {
+    for (let startIdx = startBrandIndex; startIdx < endBrandIndex; startIdx += BATCH_SIZE) {
         const endIdx = Math.min(startIdx + BATCH_SIZE, endBrandIndex);
-        const brandBatch = allBrands.slice(startIdx, endIdx);
+        const brandBatch = brandsToProcess.slice(startIdx, endIdx);
 
         console.log(`Tab ${tabIndex + 1}: Processing batch: ${startIdx} to ${endIdx - 1} of range ${startBrandIndex}-${endBrandIndex - 1}`);
 
@@ -205,16 +176,14 @@ async function processTabBrands(
             const currentIndex = startIdx + i;
             const startTime = Date.now();
 
-            // Normalize the brand name for comparison
+            // Double-check if already processed (in case another tab inserted it)
             const normalizedBrandName = normalizeBrandName(brand.name).toLowerCase();
-
-            // Skip if already processed - compare by normalized name
             if (existingBrandNames.has(normalizedBrandName)) {
-                console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${allBrands.length}] Skipping brand ${brand.name} - already in database by name`);
+                console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${brandsToProcess.length}] Skipping brand ${brand.name} - already in database by name`);
                 continue;
             }
 
-            console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${allBrands.length}] Processing brand: ${brand.name}`);
+            console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${brandsToProcess.length}] Processing brand: ${brand.name}`);
 
             try {
                 // Search for the brand on Amazon
@@ -239,7 +208,7 @@ async function processTabBrands(
 
                     // Insert brand into brand_amazon table
                     await pool.query(
-                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
+                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4) ON CONFLICT (name) DO NOTHING',
                         [brandInfo.id, brandInfo.name, 0, status]
                     );
 
@@ -253,7 +222,7 @@ async function processTabBrands(
                 } else {
                     // Brand not found, set status as 'n/a'
                     await pool.query(
-                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
+                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4) ON CONFLICT (name) DO NOTHING',
                         [null, brand.name, 0, 'n/a']
                     );
 
@@ -263,19 +232,11 @@ async function processTabBrands(
                     console.log(`Tab ${tabIndex + 1}: Brand not found on Amazon: ${brand.name}, Status: n/a`);
                 }
 
-                // Update this tab's last processed index
-                lastProcessedIndices[tabIndex] = currentIndex;
-
-                // Save checkpoint after each brand
-                saveCheckpoint(lastProcessedIndices);
-
                 // Calculate and log processing time
                 const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
                 console.log(`Tab ${tabIndex + 1}: Processing time: ${processingTime}s`);
             } catch (error) {
                 console.error(`Tab ${tabIndex + 1}: Error processing brand ${brand.name}:`, error);
-                // Save checkpoint before continuing
-                saveCheckpoint(lastProcessedIndices);
             }
 
             // Small delay to avoid rate limiting
@@ -286,15 +247,6 @@ async function processTabBrands(
     // Close this tab's page when finished
     await page.close();
     console.log(`Tab ${tabIndex + 1} completed processing brands from ${startBrandIndex} to ${endBrandIndex - 1}`);
-}
-
-// Save checkpoint to file for resuming - now with multiple tab indices
-function saveCheckpoint(lastProcessedIndices) {
-    const checkpointData = {
-        lastProcessedIndices: lastProcessedIndices,
-        timestamp: new Date().toISOString()
-    };
-    fs.writeFileSync(CHECKPOINT_FILE, JSON.stringify(checkpointData, null, 2));
 }
 
 async function setPincode(page) {
