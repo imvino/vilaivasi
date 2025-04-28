@@ -7,7 +7,9 @@ const path = require('path');
 const CHECKPOINT_FILE = path.join(__dirname, 'brand_checkpoint.json');
 const BATCH_SIZE = 20; // Process brands in batches to reduce memory usage
 const HEADLESS = false; // Run browser in headless mode for better performance
-const REQUEST_TIMEOUT = 15000; // Reduce timeout from 30s to 15s
+const REQUEST_TIMEOUT = 15000; // Timeout for requests
+const NUM_TABS = 3; // Number of tabs to run in parallel
+const BRANDS_TO_SKIP = ['Classic', 'jio']; // Brands to skip
 
 async function main() {
     // Initialize PostgreSQL connection
@@ -45,7 +47,7 @@ async function main() {
       CREATE TABLE IF NOT EXISTS brand_amazon (
         id serial4 NOT NULL,
         brand_id varchar(255) NULL,
-        "name" varchar(255) NOT NULL,
+        "name" varchar(255) NOT NULL UNIQUE,
         product_count int4 DEFAULT 0 NULL,
         created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
         status varchar(10) NULL,
@@ -67,19 +69,26 @@ async function main() {
             CREATE INDEX IF NOT EXISTS idx_brand_amazon_name ON brand_amazon(name);
         `);
 
-        const page = await context.newPage();
-
-        // Step 1: Set pincode once
-        await setPincode(page);
+        // Step 1: Set up initial page and set pincode once
+        const setupPage = await context.newPage();
+        await setPincode(setupPage);
+        await setupPage.close();
 
         // Step 2: Get the list of brands from the database
-        const brandsResult = await pool.query('SELECT id, name FROM brands ORDER BY name ASC');
-        const allBrands = brandsResult.rows;
+        const brandsResult = await pool.query('SELECT id, name FROM brands where name not iLIKE \'%Flipkart%\' ORDER BY name ASC');
+        let allBrands = brandsResult.rows;
 
-        console.log(`Found ${allBrands.length} total brands to process`);
+        // Filter out brands to skip
+        allBrands = allBrands.filter(brand => {
+            const normalizedName = normalizeBrandName(brand.name).toLowerCase();
+            return !BRANDS_TO_SKIP.some(skipBrand =>
+                normalizedName.includes(skipBrand.toLowerCase())
+            );
+        });
+
+        console.log(`Found ${allBrands.length} total brands to process after filtering`);
 
         // Step 3: Get existing brands in brand_amazon to avoid duplicates
-        // Get both brand_id and name for better duplicate detection
         const existingBrandsResult = await pool.query('SELECT brand_id, name FROM brand_amazon');
 
         // Create sets for both brand IDs and normalized names
@@ -96,105 +105,57 @@ async function main() {
         console.log(`Found ${existingBrandNames.size} brands already in database`);
 
         // Step 4: Load checkpoint if exists
-        let lastProcessedIndex = -1;
+        let lastProcessedIndices = Array(NUM_TABS).fill(-1);
         if (fs.existsSync(CHECKPOINT_FILE)) {
             try {
                 const checkpointData = JSON.parse(fs.readFileSync(CHECKPOINT_FILE, 'utf8'));
-                lastProcessedIndex = checkpointData.lastProcessedIndex || -1;
-                console.log(`Resuming from checkpoint: Brand index ${lastProcessedIndex + 1}`);
+                if (Array.isArray(checkpointData.lastProcessedIndices)) {
+                    lastProcessedIndices = checkpointData.lastProcessedIndices;
+                } else if (typeof checkpointData.lastProcessedIndex === 'number') {
+                    // Backward compatibility with old checkpoint format
+                    lastProcessedIndices[0] = checkpointData.lastProcessedIndex;
+                }
+                console.log(`Resuming from checkpoint: ${JSON.stringify(lastProcessedIndices)}`);
             } catch (error) {
                 console.error('Error reading checkpoint file:', error);
-                // Continue with default lastProcessedIndex = -1
+                // Continue with default lastProcessedIndices = [-1, -1, -1]
             }
         }
 
-        // Step 5: Process brands in batches
-        for (let startIdx = lastProcessedIndex + 1; startIdx < allBrands.length; startIdx += BATCH_SIZE) {
-            const endIdx = Math.min(startIdx + BATCH_SIZE, allBrands.length);
-            const brandBatch = allBrands.slice(startIdx, endIdx);
+        // Step 5: Distribute brands among tabs and process in parallel
+        // Calculate the portion of brands each tab will handle
+        const brandsPerTab = Math.ceil(allBrands.length / NUM_TABS);
 
-            console.log(`Processing batch: ${startIdx} to ${endIdx - 1} of ${allBrands.length} brands`);
+        // Create and process all tabs in parallel
+        const tabPromises = [];
+        for (let tabIndex = 0; tabIndex < NUM_TABS; tabIndex++) {
+            const startBrandIndex = tabIndex * brandsPerTab;
+            const endBrandIndex = Math.min((tabIndex + 1) * brandsPerTab, allBrands.length);
 
-            // Process each brand in the current batch
-            for (let i = 0; i < brandBatch.length; i++) {
-                const brand = brandBatch[i];
-                const currentIndex = startIdx + i;
-                const startTime = Date.now();
-
-                // Normalize the brand name for comparison
-                const normalizedBrandName = normalizeBrandName(brand.name).toLowerCase();
-
-                // Skip if already processed - compare by normalized name
-                if (existingBrandNames.has(normalizedBrandName)) {
-                    console.log(`[${currentIndex + 1}/${allBrands.length}] Skipping brand ${brand.name} - already in database by name`);
-                    continue;
-                }
-
-                console.log(`[${currentIndex + 1}/${allBrands.length}] Processing brand: ${brand.name}`);
-
-                try {
-                    // Search for the brand on Amazon
-                    const brandInfo = await searchAndExtractBrandInfo(page, brand.name);
-
-                    if (brandInfo) {
-                        // Check if this brand ID already exists in the database
-                        if (brandInfo.id && existingBrandIds.has(brandInfo.id)) {
-                            console.log(`Brand ID ${brandInfo.id} already exists in database, setting to null`);
-                            brandInfo.id = null;
-                        }
-
-                        // Determine status based on brandInfo results
-                        let status = null;
-
-                        // If the brand ID is '0', set status to '0' and set brandInfo.id to null
-                        if (brandInfo.id === '0') {
-                            status = '0';
-                            brandInfo.id = null;
-                            console.log(`Brand ID is 0 for ${brandInfo.name}, setting brandId to null`);
-                        }
-
-                        // Insert brand into brand_amazon table
-                        await pool.query(
-                            'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
-                            [brandInfo.id, brandInfo.name, 0, status]
-                        );
-
-                        // Add to our tracking sets to avoid duplicates in the current run
-                        if (brandInfo.id) {
-                            existingBrandIds.add(brandInfo.id);
-                        }
-                        existingBrandNames.add(normalizeBrandName(brandInfo.name).toLowerCase());
-
-                        console.log(`Saved brand: ${brandInfo.name} with ID: ${brandInfo.id || 'NULL'}, Status: ${status || 'NULL'}`);
-                    } else {
-                        // Brand not found, set status as 'n/a'
-                        await pool.query(
-                            'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
-                            [null, brand.name, 0, 'n/a']
-                        );
-
-                        // Add to existing names set
-                        existingBrandNames.add(normalizedBrandName);
-
-                        console.log(`Brand not found on Amazon: ${brand.name}, Status: n/a`);
-                    }
-
-                    // Save checkpoint after each brand
-                    saveCheckpoint(currentIndex);
-
-                    // Calculate and log processing time
-                    const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
-                    console.log(`Processing time: ${processingTime}s`);
-                } catch (error) {
-                    console.error(`Error processing brand ${brand.name}:`, error);
-                    // Save checkpoint before exiting the batch loop
-                    saveCheckpoint(currentIndex - 1); // Save the last successful brand
-                }
-
-                // Small delay to avoid rate limiting - reduced from 2000ms
-                await page.waitForTimeout(1000);
+            // Skip if this tab has already processed all its brands
+            if (lastProcessedIndices[tabIndex] >= endBrandIndex - 1) {
+                console.log(`Tab ${tabIndex + 1} has already completed all its assigned brands`);
+                continue;
             }
+
+            // Process this tab's brands
+            tabPromises.push(
+                processTabBrands(
+                    context,
+                    pool,
+                    allBrands,
+                    startBrandIndex,
+                    endBrandIndex,
+                    tabIndex,
+                    lastProcessedIndices,
+                    existingBrandIds,
+                    existingBrandNames
+                )
+            );
         }
+
+        // Wait for all tabs to complete
+        await Promise.all(tabPromises);
 
         console.log("All brands processed successfully!");
         // Clean up checkpoint file when done
@@ -211,10 +172,126 @@ async function main() {
     }
 }
 
-// Save checkpoint to file for resuming
-function saveCheckpoint(index) {
+// Process brands for a specific tab
+async function processTabBrands(
+    context,
+    pool,
+    allBrands,
+    startBrandIndex,
+    endBrandIndex,
+    tabIndex,
+    lastProcessedIndices,
+    existingBrandIds,
+    existingBrandNames
+) {
+    console.log(`Tab ${tabIndex + 1} processing brands from index ${startBrandIndex} to ${endBrandIndex - 1}`);
+
+    const page = await context.newPage();
+    await setPincode(page);  // Set pincode for this tab
+
+    // Resume from the last processed index for this tab
+    let lastProcessedIndex = lastProcessedIndices[tabIndex];
+
+    // Process brands in batches
+    for (let startIdx = Math.max(startBrandIndex, lastProcessedIndex + 1); startIdx < endBrandIndex; startIdx += BATCH_SIZE) {
+        const endIdx = Math.min(startIdx + BATCH_SIZE, endBrandIndex);
+        const brandBatch = allBrands.slice(startIdx, endIdx);
+
+        console.log(`Tab ${tabIndex + 1}: Processing batch: ${startIdx} to ${endIdx - 1} of range ${startBrandIndex}-${endBrandIndex - 1}`);
+
+        // Process each brand in the current batch
+        for (let i = 0; i < brandBatch.length; i++) {
+            const brand = brandBatch[i];
+            const currentIndex = startIdx + i;
+            const startTime = Date.now();
+
+            // Normalize the brand name for comparison
+            const normalizedBrandName = normalizeBrandName(brand.name).toLowerCase();
+
+            // Skip if already processed - compare by normalized name
+            if (existingBrandNames.has(normalizedBrandName)) {
+                console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${allBrands.length}] Skipping brand ${brand.name} - already in database by name`);
+                continue;
+            }
+
+            console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${allBrands.length}] Processing brand: ${brand.name}`);
+
+            try {
+                // Search for the brand on Amazon
+                const brandInfo = await searchAndExtractBrandInfo(page, brand.name);
+
+                if (brandInfo) {
+                    // Check if this brand ID already exists in the database
+                    if (brandInfo.id && existingBrandIds.has(brandInfo.id)) {
+                        console.log(`Tab ${tabIndex + 1}: Brand ID ${brandInfo.id} already exists in database, setting to null`);
+                        brandInfo.id = null;
+                    }
+
+                    // Determine status based on brandInfo results
+                    let status = null;
+
+                    // If the brand ID is '0', set status to '0' and set brandInfo.id to null
+                    if (brandInfo.id === '0') {
+                        status = '0';
+                        brandInfo.id = null;
+                        console.log(`Tab ${tabIndex + 1}: Brand ID is 0 for ${brandInfo.name}, setting brandId to null`);
+                    }
+
+                    // Insert brand into brand_amazon table
+                    await pool.query(
+                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
+                        [brandInfo.id, brandInfo.name, 0, status]
+                    );
+
+                    // Add to our tracking sets to avoid duplicates in the current run
+                    if (brandInfo.id) {
+                        existingBrandIds.add(brandInfo.id);
+                    }
+                    existingBrandNames.add(normalizeBrandName(brandInfo.name).toLowerCase());
+
+                    console.log(`Tab ${tabIndex + 1}: Saved brand: ${brandInfo.name} with ID: ${brandInfo.id || 'NULL'}, Status: ${status || 'NULL'}`);
+                } else {
+                    // Brand not found, set status as 'n/a'
+                    await pool.query(
+                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4)',
+                        [null, brand.name, 0, 'n/a']
+                    );
+
+                    // Add to existing names set
+                    existingBrandNames.add(normalizedBrandName);
+
+                    console.log(`Tab ${tabIndex + 1}: Brand not found on Amazon: ${brand.name}, Status: n/a`);
+                }
+
+                // Update this tab's last processed index
+                lastProcessedIndices[tabIndex] = currentIndex;
+
+                // Save checkpoint after each brand
+                saveCheckpoint(lastProcessedIndices);
+
+                // Calculate and log processing time
+                const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
+                console.log(`Tab ${tabIndex + 1}: Processing time: ${processingTime}s`);
+            } catch (error) {
+                console.error(`Tab ${tabIndex + 1}: Error processing brand ${brand.name}:`, error);
+                // Save checkpoint before continuing
+                saveCheckpoint(lastProcessedIndices);
+            }
+
+            // Small delay to avoid rate limiting
+            await page.waitForTimeout(1000);
+        }
+    }
+
+    // Close this tab's page when finished
+    await page.close();
+    console.log(`Tab ${tabIndex + 1} completed processing brands from ${startBrandIndex} to ${endBrandIndex - 1}`);
+}
+
+// Save checkpoint to file for resuming - now with multiple tab indices
+function saveCheckpoint(lastProcessedIndices) {
     const checkpointData = {
-        lastProcessedIndex: index,
+        lastProcessedIndices: lastProcessedIndices,
         timestamp: new Date().toISOString()
     };
     fs.writeFileSync(CHECKPOINT_FILE, JSON.stringify(checkpointData, null, 2));
@@ -283,7 +360,7 @@ async function searchAndExtractBrandInfo(page, brandName) {
         console.log(`Searching for ${brandName} at ${searchUrl}`);
         await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: REQUEST_TIMEOUT });
 
-        // Wait for search results - reduced from 2000ms
+        // Wait for search results
         await page.waitForTimeout(1000);
 
         // Extract products using the same selectors as your sample code
@@ -350,7 +427,7 @@ async function searchAndExtractBrandInfo(page, brandName) {
 
         // Navigate to the product page
         await page.goto(bestMatch.productUrl, { waitUntil: 'domcontentloaded', timeout: REQUEST_TIMEOUT });
-        await page.waitForTimeout(1000); // Reduced from 2000ms
+        await page.waitForTimeout(1000);
 
         // Check if brand info link exists
         const brandInfoExists = await page.locator('a#bylineInfo').count() > 0;
