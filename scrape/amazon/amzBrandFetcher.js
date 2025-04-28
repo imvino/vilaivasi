@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 const BATCH_SIZE = 20; // Process brands in batches to reduce memory usage
 const HEADLESS = false; // Run browser in headless mode for better performance
 const REQUEST_TIMEOUT = 15000; // Timeout for requests
-const NUM_TABS = 3; // Number of tabs to run in parallel
+const NUM_TABS = 5; // Number of tabs to run in parallel
 const BRANDS_TO_SKIP = ['Classic', 'jio']; // Brands to skip
 
 async function main() {
@@ -72,7 +72,7 @@ async function main() {
         await setupPage.close();
 
         // Step 2: Get the list of brands from the database
-        const brandsResult = await pool.query('SELECT id, name FROM brands WHERE name NOT ILIKE \'%Flipkart%\' ORDER BY name ASC');
+        const brandsResult = await pool.query('SELECT id, name FROM brands where name not iLIKE \'%Flipkart%\' ORDER BY name ASC');
         let allBrands = brandsResult.rows;
 
         // Filter out brands to skip
@@ -88,37 +88,36 @@ async function main() {
         // Step 3: Get existing brands in brand_amazon to avoid duplicates
         const existingBrandsResult = await pool.query('SELECT brand_id, name FROM brand_amazon');
 
-        // Create sets for both brand IDs and normalized names
-        const existingBrandIds = new Set();
         const existingBrandNames = new Set();
 
         existingBrandsResult.rows.forEach(row => {
-            if (row.brand_id) {
-                existingBrandIds.add(row.brand_id);
-            }
             existingBrandNames.add(normalizeBrandName(row.name).toLowerCase());
         });
 
-        console.log(`Found ${existingBrandNames.size} brands already in database - will skip these`);
+        console.log(`Found ${existingBrandNames.size} brands already in database`);
 
-        // Filter out brands already processed
+        // Step 4: Filter brands that are already processed
         const brandsToProcess = allBrands.filter(brand =>
             !existingBrandNames.has(normalizeBrandName(brand.name).toLowerCase())
         );
 
         console.log(`After filtering, ${brandsToProcess.length} brands remain to be processed`);
 
-        // Distribute remaining brands among tabs
+        // Step 5: Distribute brands among tabs and process in parallel
+        // Calculate the portion of brands each tab will handle
         const brandsPerTab = Math.ceil(brandsToProcess.length / NUM_TABS);
 
-        // Process in parallel tabs
+        // Create and process all tabs in parallel
         const tabPromises = [];
         for (let tabIndex = 0; tabIndex < NUM_TABS; tabIndex++) {
             const startBrandIndex = tabIndex * brandsPerTab;
             const endBrandIndex = Math.min((tabIndex + 1) * brandsPerTab, brandsToProcess.length);
 
             // Skip if this tab has no brands to process
-            if (startBrandIndex >= endBrandIndex) continue;
+            if (startBrandIndex >= endBrandIndex) {
+                console.log(`Tab ${tabIndex + 1} has no brands to process`);
+                continue;
+            }
 
             // Process this tab's brands
             tabPromises.push(
@@ -129,12 +128,12 @@ async function main() {
                     startBrandIndex,
                     endBrandIndex,
                     tabIndex,
-                    existingBrandIds,
                     existingBrandNames
                 )
             );
         }
 
+        // Wait for all tabs to complete
         await Promise.all(tabPromises);
 
         console.log("All brands processed successfully!");
@@ -155,7 +154,6 @@ async function processTabBrands(
     startBrandIndex,
     endBrandIndex,
     tabIndex,
-    existingBrandIds,
     existingBrandNames
 ) {
     console.log(`Tab ${tabIndex + 1} processing brands from index ${startBrandIndex} to ${endBrandIndex - 1}`);
@@ -176,8 +174,10 @@ async function processTabBrands(
             const currentIndex = startIdx + i;
             const startTime = Date.now();
 
-            // Double-check if already processed (in case another tab inserted it)
+            // Normalize the brand name for comparison
             const normalizedBrandName = normalizeBrandName(brand.name).toLowerCase();
+
+            // Double-check if already processed (in case another tab inserted it)
             if (existingBrandNames.has(normalizedBrandName)) {
                 console.log(`Tab ${tabIndex + 1} [${currentIndex + 1}/${brandsToProcess.length}] Skipping brand ${brand.name} - already in database by name`);
                 continue;
@@ -190,12 +190,6 @@ async function processTabBrands(
                 const brandInfo = await searchAndExtractBrandInfo(page, brand.name);
 
                 if (brandInfo) {
-                    // Check if this brand ID already exists in the database
-                    if (brandInfo.id && existingBrandIds.has(brandInfo.id)) {
-                        console.log(`Tab ${tabIndex + 1}: Brand ID ${brandInfo.id} already exists in database, setting to null`);
-                        brandInfo.id = null;
-                    }
-
                     // Determine status based on brandInfo results
                     let status = null;
 
@@ -206,16 +200,13 @@ async function processTabBrands(
                         console.log(`Tab ${tabIndex + 1}: Brand ID is 0 for ${brandInfo.name}, setting brandId to null`);
                     }
 
-                    // Insert brand into brand_amazon table
+                    // Insert brand into brand_amazon table with ON CONFLICT clause
                     await pool.query(
                         'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4) ON CONFLICT (name) DO NOTHING',
                         [brandInfo.id, brandInfo.name, 0, status]
                     );
 
-                    // Add to our tracking sets to avoid duplicates in the current run
-                    if (brandInfo.id) {
-                        existingBrandIds.add(brandInfo.id);
-                    }
+                    // Add to our tracking set to avoid duplicates in the current run
                     existingBrandNames.add(normalizeBrandName(brandInfo.name).toLowerCase());
 
                     console.log(`Tab ${tabIndex + 1}: Saved brand: ${brandInfo.name} with ID: ${brandInfo.id || 'NULL'}, Status: ${status || 'NULL'}`);
@@ -237,6 +228,19 @@ async function processTabBrands(
                 console.log(`Tab ${tabIndex + 1}: Processing time: ${processingTime}s`);
             } catch (error) {
                 console.error(`Tab ${tabIndex + 1}: Error processing brand ${brand.name}:`, error);
+
+                // Try to insert a record with error status
+                try {
+                    await pool.query(
+                        'INSERT INTO brand_amazon (brand_id, name, product_count, status) VALUES ($1, $2, $3, $4) ON CONFLICT (name) DO NOTHING',
+                        [null, brand.name, 0, 'error']
+                    );
+
+                    // Add to tracking set
+                    existingBrandNames.add(normalizedBrandName);
+                } catch (insertError) {
+                    console.error(`Tab ${tabIndex + 1}: Failed to insert error record for ${brand.name}:`, insertError);
+                }
             }
 
             // Small delay to avoid rate limiting
