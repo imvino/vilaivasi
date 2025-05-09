@@ -24,6 +24,28 @@ const redisClient = new Redis();
 // Global spell checker instance
 let speller = null;
 
+// Initialize PostgreSQL extensions
+async function initPostgresExtensions() {
+  const client = await pgPool.connect();
+  try {
+    console.log('Installing and enabling PostgreSQL extensions...');
+    
+    // Install required extensions for advanced text search and indexing
+    await client.query(`
+      CREATE EXTENSION IF NOT EXISTS pg_trgm;
+      CREATE EXTENSION IF NOT EXISTS btree_gin;
+      CREATE EXTENSION IF NOT EXISTS btree_gist;
+      CREATE EXTENSION IF NOT EXISTS unaccent;
+    `);
+    
+    console.log('PostgreSQL extensions successfully enabled');
+  } catch (error) {
+    console.error('Error installing PostgreSQL extensions:', error);
+  } finally {
+    client.release();
+  }
+}
+
 // Initialize embedding model
 async function initEmbeddingModel() {
   const pipeline = await Pipeline.pipeline(
@@ -151,6 +173,21 @@ async function setupDatabaseSchema() {
         filters JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+      
+      -- User search log (for OpenSearch compatibility)
+      CREATE TABLE IF NOT EXISTS user_search_log (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NULL,  -- Optional user identifier
+        session_id VARCHAR(255) NOT NULL,
+        query TEXT NOT NULL,
+        filters JSONB,
+        result_count INTEGER NOT NULL,
+        clicked_items JSONB,
+        search_metadata JSONB,  -- For OpenSearch metadata compatibility
+        ip_address VARCHAR(45),
+        user_agent TEXT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     
     // Create indexes for better performance
@@ -174,6 +211,13 @@ async function setupDatabaseSchema() {
       -- Indexes for search_cache
       CREATE INDEX IF NOT EXISTS idx_search_query ON search_cache(query);
       CREATE INDEX IF NOT EXISTS idx_search_hits ON search_cache(hit_count DESC);
+      
+      -- Indexes for user_search_log for OpenSearch compatibility
+      CREATE INDEX IF NOT EXISTS idx_user_search_query ON user_search_log(query);
+      CREATE INDEX IF NOT EXISTS idx_user_search_timestamp ON user_search_log(timestamp);
+      CREATE INDEX IF NOT EXISTS idx_user_search_user_id ON user_search_log(user_id);
+      CREATE INDEX IF NOT EXISTS idx_user_search_session ON user_search_log(session_id);
+      CREATE INDEX IF NOT EXISTS idx_user_search_query_gin ON user_search_log USING GIN(query gin_trgm_ops);
       
       -- Add full-text search capabilities
       ALTER TABLE unified_products ADD COLUMN IF NOT EXISTS search_vector tsvector;
@@ -747,8 +791,113 @@ async function generateSearchSuggestions(query, limit = 5) {
   }
 }
 
+// Log user search for OpenSearch compatibility
+async function logUserSearch(query, filters = {}, resultCount, options = {}) {
+  try {
+    const { 
+      userId = null, 
+      sessionId = uuidv4(), 
+      clickedItems = [], 
+      ipAddress = null, 
+      userAgent = null 
+    } = options;
+    
+    // Create search metadata in OpenSearch-compatible format
+    const searchMetadata = {
+      query_type: 'product_search',
+      search_version: '1.0',
+      applied_filters: filters,
+      sort_order: options.sortOrder || 'relevance',
+      page: options.page || 1,
+      page_size: options.pageSize || 20,
+      response_time_ms: options.responseTime || 0,
+      suggestions_shown: options.spellCorrectionShown || false,
+      query_expansion_applied: options.expansionApplied || false
+    };
+    
+    // Log the search
+    await pgPool.query(`
+      INSERT INTO user_search_log(
+        user_id, 
+        session_id, 
+        query, 
+        filters, 
+        result_count, 
+        clicked_items, 
+        search_metadata, 
+        ip_address, 
+        user_agent
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `, [
+      userId,
+      sessionId,
+      query,
+      JSON.stringify(filters),
+      resultCount,
+      JSON.stringify(clickedItems),
+      JSON.stringify(searchMetadata),
+      ipAddress,
+      userAgent
+    ]);
+    
+    return true;
+  } catch (error) {
+    console.error('Error logging user search:', error);
+    return false;
+  }
+}
+
+// Log when a user clicks on a search result (for future relevance tuning)
+async function logSearchResultClick(searchId, productId, options = {}) {
+  try {
+    const { 
+      userId = null, 
+      sessionId, 
+      position, 
+      timeToClick 
+    } = options;
+    
+    // First get the search entry
+    const searchResult = await pgPool.query(
+      'SELECT id, clicked_items FROM user_search_log WHERE id = $1',
+      [searchId]
+    );
+    
+    if (searchResult.rows.length === 0) {
+      console.error(`Search log entry ${searchId} not found`);
+      return false;
+    }
+    
+    // Add this click to the clicked_items array
+    const clickData = {
+      product_id: productId,
+      timestamp: new Date().toISOString(),
+      position: position || 0,
+      time_to_click_ms: timeToClick || 0
+    };
+    
+    let clickedItems = searchResult.rows[0].clicked_items || [];
+    if (!Array.isArray(clickedItems)) {
+      clickedItems = [];
+    }
+    
+    clickedItems.push(clickData);
+    
+    // Update the record
+    await pgPool.query(
+      'UPDATE user_search_log SET clicked_items = $1 WHERE id = $2',
+      [JSON.stringify(clickedItems), searchId]
+    );
+    
+    return true;
+  } catch (error) {
+    console.error('Error logging search result click:', error);
+    return false;
+  }
+}
+
 // Hybrid search with improved performance
-async function hybridSearch(query, filters = {}, page = 1, pageSize = 20) {
+async function hybridSearch(query, filters = {}, page = 1, pageSize = 20, sessionInfo = {}) {
   const startTime = Date.now();
   try {
     // Check cache first for exact same query/filters
@@ -766,6 +915,18 @@ async function hybridSearch(query, filters = {}, page = 1, pageSize = 20) {
         'INSERT INTO search_performance(query, duration_ms, result_count, filters) VALUES($1, $2, $3, $4)',
         [query, duration, result.totalResults, JSON.stringify(filters)]
       ).catch(err => console.error('Error logging search performance:', err));
+      
+      // Log the search for future OpenSearch migration
+      logUserSearch(query, filters, result.totalResults, {
+        sessionId: sessionInfo.sessionId || uuidv4(),
+        userId: sessionInfo.userId,
+        ipAddress: sessionInfo.ipAddress,
+        userAgent: sessionInfo.userAgent,
+        page: page,
+        pageSize: pageSize,
+        responseTime: duration,
+        spellCorrectionShown: result.spellCorrection ? true : false
+      }).catch(err => console.error('Error logging user search:', err));
       
       return result;
     }
@@ -1005,6 +1166,18 @@ async function hybridSearch(query, filters = {}, page = 1, pageSize = 20) {
       [query, Date.now() - startTime, totalResults, JSON.stringify(filters)]
     ).catch(err => console.error('Error logging search performance:', err));
     
+    // Log the search for future OpenSearch migration
+    logUserSearch(query, filters, totalResults, {
+      sessionId: sessionInfo.sessionId || uuidv4(),
+      userId: sessionInfo.userId,
+      ipAddress: sessionInfo.ipAddress,
+      userAgent: sessionInfo.userAgent,
+      page: page,
+      pageSize: pageSize,
+      responseTime: Date.now() - startTime,
+      spellCorrectionShown: spellCorrection ? true : false
+    }).catch(err => console.error('Error logging user search:', err));
+    
     console.log(`Search "${query}" completed in ${Date.now() - startTime}ms, found ${totalResults} results`);
     
     return finalResponse;
@@ -1017,6 +1190,18 @@ async function hybridSearch(query, filters = {}, page = 1, pageSize = 20) {
       'INSERT INTO search_performance(query, duration_ms, result_count, filters) VALUES($1, $2, $3, $4)',
       [query, errorTime, 0, JSON.stringify({ error: error.message, ...filters })]
     ).catch(err => console.error('Error logging search performance:', err));
+    
+    // Log the failed search for analytics
+    logUserSearch(query, filters, 0, {
+      sessionId: sessionInfo.sessionId || uuidv4(),
+      userId: sessionInfo.userId,
+      ipAddress: sessionInfo.ipAddress,
+      userAgent: sessionInfo.userAgent,
+      page: page,
+      pageSize: pageSize,
+      responseTime: errorTime,
+      searchMetadata: { error: error.message }
+    }).catch(err => console.error('Error logging user search:', err));
     
     return {
       query,
@@ -1385,6 +1570,9 @@ async function initSystem(options = {}) {
   try {
     console.log('Initializing search system...');
     
+    // Install and enable PostgreSQL extensions
+    await initPostgresExtensions();
+    
     // Setup database schema
     await setupDatabaseSchema();
     
@@ -1430,5 +1618,7 @@ module.exports = {
   generateSearchSuggestions,
   getGroupedProductDetails,
   importRawData,  // Export new function for direct import
+  logUserSearch,
+  logSearchResultClick,
   DEPENDENCIES  // Export dependencies for reference
 };
