@@ -1,17 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-    View,
-    Text,
-    ScrollView,
-    Image,
-    TouchableOpacity,
-    StyleSheet,
-    Animated,
-    findNodeHandle,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
@@ -44,16 +35,17 @@ const StorePage2 = () => {
     ];
 
     useEffect(() => {
-        const measureAllCategories = () => {
-            categories.forEach(measureCategoryLayout);
-            setIsMeasured(true);
-        };
-
+        // Set a timeout to mark as measured after categories have had time to layout
         const timeoutId = setTimeout(() => {
-            requestAnimationFrame(measureAllCategories);
-        }, 500);
+            setIsMeasured(true);
+        }, 1000);
 
-        return () => clearTimeout(timeoutId);
+        return () => {
+            clearTimeout(timeoutId);
+            // Clean up refs
+            categoryRefs.current = {};
+            categoryOffsets.current = {};
+        };
     }, []);
 
     useEffect(() => {
@@ -85,43 +77,25 @@ const StorePage2 = () => {
         setIsScrolling(true);
         setSelectedCategory(category);
         if (categoryOffsets.current[category] !== undefined) {
+            const scrollY = categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT;
             scrollViewRef.current?.scrollTo({
-                y: categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT,
+                y: scrollY,
                 animated: true
             });
             setTimeout(() => {
                 setIsScrolling(false);
-                lastScrollPosition.current = categoryOffsets.current[category] - CATEGORY_BAR_HEIGHT;
+                lastScrollPosition.current = scrollY;
             }, 500);
         } else {
-            console.warn(`Offset not found for category: ${category}`);
             setIsScrolling(false);
         }
     };
 
-    const measureCategoryLayout = (category) => {
-        if (categoryRefs.current[category] && scrollViewRef.current) {
-            const scrollViewHandle = findNodeHandle(scrollViewRef.current);
-            if (scrollViewHandle) {
-                categoryRefs.current[category].measureLayout(
-                    scrollViewHandle,
-                    (x, y) => {
-                        categoryOffsets.current[category] = y;
-                    },
-                    (error) => {
-                        console.error(`Error measuring layout for ${category}:`, error);
-                    }
-                );
-            } else {
-                console.warn(`ScrollView node handle not found for ${category}`);
-            }
-        }
-    };
 
     const renderCategoryBar = (isFloating = false) => (
         <View style={[styles.categoryBar, isFloating && styles.floatingCategoryBar]}>
             <TouchableOpacity style={styles.burgerMenu}>
-                <Ionicons name="menu" size={24} color="black" />
+                <Ionicons name='menu' size={24} color='black'/>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {categories.map((category) => (
@@ -130,12 +104,14 @@ const StorePage2 = () => {
                         style={[styles.categoryItem, selectedCategory === category && styles.selectedCategory]}
                         onPress={() => scrollToCategory(category)}
                     >
-                        <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
+                        <Text
+                            style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
                             {category}
                         </Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
+
         </View>
     );
 
@@ -146,16 +122,16 @@ const StorePage2 = () => {
                     title: 'Yasin Qasab',
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-                            <Ionicons name="arrow-back" size={24} color="black" />
+                            <Ionicons name='arrow-back' size={24} color='black'/>
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
                         <View style={styles.headerRightContainer}>
                             <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name="share-outline" size={24} color="black" />
+                                <Ionicons name='share-outline' size={24} color='black'/>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name="search-outline" size={24} color="black" />
+                                <Ionicons name='search-outline' size={24} color='black'/>
                             </TouchableOpacity>
                         </View>
                     ),
@@ -191,18 +167,19 @@ const StorePage2 = () => {
                         }}
                     >
                         <TouchableOpacity style={styles.infoButton}>
-                            <Ionicons name="information-circle-outline" size={24} color="#666" />
+                            <Ionicons name='information-circle-outline' size={24} color='#666'/>
                         </TouchableOpacity>
                         <View style={styles.storeInfoHeader}>
                             <Image
-                                source={{uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png'}}
+                                source={{ uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png' }}
                                 style={styles.logo}
                             />
                             <View style={styles.storeInfoText}>
                                 <Text style={styles.storeName}>Yasin Qasab</Text>
-                                <Text style={styles.storeDescription}>Fresh Meat & Fish, Chicken, Speciality St...</Text>
+                                <Text style={styles.storeDescription}>Fresh Meat & Fish, Chicken, Speciality
+                                    St...</Text>
                                 <View style={styles.ratingContainer}>
-                                    <Ionicons name="star" size={16} color="#FFD700" />
+                                    <Ionicons name='star' size={16} color='#FFD700'/>
                                     <Text style={styles.rating}>4.6 (32 Ratings)</Text>
                                 </View>
                             </View>
@@ -222,7 +199,7 @@ const StorePage2 = () => {
                             </View>
                         </View>
                         <View style={styles.promoContainer}>
-                            <Ionicons name="gift-outline" size={16} color="#FF6347" />
+                            <Ionicons name='gift-outline' size={16} color='#FF6347'/>
                             <Text style={styles.promoText}>Free delivery on your first order</Text>
                         </View>
                     </View>
@@ -231,13 +208,31 @@ const StorePage2 = () => {
                 <View style={styles.contentContainer}>
                     {renderCategoryBar()}
 
-                    {categories.map((category) => (
+                    {categories.map((category, index) => (
                         <View key={category}
                               ref={(ref) => {
-                                  if (ref && !categoryRefs.current[category]) {
+                                  if (ref) {
                                       categoryRefs.current[category] = ref;
-                                      measureCategoryLayout(category);
                                   }
+                              }}
+                              onLayout={(event) => {
+                                  const { height } = event.nativeEvent.layout;
+
+                                  // Store the actual measured height for this category section
+                                  categoryOffsets.current[category + '_height'] = height;
+
+                                  // Calculate position based on accumulated heights
+                                  let totalHeight = HEADER_HEIGHT + CATEGORY_BAR_HEIGHT + 50; // Add contentContainer paddingTop
+
+                                  // Add heights of previous categories
+                                  for (let i = 0; i < index; i++) {
+                                      const prevCategory = categories[i];
+                                      const prevHeight = categoryOffsets.current[prevCategory + '_height'] || 0;
+                                      totalHeight += prevHeight;
+                                  }
+
+                                  // Store the position
+                                  categoryOffsets.current[category] = totalHeight;
                               }}
                         >
                             <Text style={styles.categoryTitle}>{category}</Text>
@@ -246,7 +241,7 @@ const StorePage2 = () => {
                                 .map((product) => (
                                     <View key={product.id} style={styles.productItem}>
                                         <Image
-                                            source={{uri: `https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png`}}
+                                            source={{ uri: `https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png` }}
                                             style={styles.productImage}
                                         />
                                         <View style={styles.productInfo}>
@@ -297,7 +292,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: 'white',
         borderRadius: 8,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -307,7 +302,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     contentContainer: {
-        paddingTop: HEADER_HEIGHT-150,
+        paddingTop: HEADER_HEIGHT - 150,
     },
     infoButton: {
         position: 'absolute',
@@ -403,7 +398,7 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 2,
         backgroundColor: 'white',
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -473,6 +468,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
     },
+
 });
 
 export default StorePage2;
