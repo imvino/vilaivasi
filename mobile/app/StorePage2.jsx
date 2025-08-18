@@ -130,6 +130,9 @@ const StorePage2 = () => {
                             <TouchableOpacity style={styles.headerButton}>
                                 <Ionicons name='share-outline' size={24} color='black'/>
                             </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => router.push('/chat')}>
+                                <Ionicons name='chatbubbles-outline' size={24} color='black'/>
+                            </TouchableOpacity>
                             <TouchableOpacity style={styles.headerButton}>
                                 <Ionicons name='search-outline' size={24} color='black'/>
                             </TouchableOpacity>
