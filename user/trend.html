@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankNifty Chart with All Strikes and Zoom Toggle</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #toggle-btn {
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="toggle-btn">Toggle Zoom (0-100% / 25-75%)</button>
+    <div id="chart-container"></div>
+
+    <script>
+        let chart;
+        let bankData = [];
+        let trendData = {};
+        let isZoomedIn = false;
+
+        async function fetchData() {
+            const bankResponse = await fetch('bank.json');
+            const trendResponse = await fetch('trend.json');
+            bankData = await bankResponse.json();
+            trendData = await trendResponse.json();
+        }
+
+        function processData() {
+            const processedBankData = bankData.map(item => ({
+                time: moment(item[0]).format('HH:mm'),
+                close: item[4]
+            }));
+
+            const processedTrendData = Object.entries(trendData).map(([time, strikes]) => ({
+                time: moment(time, 'hh:mm A').format('HH:mm'),
+                strikes: strikes.map(strike => ({
+                    strike: strike.s,
+                    type: strike.t,
+                    oi: strike.o
+                }))
+            }));
+
+            return { bankData: processedBankData, trendData: processedTrendData };
+        }
+
+        function formatOI(oi) {
+            return (oi / 100000).toFixed(2) + 'L';
+        }
+
+        function getStrikesSeries(data) {
+            const allStrikes = data.reduce((acc, item) => {
+                item.strikes.forEach(strike => {
+                    if (!acc.includes(strike.strike)) {
+                        acc.push(strike.strike);
+                    }
+                });
+                return acc;
+            }, []);
+
+            return allStrikes.map(strike => {
+                const seriesData = data.map(item => {
+                    const strikeData = item.strikes.find(s => s.strike === strike);
+                    return strikeData ? [item.time, strike, strikeData.type, strikeData.oi] : [item.time, '-', '-', '-'];
+                });
+
+                return {
+                    name: `${strike}`,
+                    type: 'scatter',
+                    symbolSize: 5,
+                    data: seriesData,
+                    itemStyle: {
+                        color: (params) => {
+                            return params.data[2] === 'CE' ? 'red' : 'green';
+                        }
+                    }
+                };
+            });
+        }
+
+        function updateChart() {
+            const { bankData, trendData } = processData();
+
+            const allStrikes = trendData.reduce((acc, item) => {
+                item.strikes.forEach(strike => {
+                    if (!acc.includes(strike.strike)) {
+                        acc.push(strike.strike);
+                    }
+                });
+                return acc;
+            }, []);
+
+            const minStrike = Math.min(...allStrikes);
+            const maxStrike = Math.max(...allStrikes);
+
+            const option = {
+                title: {
+                    text: 'BankNifty Chart with All Strikes',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            if (param.seriesName === 'BankNifty') {
+                                result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:blue;"></span>`;
+                                result += param.seriesName + ': <b>' + param.value[1] + '</b><br/>';
+                            } else if (param.value[1] !== '-') {
+                                const color = param.value[2] === 'CE' ? 'red' : 'green';
+                                const oi = formatOI(param.value[3]);
+                                result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+                                result += `${param.seriesName}${param.value[2]} - <b>${oi}</b><br/>`;
+                            }
+                        });
+                        return result;
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: bankData.map(item => item.time)
+                },
+                yAxis: {
+                    type: 'value',
+                    min: Math.floor(minStrike / 1000) * 1000,
+                    max: Math.ceil(maxStrike / 1000) * 1000
+                },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        xAxisIndex: 0,
+                        filterMode: 'none'
+                    },
+                    {
+                        type: 'slider',
+                        xAxisIndex: 0,
+                        filterMode: 'none'
+                    },
+                    {
+                        type: 'inside',
+                        yAxisIndex: 0,
+                        filterMode: 'none'
+                    },
+                    {
+                        type: 'slider',
+                        yAxisIndex: 0,
+                        filterMode: 'none',
+                        left: '93%'
+                    }
+                ],
+                series: [
+                    {
+                        name: 'BankNifty',
+                        type: 'line',
+                        data: bankData.map(item => [item.time, item.close]),
+                        smooth: true,
+                        lineStyle: {
+                            color: 'blue',
+                            width: 2
+                        },
+                        z: 2
+                    },
+                    ...getStrikesSeries(trendData)
+                ]
+            };
+
+            chart.setOption(option);
+            updateZoom();
+        }
+
+        function updateZoom() {
+            chart.setOption({
+                dataZoom: [
+                    {},
+                    {},
+                    {
+                        start: isZoomedIn ? 25 : 0,
+                        end: isZoomedIn ? 75 : 100
+                    },
+                    {
+                        start: isZoomedIn ? 25 : 0,
+                        end: isZoomedIn ? 75 : 100
+                    }
+                ]
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchData();
+            chart = echarts.init(document.getElementById('chart-container'));
+            updateChart();
+
+            document.getElementById('toggle-btn').addEventListener('click', () => {
+                isZoomedIn = !isZoomedIn;
+                updateZoom();
+            });
+        });
+    </script>
+</body>
+
+</html>

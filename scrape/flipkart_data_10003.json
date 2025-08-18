@@ -1,0 +1,979 @@
+[
+  {
+    "product": [
+      {
+        "id": "DCGH76CGQZYMHJCE",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/r/y/g/-original-imah6ck9h5wvjmzb.jpeg?q={@quality}",
+        "url": "/vim-liquid-core-2-25-ltr-dish-cleaning-gel/p/itm5fda0ac85915e?pid=DCGH76CGQZYMHJCE&lid=LSTDCGH76CGQZYMHJCEQGKKGK&marketplace=GROCERY",
+        "mrp": "600",
+        "price": 466,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 14.563
+        },
+        "title": "Vim Liquid Core 2.25 Ltr Dish Cleaning Gel Lemon, 2.25 L",
+        "qtyInfo": "2.25 L + 950 ml Extra in Pack",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": "950 ml Extra in Pack",
+        "smartQty": "3.20 L"
+      },
+      {
+        "id": "DCGFXC8KEAGXZCFK",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/b/z/x/-original-imah5xsjwhxjhx7q.jpeg?q={@quality}",
+        "url": "/vim-liquid-pouch-core-dish-cleaning-gel/p/itmcaf8913f810ba?pid=DCGFXC8KEAGXZCFK&lid=LSTDCGFXC8KEAGXZCFKWSFXA6&marketplace=GROCERY",
+        "mrp": "405",
+        "price": 292,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 14.6
+        },
+        "title": "Vim LIQUID POUCH Core Dish Cleaning Gel Lemon, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "CFEFZKHEUZCTK9N2",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/l27wtjk0/coffee/7/q/r/500-60-40-pouch-5-filter-coffee-continental-malgudi-original-imagdhw8mw5kmdrv.jpeg?q={@quality}",
+        "url": "/continental-malgudi-60-degree-pouch-filter-coffee/p/itmce722a092250a?pid=CFEFZKHEUZCTK9N2&lid=LSTCFEFZKHEUZCTK9N20FSFQF&marketplace=GROCERY",
+        "mrp": "410",
+        "price": 321,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 100,
+          "pricePerUnit": 64.2
+        },
+        "title": "CONTINENTAL Malgudi 60 Degree Pouch Filter Coffee 500 g, Chicory Flavoured",
+        "qtyInfo": "500 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "500.00 g"
+      },
+      {
+        "id": "CFEF9HRNTVHWFHUW",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/l5jxt3k0/coffee/0/x/3/-original-imagg742vztkd82v.jpeg?q={@quality}",
+        "url": "/continental-malgudi-60-degree-pouch-filter-coffee/p/itmce722a092250a?pid=CFEF9HRNTVHWFHUW&lid=LSTCFEF9HRNTVHWFHUW99DMKE&marketplace=GROCERY",
+        "mrp": "170",
+        "price": 126,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 100,
+          "pricePerUnit": 63
+        },
+        "title": "CONTINENTAL Malgudi 60 Degree Pouch Filter Coffee 200 g, Chicory Flavoured",
+        "qtyInfo": "200 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "200.00 g"
+      }
+    ],
+    "brand": "CONTINENTAL",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "Beverages",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "Coffee"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DWBEU6M6WTGKAG9Q",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-washing-bar/y/d/z/-original-imah3uafzjr6pdbz.jpeg?q={@quality}",
+        "url": "/vim-dishwash-bar/p/itmew7uegahfruem?pid=DWBEU6M6WTGKAG9Q&lid=LSTDWBEU6M6WTGKAG9QGQEBJB&marketplace=GROCERY",
+        "mrp": "30",
+        "price": 27,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 22.5
+        },
+        "title": "Vim Dishwash Bar 300 g",
+        "qtyInfo": "300 g",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "300.00 g"
+      },
+      {
+        "id": "DWBEU6M6RCEGUHKU",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-washing-bar/d/d/e/-original-imah3ua3upgmdggy.jpeg?q={@quality}",
+        "url": "/vim-dishwash-bar/p/itmew7uegahfruem?pid=DWBEU6M6RCEGUHKU&lid=LSTDWBEU6M6RCEGUHKURPFTSZ&marketplace=GROCERY",
+        "mrp": "10",
+        "price": 9,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 14.516
+        },
+        "title": "Vim Dishwash Bar 110 g",
+        "qtyInfo": "110 g + 45 g Extra in Pack",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "155.00 g"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishWashingBar"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DWBEU6M6WTGKAG9Q",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-washing-bar/y/d/z/-original-imah3uafzjr6pdbz.jpeg?q={@quality}",
+        "url": "/vim-dishwash-bar/p/itmew7uegahfruem?pid=DWBEU6M6WTGKAG9Q&lid=LSTDWBEU6M6WTGKAG9QGQEBJB&marketplace=GROCERY",
+        "mrp": "30",
+        "price": 27,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 22.5
+        },
+        "title": "Vim Dishwash Bar 300 g",
+        "qtyInfo": "300 g",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "300.00 g"
+      },
+      {
+        "id": "DWBEU6M6RCEGUHKU",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-washing-bar/d/d/e/-original-imah3ua3upgmdggy.jpeg?q={@quality}",
+        "url": "/vim-dishwash-bar/p/itmew7uegahfruem?pid=DWBEU6M6RCEGUHKU&lid=LSTDWBEU6M6RCEGUHKURPFTSZ&marketplace=GROCERY",
+        "mrp": "10",
+        "price": 9,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 14.516
+        },
+        "title": "Vim Dishwash Bar 110 g",
+        "qtyInfo": "110 g + 45 g Extra in Pack",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": "45 g Extra in Pack",
+        "smartQty": "155.00 g"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishWashingBar"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DWBGQGJQF8WT8FQQ",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-washing-bar/t/y/c/dishwash-bar-multipack-4-800-vim-original-imagqrgfdsbxpzzy.jpeg?q={@quality}",
+        "url": "/vim-power-lemon-dishwash-bar/p/itm9106d11b8718c?pid=DWBGQGJQF8WT8FQQ&lid=LSTDWBGQGJQF8WT8FQQVDLLKH&marketplace=GROCERY",
+        "mrp": "86",
+        "price": 77,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 24.063
+        },
+        "title": "Vim Power of Lemon Dishwash Bar 4 x 200 g",
+        "qtyInfo": "4x200 g",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "799.98 g"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishWashingBar"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGETZP9NVGQ37XJ",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/x/f/b/-original-imagsb5fgsad349h.jpeg?q={@quality}",
+        "url": "/vim-dish-cleaning-gel/p/itmfd4qydmg59zvy?pid=DCGETZP9NVGQ37XJ&lid=LSTDCGETZP9NVGQ37XJKX8D6Z&marketplace=GROCERY",
+        "mrp": "58",
+        "price": 53,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 21.2
+        },
+        "title": "Vim Dish Cleaning Gel Lemon, 0.25 L",
+        "qtyInfo": "0.25 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "250.00 ml"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "ESRG32FQDGTG7HAC",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/milk-drink-mix/z/c/w/-original-imah2kzqx2dghapz.jpeg?q={@quality}",
+        "url": "/boost-nutrition-drink-promo-contaner/p/itm3150450531e67?pid=ESRG32FQDGTG7HAC&lid=LSTESRG32FQDGTG7HAC2TBKDI&marketplace=GROCERY",
+        "mrp": "625",
+        "price": 465,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 500,
+          "pricePerUnit": 232.5
+        },
+        "title": "Boost Nutrition Drink Promo Contaner (Flavored) 2 x 0.5 kg",
+        "qtyInfo": "2x0.5 kg + 1N SIPPER Free",
+        "variant": null,
+        "category": "HealthAndNutrition",
+        "offer": "1N SIPPER Free",
+        "smartQty": "1.00 kg"
+      }
+    ],
+    "brand": "Boost",
+    "analyticsData": {
+      "category": "HealthAndNutrition",
+      "subCategory": "EnergyDrink",
+      "superCategory": "HealthCare",
+      "vertical": "HealthDrinkMixes"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGH76CGQZYMHJCE",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/r/y/g/-original-imah6ck9h5wvjmzb.jpeg?q={@quality}",
+        "url": "/vim-liquid-core-2-25-ltr-dish-cleaning-gel/p/itm5fda0ac85915e?pid=DCGH76CGQZYMHJCE&lid=LSTDCGH76CGQZYMHJCEQGKKGK&marketplace=GROCERY",
+        "mrp": "600",
+        "price": 466,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 14.563
+        },
+        "title": "Vim Liquid Core 2.25 Ltr Dish Cleaning Gel Lemon, 2.25 L",
+        "qtyInfo": "2.25 L + 950 ml Extra in Pack",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": "950 ml Extra in Pack",
+        "smartQty": "3.20 L"
+      },
+      {
+        "id": "DCGFXC8KEAGXZCFK",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/b/z/x/-original-imah5xsjwhxjhx7q.jpeg?q={@quality}",
+        "url": "/vim-liquid-pouch-core-dish-cleaning-gel/p/itmcaf8913f810ba?pid=DCGFXC8KEAGXZCFK&lid=LSTDCGFXC8KEAGXZCFKWSFXA6&marketplace=GROCERY",
+        "mrp": "405",
+        "price": 292,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 14.6
+        },
+        "title": "Vim LIQUID POUCH Core Dish Cleaning Gel Lemon, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZFEVAP2GZ",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/w/e/j/-original-imaha5fqzgfheywf.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lavender/p/itm9026fa7d0aa74?pid=BCRH3R9ZFEVAP2GZ&lid=LSTBCRH3R9ZFEVAP2GZCWVK9K&marketplace=GROCERY",
+        "mrp": "240",
+        "price": 171,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 171
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lavender 1 L",
+        "qtyInfo": "1 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "1.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZPN7SK4HZ",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/l/7/h/-original-imaha5fprkmbramh.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lavender/p/itm9026fa7d0aa74?pid=BCRH3R9ZPN7SK4HZ&lid=LSTBCRH3R9ZPN7SK4HZUZ2QCE&marketplace=GROCERY",
+        "mrp": "120",
+        "price": 99,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 198
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lavender 500 ml",
+        "qtyInfo": "500 ml",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "500.00 ml"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "SCMFT7N7PHFHRRRZ",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/spice-masala/p/k/k/-original-imahft9dmektxehe.jpeg?q={@quality}",
+        "url": "/zoff-fennel/p/itm30bb5afaf3637?pid=SCMFT7N7PHFHRRRZ&lid=LSTSCMFT7N7PHFHRRRZDZGJMM&marketplace=GROCERY",
+        "mrp": "90",
+        "price": 39,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 97.5
+        },
+        "title": "zoff Fennel 100 g",
+        "qtyInfo": "100 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "100.00 g"
+      },
+      {
+        "id": "SCMFT7N7Z5RQ7UJX",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/spice-masala/p/k/k/-original-imahft9dmektxehe.jpeg?q={@quality}",
+        "url": "/zoff-fennel/p/itm30bb5afaf3637?pid=SCMFT7N7Z5RQ7UJX&lid=LSTSCMFT7N7Z5RQ7UJXRPQ5TQ&marketplace=GROCERY",
+        "mrp": "45",
+        "price": 20,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 100
+        },
+        "title": "zoff Fennel 50 g",
+        "qtyInfo": "50 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "50.00 g"
+      }
+    ],
+    "brand": "zoff",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "SpicesCondimentsSauces",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "SpicesMasala"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "SCMFT7N7YMTVSSQM",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/spice-masala/s/b/c/-original-imahft96adkeh4nh.jpeg?q={@quality}",
+        "url": "/zoff-black-pepper-kali-mirch/p/itm8bc6183c29e16?pid=SCMFT7N7YMTVSSQM&lid=LSTSCMFT7N7YMTVSSQMXLBOWM&marketplace=GROCERY",
+        "mrp": "105",
+        "price": 50,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 250
+        },
+        "title": "zoff Black Pepper/Kali Mirch 50 g",
+        "qtyInfo": "50 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "50.00 g"
+      },
+      {
+        "id": "SCMFT7N7PZXJY2TC",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/spice-masala/s/b/c/-original-imahft96adkeh4nh.jpeg?q={@quality}",
+        "url": "/zoff-black-pepper-kali-mirch/p/itm8bc6183c29e16?pid=SCMFT7N7PZXJY2TC&lid=LSTSCMFT7N7PZXJY2TCYSBT16&marketplace=GROCERY",
+        "mrp": "210",
+        "price": 100,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 250
+        },
+        "title": "zoff Black Pepper/Kali Mirch 100 g",
+        "qtyInfo": "100 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "100.00 g"
+      }
+    ],
+    "brand": "zoff",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "SpicesCondimentsSauces",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "SpicesMasala"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZSQGFAUQM",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/c/h/v/-original-imaha5fzxh3s4ufj.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lemon/p/itm316ec96408b35?pid=BCRH3R9ZSQGFAUQM&lid=LSTBCRH3R9ZSQGFAUQMN4DAEV&marketplace=GROCERY",
+        "mrp": "240",
+        "price": 170,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 170
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lemon 1 L",
+        "qtyInfo": "1 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "1.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZRTTFJF2P",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/g/d/q/-original-imaha5fzabk6j4zy.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lemon/p/itm316ec96408b35?pid=BCRH3R9ZRTTFJF2P&lid=LSTBCRH3R9ZRTTFJF2PZ20MRL&marketplace=GROCERY",
+        "mrp": "120",
+        "price": 95,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 190
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lemon 500 ml",
+        "qtyInfo": "500 ml",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "500.00 ml"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH6GZADYHFZVBT",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/o/x/6/-original-imah7hyfvgcuzsqe.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultrapro-lemon-5l/p/itm1df7b345187f9?pid=BCRH6GZADYHFZVBT&lid=LSTBCRH6GZADYHFZVBTRGAULN&marketplace=GROCERY",
+        "mrp": "975",
+        "price": 499,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 99.8
+        },
+        "title": "Vim Floor Cleaner UltraPro lemon 5L Lemon 5 L",
+        "qtyInfo": "5 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "5.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZHBFCQHGA",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/g/l/o/-original-imaha5fn7npk6eue.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lemongrass/p/itm02ce4a7355f4c?pid=BCRH3R9ZHBFCQHGA&lid=LSTBCRH3R9ZHBFCQHGAHKGEMF&marketplace=GROCERY",
+        "mrp": "120",
+        "price": 87,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 174
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lemongrass 500 ml",
+        "qtyInfo": "500 ml",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "500.00 ml"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "SCMG63YWH6FGHBE8",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/spice-masala/f/v/u/-original-imahft9fthtqcyse.jpeg?q={@quality}",
+        "url": "/zoff-black-mustard-rai/p/itm7513c4bfde28d?pid=SCMG63YWH6FGHBE8&lid=LSTSCMG63YWH6FGHBE8A7IATG&marketplace=GROCERY",
+        "mrp": "45",
+        "price": 23,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 28.75
+        },
+        "title": "zoff Black Mustard/Rai 200 g",
+        "qtyInfo": "200 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "200.00 g"
+      }
+    ],
+    "brand": "zoff",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "SpicesCondimentsSauces",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "SpicesMasala"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "CFEFZKHEZ5XYUFBC",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/l27wtjk0/coffee/e/u/l/500-80-20-pouch-5-filter-coffee-continental-malgudi-original-imagdhw76nsahvmh.jpeg?q={@quality}",
+        "url": "/continental-malgudi-80-degree-pouch-filter-coffee/p/itmc852dde0c444a?pid=CFEFZKHEZ5XYUFBC&lid=LSTCFEFZKHEZ5XYUFBCJFEUOL&marketplace=GROCERY",
+        "mrp": "460",
+        "price": 338,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 100,
+          "pricePerUnit": 67.6
+        },
+        "title": "CONTINENTAL Malgudi 80 Degree Pouch Filter Coffee 500 g, Chicory Flavoured",
+        "qtyInfo": "500 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "500.00 g"
+      },
+      {
+        "id": "CFEF9HRNHQTGFWVG",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/l5jxt3k0/coffee/8/a/f/-original-imagg742ykfghvg2.jpeg?q={@quality}",
+        "url": "/continental-malgudi-80-degree-pouch-filter-coffee/p/itmc852dde0c444a?pid=CFEF9HRNHQTGFWVG&lid=LSTCFEF9HRNHQTGFWVGPASCCL&marketplace=GROCERY",
+        "mrp": "200",
+        "price": 147,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 100,
+          "pricePerUnit": 73.5
+        },
+        "title": "CONTINENTAL Malgudi 80 Degree Pouch Filter Coffee 200 g, Chicory Flavoured",
+        "qtyInfo": "200 g",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "200.00 g"
+      }
+    ],
+    "brand": "CONTINENTAL",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "Beverages",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "Coffee"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "BCRH3R9ZFYZW6WKY",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/bathroom-floor-cleaner/c/x/5/lemongrass-1-fc-ultrapro-lemongrass-bottle-1-vim-original-imah5uhy7p3uzzyf.jpeg?q={@quality}",
+        "url": "/vim-floor-cleaner-ultra-pro-lemongrass/p/itm02ce4a7355f4c?pid=BCRH3R9ZFYZW6WKY&lid=LSTBCRH3R9ZFYZW6WKYFQMVLT&marketplace=GROCERY",
+        "mrp": "240",
+        "price": 176,
+        "pricePerUnit": {
+          "pivotQualifier": "L",
+          "pivotValue": 1,
+          "pricePerUnit": 176
+        },
+        "title": "Vim Floor Cleaner Ultra Pro Lemongrass 1 L",
+        "qtyInfo": "1 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "1.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "BathroomFloorCleaner"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGG6M29T8YYH5PX",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/y/r/y/-original-imah3tezpygcvwhk.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-bac-liquid-dish-cleaning-gel/p/itm4d71a351f5180?pid=DCGG6M29T8YYH5PX&lid=LSTDCGG6M29T8YYH5PXP6AQJF&marketplace=GROCERY",
+        "mrp": "249",
+        "price": 183,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 24.4
+        },
+        "title": "Vim Dishwash Anti Bac Liquid Dish Cleaning Gel Neem, 0.75 L",
+        "qtyInfo": "0.75 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "750.00 ml"
+      },
+      {
+        "id": "DCGG6M29AKZHK8RB",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/n/9/d/-original-imah3xn6wgpyy8yp.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-bac-liquid-dish-cleaning-gel/p/itm4d71a351f5180?pid=DCGG6M29AKZHK8RB&lid=LSTDCGG6M29AKZHK8RBQ5FBKO&marketplace=GROCERY",
+        "mrp": "480",
+        "price": 330,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 16.5
+        },
+        "title": "Vim Dishwash Anti Bac Liquid Dish Cleaning Gel Neem, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "TEAGDTKACDPWNJJW",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/tea/y/f/j/-original-imah62efgwvz4bba.jpeg?q={@quality}",
+        "url": "/tata-tea-chakra-gold-dust-long-lasting-taste-pouch/p/itm2f7af3307e533?pid=TEAGDTKACDPWNJJW&lid=LSTTEAGDTKACDPWNJJWVNNJSQ&marketplace=GROCERY",
+        "mrp": "740",
+        "price": 718,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 179.5
+        },
+        "title": "Tata Tea Chakra Gold Dust Tea with Long Lasting Taste Tea Pouch (sada Tea) 1 kg",
+        "qtyInfo": "1 kg Pouch",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "1.00 kg"
+      },
+      {
+        "id": "TEAETM5T8FBFUSJN",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/tea/x/b/x/-original-imah62efhg3h9nff.jpeg?q={@quality}",
+        "url": "/tata-tea-chakra-gold-dust-long-lasting-taste-box/p/itm2f7af3307e533?pid=TEAETM5T8FBFUSJN&lid=LSTTEAETM5T8FBFUSJN9O9GL6&marketplace=GROCERY",
+        "mrp": "430",
+        "price": 370,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 185
+        },
+        "title": "Tata Tea Chakra Gold Dust Tea with Long Lasting Taste Tea Box (sada Tea) 500 g",
+        "qtyInfo": "500 g Box",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "500.00 g"
+      },
+      {
+        "id": "TEAETM5THKGQBBZ5",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/tea/x/b/x/-original-imah62efhg3h9nff.jpeg?q={@quality}",
+        "url": "/tata-tea-chakra-gold-dust-long-lasting-taste-box/p/itm2f7af3307e533?pid=TEAETM5THKGQBBZ5&lid=LSTTEAETM5THKGQBBZ5LLA0Q4&marketplace=GROCERY",
+        "mrp": "225",
+        "price": 204,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 250,
+          "pricePerUnit": 204
+        },
+        "title": "Tata Tea Chakra Gold Dust Tea with Long Lasting Taste Tea Box (sada Tea) 250 g",
+        "qtyInfo": "250 g Box",
+        "variant": null,
+        "category": "Gourmet",
+        "offer": null,
+        "smartQty": "250.00 g"
+      }
+    ],
+    "brand": "Tata Tea Chakra Gold",
+    "analyticsData": {
+      "category": "Gourmet",
+      "subCategory": "Beverages",
+      "superCategory": "FoodAndNutrition",
+      "vertical": "Tea"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "TPSGHZ5EHHFZY6BY",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/toothpaste/k/k/q/450-fresh-mint-combo-pack-3-na-sensodyne-original-imagnjhsen5dyvdn.jpeg?q={@quality}",
+        "url": "/sensodyne-fresh-mint-combo-pack-toothpaste/p/itmdba402e5b48e6?pid=TPSGHZ5EHHFZY6BY&lid=LSTTPSGHZ5EHHFZY6BYZC7LJS&marketplace=GROCERY",
+        "mrp": "756",
+        "price": 621,
+        "pricePerUnit": {
+          "pivotQualifier": "g",
+          "pivotValue": 100,
+          "pricePerUnit": 138
+        },
+        "title": "SENSODYNE Fresh Mint Combo Pack Toothpaste 450 g, Pack of 3",
+        "qtyInfo": "3x150 g",
+        "variant": null,
+        "category": "Grooming",
+        "offer": null,
+        "smartQty": "450.00 g"
+      }
+    ],
+    "brand": "SENSODYNE",
+    "analyticsData": {
+      "category": "Grooming",
+      "subCategory": "OralCare",
+      "superCategory": "Grooming",
+      "vertical": "Toothpaste"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGG6M29T8YYH5PX",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/y/r/y/-original-imah3tezpygcvwhk.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-bac-liquid-dish-cleaning-gel/p/itm4d71a351f5180?pid=DCGG6M29T8YYH5PX&lid=LSTDCGG6M29T8YYH5PXP6AQJF&marketplace=GROCERY",
+        "mrp": "249",
+        "price": 183,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 24.4
+        },
+        "title": "Vim Dishwash Anti Bac Liquid Dish Cleaning Gel Neem, 0.75 L",
+        "qtyInfo": "0.75 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "750.00 ml"
+      },
+      {
+        "id": "DCGG6M29AKZHK8RB",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/n/9/d/-original-imah3xn6wgpyy8yp.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-bac-liquid-dish-cleaning-gel/p/itm4d71a351f5180?pid=DCGG6M29AKZHK8RB&lid=LSTDCGG6M29AKZHK8RBQ5FBKO&marketplace=GROCERY",
+        "mrp": "480",
+        "price": 330,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 16.5
+        },
+        "title": "Vim Dishwash Anti Bac Liquid Dish Cleaning Gel Neem, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGG6M29JH2F4CYG",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/i/3/u/-original-imah3tezvynmj28c.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-smell-liquid-dish-cleaning-gel/p/itm0b7f3a5f050b4?pid=DCGG6M29JH2F4CYG&lid=LSTDCGG6M29JH2F4CYGCXI9ML&marketplace=GROCERY",
+        "mrp": "249",
+        "price": 183,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 24.4
+        },
+        "title": "Vim Dishwash Anti Smell Liquid Dish Cleaning Gel Pudina, 0.75 L",
+        "qtyInfo": "0.75 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "750.00 ml"
+      },
+      {
+        "id": "DCGG6M29HZGS9HQC",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/b/6/l/-original-imah3zw8uhqd456x.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-smell-liquid-dish-cleaning-gel/p/itm0b7f3a5f050b4?pid=DCGG6M29HZGS9HQC&lid=LSTDCGG6M29HZGS9HQCBHWZYD&marketplace=GROCERY",
+        "mrp": "480",
+        "price": 348,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 17.4
+        },
+        "title": "Vim Dishwash Anti Smell Liquid Dish Cleaning Gel Pudina, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  },
+  {
+    "product": [
+      {
+        "id": "DCGG6M29JH2F4CYG",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/i/3/u/-original-imah3tezvynmj28c.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-smell-liquid-dish-cleaning-gel/p/itm0b7f3a5f050b4?pid=DCGG6M29JH2F4CYG&lid=LSTDCGG6M29JH2F4CYGCXI9ML&marketplace=GROCERY",
+        "mrp": "249",
+        "price": 183,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 24.4
+        },
+        "title": "Vim Dishwash Anti Smell Liquid Dish Cleaning Gel Pudina, 0.75 L",
+        "qtyInfo": "0.75 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "750.00 ml"
+      },
+      {
+        "id": "DCGG6M29HZGS9HQC",
+        "image": "http://rukminim2.flixcart.com/image/{@width}/{@height}/xif0q/dish-cleaning-gel/b/6/l/-original-imah3zw8uhqd456x.jpeg?q={@quality}",
+        "url": "/vim-dishwash-anti-smell-liquid-dish-cleaning-gel/p/itm0b7f3a5f050b4?pid=DCGG6M29HZGS9HQC&lid=LSTDCGG6M29HZGS9HQCBHWZYD&marketplace=GROCERY",
+        "mrp": "480",
+        "price": 348,
+        "pricePerUnit": {
+          "pivotQualifier": "ml",
+          "pivotValue": 100,
+          "pricePerUnit": 17.4
+        },
+        "title": "Vim Dishwash Anti Smell Liquid Dish Cleaning Gel Pudina, 2 L",
+        "qtyInfo": "2 L",
+        "variant": null,
+        "category": "HouseHoldSuppliesAndConsummables",
+        "offer": null,
+        "smartQty": "2.00 L"
+      }
+    ],
+    "brand": "Vim",
+    "analyticsData": {
+      "category": "HouseHoldSuppliesAndConsummables",
+      "subCategory": "HouseHoldSuppliesAndConsummables",
+      "superCategory": "HouseHoldSupplies",
+      "vertical": "DishCleaningGel"
+    }
+  }
+]

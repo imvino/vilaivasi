@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Nifty Options Depth Chart</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js"></script>
+</head>
+
+<body>
+    <div id="depthChart" style="width: 100%; height: 400px;"></div>
+    <script>
+        // Market data for Bank Nifty Options
+        const marketData = [
+            { strike: 5000, ce: { total_buy_qty: 1234, total_sell_qty: 1234 }, pe: { total_buy_qty: 4342, total_sell_qty: 6423 } },
+            { strike: 4000, ce: { total_buy_qty: 5445, total_sell_qty: 5232 }, pe: { total_buy_qty: 4534, total_sell_qty: 3453 } },
+            { strike: 3000, ce: { total_buy_qty: 6334, total_sell_qty: 6453 }, pe: { total_buy_qty: 3454, total_sell_qty: 3452 } }
+        ];
+
+        // Prepare data for ECharts
+        const strikes = marketData.map(option => option.strike);
+        const callBuyQuantities = marketData.map(option => option.ce.total_buy_qty);
+        const callSellQuantities = marketData.map(option => option.ce.total_sell_qty);
+        const putBuyQuantities = marketData.map(option => option.pe.total_buy_qty);
+        const putSellQuantities = marketData.map(option => option.pe.total_sell_qty);
+
+        // Initialize the chart
+        const chartDom = document.getElementById('depthChart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            title: {
+                text: 'Bank Nifty Options Depth Chart',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['Call Buy', 'Call Sell', 'Put Buy', 'Put Sell'],
+                bottom: '10%'
+            },
+            xAxis: {
+                type: 'value',
+                name: 'Strike Price',
+                boundaryGap: [0, '100%']
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Quantity',
+                boundaryGap: [0, '100%']
+            },
+            series: [
+                {
+                    name: 'Call Buy',
+                    type: 'bar',
+                    data: callBuyQuantities,
+                    emphasis: {
+                        focus: 'series'
+                    }
+                },
+                {
+                    name: 'Call Sell',
+                    type: 'bar',
+                    data: callSellQuantities,
+                    emphasis: {
+                        focus: 'series'
+                    }
+                },
+                {
+                    name: 'Put Buy',
+                    type: 'bar',
+                    data: putBuyQuantities,
+                    emphasis: {
+                        focus: 'series'
+                    }
+                },
+                {
+                    name: 'Put Sell',
+                    type: 'bar',
+                    data: putSellQuantities,
+                    emphasis: {
+                        focus: 'series'
+                    }
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    </script>
+</body>
+
+</html>

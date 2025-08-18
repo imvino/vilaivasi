@@ -28,7 +28,7 @@ async function resetSequences() {
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-      AND table_name IN ('brand_jio', 'products_jio')
+      AND table_name IN ('brand_amazon')
     `;
 
         const tablesResult = await client.query(tablesQuery);
