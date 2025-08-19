@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+    ActivityIndicator,
     Alert,
     Animated,
     Dimensions,
@@ -29,6 +30,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as Clipboard from 'expo-clipboard';
 import {LinearGradient} from 'expo-linear-gradient';
 import AudioBubble from '../components/AudioBubble';
+import {colors} from "@/assets/theme";
+import {headerStyles} from "@/assets/commonStyles";
 
 // Helper function to get MIME type
 const getMimeType = (fileName: string) => {
@@ -194,6 +197,9 @@ export default function ChatScreen() {
     const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     const recorderState = useAudioRecorderState(recorder);
 
+    // Add loading state to fix header transition issue
+    const [isLoading, setIsLoading] = useState(true);
+
     // Improved recording state
     const [isRecordingStarted, setIsRecordingStarted] = useState(false);
     const [recordingTimer, setRecordingTimer] = useState(0);
@@ -217,6 +223,16 @@ export default function ChatScreen() {
     const recordingAnimation = useRef(new Animated.Value(0)).current;
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
     const highlightAnim = useRef(new Animated.Value(0)).current;
+
+    // Add useEffect to handle loading state
+    useEffect(() => {
+        // Set a timeout to ensure the UI is fully loaded before showing content
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 300); // 300ms delay to allow header transition to complete
+
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         if (recorderState.isRecording) {
@@ -787,7 +803,7 @@ export default function ChatScreen() {
                         <Ionicons
                             name={selectedMessages.has(item.id) ? 'checkbox' : 'square-outline'}
                             size={24}
-                            color={selectedMessages.has(item.id) ? '#4CAF50' : '#6B7280'}
+                            color={selectedMessages.has(item.id) ? colors.primary : '#6B7280'}
                         />
                     </TouchableOpacity>
                 )}
@@ -821,7 +837,7 @@ export default function ChatScreen() {
                 >
                     <View style={styles.bubbleContainer}>
                         <LinearGradient
-                            colors={item.sender === 'me' ? ['#DCF8C6', '#D1F2EB'] : ['#FFFFFF', '#F8F9FA']}
+                            colors={item.sender === 'me' ? ['#D0F0D9', '#B7E6C4'] : ['#FFFFFF', '#F8F9FA']}
                             style={[
                                 styles.bubble,
                                 item.type === 'image' ? styles.bubbleMedia : null,
@@ -842,7 +858,7 @@ export default function ChatScreen() {
                                 {item.type === 'file' && (
                                     <View style={styles.fileRow}>
                                         <View style={styles.fileIcon}>
-                                            <MaterialIcons name="insert-drive-file" size={24} color="#4CAF50"/>
+                                            <MaterialIcons name="insert-drive-file" size={24} color={colors.primary}/>
                                         </View>
                                         <View style={styles.fileInfo}>
                                             <Text style={styles.fileName}
@@ -909,7 +925,12 @@ export default function ChatScreen() {
 
     return (
         <SafeAreaView style={styles.safe}>
-            <StatusBar barStyle="light-content" backgroundColor="#4CAF50"/>
+            <StatusBar barStyle="light-content" backgroundColor={colors.primary}/>
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={colors.primary}/>
+                </View>
+            ) : null}
             <Stack.Screen
                 options={{
                     headerTitle: () => (
@@ -931,15 +952,10 @@ export default function ChatScreen() {
                             </TouchableOpacity>
                         )
                     ),
-                    headerStyle: {
-                        backgroundColor: '#4CAF50',
-                        ...(Platform.OS === 'android' && {elevation: 4}),
-                        ...(Platform.OS === 'ios' && {
-                            shadowOpacity: 0.3,
-                            shadowRadius: 4,
-                            shadowOffset: {width: 0, height: 2},
-                        }),
-                    },
+                    // headerStyle: headerStyles.headerStyle,
+                    headerBackground: () => (
+                        <View style={headerStyles.headerBackground}/>
+                    ),
                     headerTintColor: '#FFFFFF',
                     headerLeft: () => (
                         <TouchableOpacity
@@ -967,325 +983,340 @@ export default function ChatScreen() {
                 }}
             />
 
-            <View style={styles.backgroundImage}>
-                <KeyboardAvoidingView
-                    style={styles.container}
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
-                >
-                    <FlatList
-                        ref={listRef}
-                        style={styles.list}
-                        contentContainerStyle={styles.listContent}
-                        data={isTyping ? [{
-                            id: 'typing',
-                            type: 'typing' as any,
-                            sender: 'them' as any,
-                            time: '',
-                            text: ''
-                        }, ...messages] : messages}
-                        renderItem={({item}) => {
-                            if (item.id === 'typing') {
-                                return renderTypingIndicator();
-                            }
-                            return renderItem({item});
-                        }}
-                        keyExtractor={(item) => item.id}
-                        inverted
-                        showsVerticalScrollIndicator={false}
-                    />
-
-                    <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => setModalVisible(false)}
+            {!isLoading && (
+                <View style={styles.backgroundImage}>
+                    <KeyboardAvoidingView
+                        style={styles.container}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
                     >
-                        <View style={styles.modalContainer}>
-                            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
-                                <Ionicons name="close" size={32} color="#fff"/>
-                            </TouchableOpacity>
-                            <ScrollView
-                                horizontal
-                                pagingEnabled
-                                showsHorizontalScrollIndicator={false}
-                                contentOffset={{x: currentImageIndex * Dimensions.get('window').width, y: 0}}
-                                onMomentumScrollEnd={(event) => {
-                                    const newIndex = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
-                                    setCurrentImageIndex(newIndex);
-                                }}
-                            >
-                                {imageGallery.map((imageUri, index) => (
-                                    <View key={index} style={styles.imageSlide}>
-                                        <ScrollView
-                                            maximumZoomScale={3}
-                                            minimumZoomScale={1}
-                                            showsHorizontalScrollIndicator={false}
-                                            showsVerticalScrollIndicator={false}
-                                            contentContainerStyle={styles.zoomContainer}
-                                        >
-                                            <Image
-                                                source={{uri: imageUri}}
-                                                style={styles.modalImage}
-                                                resizeMode="contain"
-                                            />
-                                        </ScrollView>
-                                    </View>
-                                ))}
-                            </ScrollView>
-                            {imageGallery.length > 1 && (
-                                <View style={styles.imageCounter}>
-                                    <Text style={styles.imageCounterText}>
-                                        {currentImageIndex + 1} of {imageGallery.length}
-                                    </Text>
-                                </View>
-                            )}
-                        </View>
-                    </Modal>
+                        <FlatList
+                            ref={listRef}
+                            style={styles.list}
+                            contentContainerStyle={styles.listContent}
+                            data={isTyping ? [{
+                                id: 'typing',
+                                type: 'typing' as any,
+                                sender: 'them' as any,
+                                time: '',
+                                text: ''
+                            }, ...messages] : messages}
+                            renderItem={({item}) => {
+                                if (item.id === 'typing') {
+                                    return renderTypingIndicator();
+                                }
+                                return renderItem({item});
+                            }}
+                            keyExtractor={(item) => item.id}
+                            inverted
+                            showsVerticalScrollIndicator={false}
+                        />
 
-                    {recordingOverlayVisible && (
                         <Modal
                             animationType="fade"
                             transparent={true}
-                            visible={recordingOverlayVisible}
-                            onRequestClose={cancelRecording}
+                            visible={modalVisible}
+                            onRequestClose={() => setModalVisible(false)}
                         >
-                            <View style={styles.recordingModalOverlay}>
-                                <View style={styles.recordingModalContainer}>
-                                    <View style={styles.recordingHeader}>
-                                        <View style={styles.recordingInfo}>
-                                            <Animated.View style={{
-                                                transform: [{
-                                                    scale: recordingAnimation.interpolate({
-                                                        inputRange: [0, 1],
-                                                        outputRange: [1, 1.3]
-                                                    })
-                                                }]
-                                            }}>
-                                                <Ionicons
-                                                    name={isRecordingPaused ? "pause-circle" : "mic"}
-                                                    size={24}
-                                                    color={isRecordingPaused ? "#FF9500" : "#EF4444"}
+                            <View style={styles.modalContainer}>
+                                <TouchableOpacity style={styles.modalCloseButton}
+                                                  onPress={() => setModalVisible(false)}>
+                                    <Ionicons name="close" size={32} color="#fff"/>
+                                </TouchableOpacity>
+                                <ScrollView
+                                    horizontal
+                                    pagingEnabled
+                                    showsHorizontalScrollIndicator={false}
+                                    contentOffset={{x: currentImageIndex * Dimensions.get('window').width, y: 0}}
+                                    onMomentumScrollEnd={(event) => {
+                                        const newIndex = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                                        setCurrentImageIndex(newIndex);
+                                    }}
+                                >
+                                    {imageGallery.map((imageUri, index) => (
+                                        <View key={index} style={styles.imageSlide}>
+                                            <ScrollView
+                                                maximumZoomScale={3}
+                                                minimumZoomScale={1}
+                                                showsHorizontalScrollIndicator={false}
+                                                showsVerticalScrollIndicator={false}
+                                                contentContainerStyle={styles.zoomContainer}
+                                            >
+                                                <Image
+                                                    source={{uri: imageUri}}
+                                                    style={styles.modalImage}
+                                                    resizeMode="contain"
                                                 />
-                                            </Animated.View>
-                                            <Text style={styles.recordingText}>
-                                                {Math.floor(recordingTimer / 60)}:{(recordingTimer % 60).toString().padStart(2, '0')}
-                                            </Text>
+                                            </ScrollView>
                                         </View>
-                                        <Text style={styles.recordingStatus}>
-                                            {isRecordingPaused ? 'Recording Paused' : 'Recording...'}
+                                    ))}
+                                </ScrollView>
+                                {imageGallery.length > 1 && (
+                                    <View style={styles.imageCounter}>
+                                        <Text style={styles.imageCounterText}>
+                                            {currentImageIndex + 1} of {imageGallery.length}
                                         </Text>
                                     </View>
+                                )}
+                            </View>
+                        </Modal>
 
-                                    <View style={styles.recordingControls}>
-                                        <TouchableOpacity
-                                            style={styles.recordingControlBtn}
-                                            onPress={cancelRecording}
-                                        >
-                                            <Ionicons name="trash" size={24} color="#EF4444"/>
-                                            <Text
-                                                style={[styles.recordingControlText, {color: '#EF4444'}]}>Delete</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
-                                            style={[styles.recordingControlBtn, styles.recordingControlBtnPrimary]}
-                                            onPress={isRecordingPaused ? resumeRecording : pauseRecording}
-                                        >
-                                            <Ionicons
-                                                name={isRecordingPaused ? "play" : "pause"}
-                                                size={24}
-                                                color="#FFFFFF"
-                                            />
-                                            <Text style={[styles.recordingControlText, {color: '#FFFFFF'}]}>
-                                                {isRecordingPaused ? 'Resume' : 'Pause'}
+                        {recordingOverlayVisible && (
+                            <Modal
+                                animationType="fade"
+                                transparent={true}
+                                visible={recordingOverlayVisible}
+                                onRequestClose={cancelRecording}
+                            >
+                                <View style={styles.recordingModalOverlay}>
+                                    <View style={styles.recordingModalContainer}>
+                                        <View style={styles.recordingHeader}>
+                                            <View style={styles.recordingInfo}>
+                                                <Animated.View style={{
+                                                    transform: [{
+                                                        scale: recordingAnimation.interpolate({
+                                                            inputRange: [0, 1],
+                                                            outputRange: [1, 1.3]
+                                                        })
+                                                    }]
+                                                }}>
+                                                    <Ionicons
+                                                        name={isRecordingPaused ? "pause-circle" : "mic"}
+                                                        size={24}
+                                                        color={isRecordingPaused ? "#FF9500" : "#EF4444"}
+                                                    />
+                                                </Animated.View>
+                                                <Text style={styles.recordingText}>
+                                                    {Math.floor(recordingTimer / 60)}:{(recordingTimer % 60).toString().padStart(2, '0')}
+                                                </Text>
+                                            </View>
+                                            <Text style={styles.recordingStatus}>
+                                                {isRecordingPaused ? 'Recording Paused' : 'Recording...'}
                                             </Text>
-                                        </TouchableOpacity>
+                                        </View>
 
-                                        <TouchableOpacity
-                                            style={styles.recordingControlBtn}
-                                            onPress={stopRecordingAndSend}
-                                        >
-                                            <Ionicons name="send" size={24} color="#4CAF50"/>
-                                            <Text style={[styles.recordingControlText, {color: '#4CAF50'}]}>Send</Text>
-                                        </TouchableOpacity>
+                                        <View style={styles.recordingControls}>
+                                            <TouchableOpacity
+                                                style={styles.recordingControlBtn}
+                                                onPress={cancelRecording}
+                                            >
+                                                <Ionicons name="trash" size={24} color="#EF4444"/>
+                                                <Text
+                                                    style={[styles.recordingControlText, {color: '#EF4444'}]}>Delete</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={[styles.recordingControlBtn, styles.recordingControlBtnPrimary]}
+                                                onPress={isRecordingPaused ? resumeRecording : pauseRecording}
+                                            >
+                                                <Ionicons
+                                                    name={isRecordingPaused ? "play" : "pause"}
+                                                    size={24}
+                                                    color="#FFFFFF"
+                                                />
+                                                <Text style={[styles.recordingControlText, {color: '#FFFFFF'}]}>
+                                                    {isRecordingPaused ? 'Resume' : 'Pause'}
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={styles.recordingControlBtn}
+                                                onPress={stopRecordingAndSend}
+                                            >
+                                                <Ionicons name="send" size={24} color={colors.primary}/>
+                                                <Text
+                                                    style={[styles.recordingControlText, {color: '#4CAF50'}]}>Send</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
+                                </View>
+                            </Modal>
+                        )}
+
+                        {replyingTo && (
+                            <View style={styles.replyBar}>
+                                <View style={styles.replyBarContent}>
+                                    <Ionicons name="arrow-undo" size={16} color={colors.primary}/>
+                                    <View style={styles.replyBarText}>
+                                        <Text style={styles.replyBarTitle}>Replying
+                                            to {replyingTo.sender === 'me' ? 'yourself' : 'Super Store'}</Text>
+                                        <Text style={styles.replyBarMessage} numberOfLines={1}>
+                                            {replyingTo.type === 'text' ? replyingTo.text :
+                                                replyingTo.type === 'image' ? '📷 Photo' :
+                                                    replyingTo.type === 'audio' ? '🎵 Voice message' : '📎 Document'}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <TouchableOpacity onPress={cancelReply} style={styles.replyBarClose}>
+                                    <Ionicons name="close" size={20} color="#6B7280"/>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {multiSelectMode && (
+                            <View style={styles.multiSelectFooter}>
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={deleteSelectedMessages}
+                                    disabled={selectedMessages.size === 0}
+                                >
+                                    <Ionicons name="trash" size={20} color="#FFFFFF"/>
+                                    <Text style={styles.deleteButtonText}>{selectedMessages.size}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {!multiSelectMode && (
+                            <View style={styles.inputBar}>
+                                <TouchableOpacity style={styles.iconBtn} onPress={showAttachmentOptions}>
+                                    <Ionicons name="add" size={24} color={colors.primary}/>
+                                </TouchableOpacity>
+                                <View style={styles.inputContainer}>
+                                    <TextInput
+                                        value={input}
+                                        onChangeText={setInput}
+                                        placeholder="Type a message"
+                                        placeholderTextColor="#9CA3AF"
+                                        multiline
+                                        maxLength={1000}
+                                        autoCorrect={false}
+                                    />
+                                </View>
+                                {input.trim() ? (
+                                    <TouchableOpacity style={styles.sendBtn} onPress={send}>
+                                        <Ionicons name="send" size={18} color="#fff"/>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={[styles.voiceBtn, recorderState.isRecording && styles.voiceBtnRecording]}
+                                        onPress={startRecording}
+                                    >
+                                        <Animated.View style={{
+                                            transform: [{
+                                                scale: recordingAnimation.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [1, 1.2]
+                                                })
+                                            }]
+                                        }}>
+                                            <Ionicons name="mic" size={20} color="#fff"/>
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        )}
+
+                        {/* Action Sheet Modal */}
+                        <Modal
+                            animationType="fade"
+                            transparent
+                            visible={actionSheetVisible}
+                            onRequestClose={closeActionSheet}
+                        >
+                            <View style={styles.sheetOverlay}>
+                                <Pressable style={styles.sheetBackdrop} onPress={closeActionSheet}/>
+                                <View style={styles.sheetContainer}>
+                                    {!!selectedMsg && (
+                                        <TouchableOpacity style={styles.sheetBtn}
+                                                          onPress={() => replyToMessage(selectedMsg)}>
+                                            <Text style={styles.sheetBtnText}>Reply</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {selectedMsg?.type === 'text' && (
+                                        <TouchableOpacity style={styles.sheetBtn} onPress={copyTextSelected}>
+                                            <Text style={styles.sheetBtnText}>Copy</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {selectedMsg?.type === 'image' && (
+                                        <TouchableOpacity style={styles.sheetBtn} onPress={viewImageSelected}>
+                                            <Text style={styles.sheetBtnText}>View Image</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {selectedMsg?.type === 'file' && (
+                                        <TouchableOpacity style={styles.sheetBtn} onPress={openFileSelected}>
+                                            <Text style={styles.sheetBtnText}>Open</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {/* Share for all types */}
+                                    {!!selectedMsg && (
+                                        <TouchableOpacity style={styles.sheetBtn} onPress={shareSelected}>
+                                            <Text style={styles.sheetBtnText}>Share</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {/* Delete for all types */}
+                                    {!!selectedMsg && (
+                                        <TouchableOpacity style={[styles.sheetBtn, styles.sheetBtnDestructive]}
+                                                          onPress={startMultiSelectFromAction}>
+                                            <Text
+                                                style={[styles.sheetBtnText, styles.sheetBtnTextDestructive]}>Delete</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    <TouchableOpacity style={[styles.sheetBtn]} onPress={closeActionSheet}>
+                                        <Text style={styles.sheetBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </Modal>
-                    )}
 
-                    {replyingTo && (
-                        <View style={styles.replyBar}>
-                            <View style={styles.replyBarContent}>
-                                <Ionicons name="arrow-undo" size={16} color="#4CAF50"/>
-                                <View style={styles.replyBarText}>
-                                    <Text style={styles.replyBarTitle}>Replying
-                                        to {replyingTo.sender === 'me' ? 'yourself' : 'Super Store'}</Text>
-                                    <Text style={styles.replyBarMessage} numberOfLines={1}>
-                                        {replyingTo.type === 'text' ? replyingTo.text :
-                                            replyingTo.type === 'image' ? '📷 Photo' :
-                                                replyingTo.type === 'audio' ? '🎵 Voice message' : '📎 Document'}
-                                    </Text>
+                        {/* Attachment Modal */}
+                        <Modal
+                            animationType="slide"
+                            transparent
+                            visible={attachmentModalVisible}
+                            onRequestClose={() => setAttachmentModalVisible(false)}
+                        >
+                            <View style={styles.attachmentModalOverlay}>
+                                <Pressable style={styles.attachmentModalBackdrop}
+                                           onPress={() => setAttachmentModalVisible(false)}/>
+                                <View style={styles.attachmentModalContainer}>
+                                    <Text style={styles.attachmentModalTitle}>Send Attachment</Text>
+                                    <TouchableOpacity style={styles.attachmentOption} onPress={openCamera}>
+                                        <Ionicons name="camera" size={24} color={colors.primary}/>
+                                        <Text style={styles.attachmentOptionText}>Camera</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.attachmentOption} onPress={pickFromGallery}>
+                                        <Ionicons name="images" size={24} color={colors.primary}/>
+                                        <Text style={styles.attachmentOptionText}>Photo Library</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.attachmentOption} onPress={pickDocument}>
+                                        <Ionicons name="document" size={24} color={colors.primary}/>
+                                        <Text style={styles.attachmentOptionText}>Document</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.attachmentOption, styles.attachmentCancel]}
+                                        onPress={() => setAttachmentModalVisible(false)}
+                                    >
+                                        <Text style={styles.attachmentCancelText}>Cancel</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
-                            <TouchableOpacity onPress={cancelReply} style={styles.replyBarClose}>
-                                <Ionicons name="close" size={20} color="#6B7280"/>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-
-                    {multiSelectMode && (
-                        <View style={styles.multiSelectFooter}>
-                            <TouchableOpacity
-                                style={styles.deleteButton}
-                                onPress={deleteSelectedMessages}
-                                disabled={selectedMessages.size === 0}
-                            >
-                                <Ionicons name="trash" size={20} color="#FFFFFF"/>
-                                <Text style={styles.deleteButtonText}>{selectedMessages.size}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-
-                    {!multiSelectMode && (
-                        <View style={styles.inputBar}>
-                            <TouchableOpacity style={styles.iconBtn} onPress={showAttachmentOptions}>
-                                <Ionicons name="add" size={24} color="#128C7E"/>
-                            </TouchableOpacity>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    value={input}
-                                    onChangeText={setInput}
-                                    placeholder="Type a message"
-                                    placeholderTextColor="#9CA3AF"
-                                    multiline
-                                    maxLength={1000}
-                                    autoCorrect={false}
-                                />
-                            </View>
-                            {input.trim() ? (
-                                <TouchableOpacity style={styles.sendBtn} onPress={send}>
-                                    <Ionicons name="send" size={18} color="#fff"/>
-                                </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity
-                                    style={[styles.voiceBtn, recorderState.isRecording && styles.voiceBtnRecording]}
-                                    onPress={startRecording}
-                                >
-                                    <Animated.View style={{
-                                        transform: [{
-                                            scale: recordingAnimation.interpolate({
-                                                inputRange: [0, 1],
-                                                outputRange: [1, 1.2]
-                                            })
-                                        }]
-                                    }}>
-                                        <Ionicons name="mic" size={20} color="#fff"/>
-                                    </Animated.View>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    )}
-
-                    {/* Action Sheet Modal */}
-                    <Modal
-                        animationType="fade"
-                        transparent
-                        visible={actionSheetVisible}
-                        onRequestClose={closeActionSheet}
-                    >
-                        <View style={styles.sheetOverlay}>
-                            <Pressable style={styles.sheetBackdrop} onPress={closeActionSheet}/>
-                            <View style={styles.sheetContainer}>
-                                {!!selectedMsg && (
-                                    <TouchableOpacity style={styles.sheetBtn}
-                                                      onPress={() => replyToMessage(selectedMsg)}>
-                                        <Text style={styles.sheetBtnText}>Reply</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {selectedMsg?.type === 'text' && (
-                                    <TouchableOpacity style={styles.sheetBtn} onPress={copyTextSelected}>
-                                        <Text style={styles.sheetBtnText}>Copy</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {selectedMsg?.type === 'image' && (
-                                    <TouchableOpacity style={styles.sheetBtn} onPress={viewImageSelected}>
-                                        <Text style={styles.sheetBtnText}>View Image</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {selectedMsg?.type === 'file' && (
-                                    <TouchableOpacity style={styles.sheetBtn} onPress={openFileSelected}>
-                                        <Text style={styles.sheetBtnText}>Open</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {/* Share for all types */}
-                                {!!selectedMsg && (
-                                    <TouchableOpacity style={styles.sheetBtn} onPress={shareSelected}>
-                                        <Text style={styles.sheetBtnText}>Share</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {/* Delete for all types */}
-                                {!!selectedMsg && (
-                                    <TouchableOpacity style={[styles.sheetBtn, styles.sheetBtnDestructive]}
-                                                      onPress={startMultiSelectFromAction}>
-                                        <Text
-                                            style={[styles.sheetBtnText, styles.sheetBtnTextDestructive]}>Delete</Text>
-                                    </TouchableOpacity>
-                                )}
-                                <TouchableOpacity style={[styles.sheetBtn]} onPress={closeActionSheet}>
-                                    <Text style={styles.sheetBtnText}>Cancel</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-
-                    {/* Attachment Modal */}
-                    <Modal
-                        animationType="slide"
-                        transparent
-                        visible={attachmentModalVisible}
-                        onRequestClose={() => setAttachmentModalVisible(false)}
-                    >
-                        <View style={styles.attachmentModalOverlay}>
-                            <Pressable style={styles.attachmentModalBackdrop}
-                                       onPress={() => setAttachmentModalVisible(false)}/>
-                            <View style={styles.attachmentModalContainer}>
-                                <Text style={styles.attachmentModalTitle}>Send Attachment</Text>
-                                <TouchableOpacity style={styles.attachmentOption} onPress={openCamera}>
-                                    <Ionicons name="camera" size={24} color="#4CAF50"/>
-                                    <Text style={styles.attachmentOptionText}>Camera</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.attachmentOption} onPress={pickFromGallery}>
-                                    <Ionicons name="images" size={24} color="#4CAF50"/>
-                                    <Text style={styles.attachmentOptionText}>Photo Library</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.attachmentOption} onPress={pickDocument}>
-                                    <Ionicons name="document" size={24} color="#4CAF50"/>
-                                    <Text style={styles.attachmentOptionText}>Document</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.attachmentOption, styles.attachmentCancel]}
-                                    onPress={() => setAttachmentModalVisible(false)}
-                                >
-                                    <Text style={styles.attachmentCancelText}>Cancel</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-                </KeyboardAvoidingView>
-            </View>
+                        </Modal>
+                    </KeyboardAvoidingView>
+                </View>
+            )}
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        zIndex: 10,
+    },
     safe: {
         flex: 1,
         backgroundColor: '#ffff',
     },
     backgroundImage: {
         flex: 1,
-        backgroundColor: '#E8F5E8',
+        backgroundColor: colors.separator,
     },
     container: {
         flex: 1,
@@ -1321,7 +1352,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         borderRadius: 18,
-        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        backgroundColor: `rgba(34, 197, 94, 0.2)`,
     },
     bubble: {
         maxWidth: '100%',
@@ -1378,7 +1409,7 @@ const styles = StyleSheet.create({
     },
     replyLine: {
         width: 3,
-        backgroundColor: '#4CAF50',
+        backgroundColor: colors.primary,
         borderRadius: 2,
         marginRight: 8,
     },
@@ -1388,7 +1419,7 @@ const styles = StyleSheet.create({
     replyAuthor: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#4CAF50',
+        color: colors.primary,
         marginBottom: 2,
     },
     replyText: {
@@ -1416,7 +1447,7 @@ const styles = StyleSheet.create({
     replyBarTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#4CAF50',
+        color: colors.primary,
     },
     replyBarMessage: {
         fontSize: 13,
@@ -1527,7 +1558,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
     },
     sendBtn: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: colors.primary,
         width: 44,
         height: 44,
         borderRadius: 22,
@@ -1543,7 +1574,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     voiceBtn: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: colors.primary,
         width: 44,
         height: 44,
         borderRadius: 22,
@@ -1594,7 +1625,9 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#8BC34A',
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#8BC34A',
         marginRight: 4,
     },
     statusText: {
@@ -1622,7 +1655,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 8,
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+        backgroundColor: `rgba(34, 197, 94, 0.1)`,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -1815,7 +1848,7 @@ const styles = StyleSheet.create({
         minWidth: 80,
     },
     recordingControlBtnPrimary: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: colors.primary,
     },
     recordingControlText: {
         fontSize: 12,

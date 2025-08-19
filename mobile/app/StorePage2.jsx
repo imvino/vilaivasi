@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
-import { router, Stack } from 'expo-router';
+import { router } from 'expo-router';
 import { useScrollToTop } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { colors } from '@/assets/theme';
+import { commonStyles, shadowStyles } from '@/assets/commonStyles';
+import StoreHeader from '@/components/StoreHeader';
 
 const HEADER_HEIGHT = 200;
 const CATEGORY_BAR_HEIGHT = 50;
@@ -117,35 +120,6 @@ const StorePage2 = () => {
 
     return (
         <View style={styles.container}>
-            <Stack.Screen
-                options={{
-                    title: 'Yasin Qasab',
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-                            <Ionicons name='arrow-back' size={24} color='black'/>
-                        </TouchableOpacity>
-                    ),
-                    headerRight: () => (
-                        <View style={styles.headerRightContainer}>
-                            <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name='share-outline' size={24} color='black'/>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.headerButton} onPress={() => router.push('/chat')}>
-                                <Ionicons name='chatbubbles-outline' size={24} color='black'/>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.headerButton}>
-                                <Ionicons name='search-outline' size={24} color='black'/>
-                            </TouchableOpacity>
-                        </View>
-                    ),
-                    headerStyle: {
-                        backgroundColor: '#FFFFFF',
-                        height: 10
-                    },
-                    headerTintColor: '#000000',
-                    headerShadowVisible: false,
-                }}
-            />
             <Animated.ScrollView
                 ref={scrollViewRef}
                 style={styles.scrollView}
@@ -161,52 +135,20 @@ const StorePage2 = () => {
                     updateSelectedCategory(scrollY._value);
                 }}
             >
-                <Animated.View style={[styles.header]}>
-                    <View
-                        style={styles.storeInfoCard}
-                        onLayout={(event) => {
-                            const { height } = event.nativeEvent.layout;
-                            setCardHeight(height);
-                        }}
-                    >
-                        <TouchableOpacity style={styles.infoButton}>
-                            <Ionicons name='information-circle-outline' size={24} color='#666'/>
-                        </TouchableOpacity>
-                        <View style={styles.storeInfoHeader}>
-                            <Image
-                                source={{ uri: 'https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png' }}
-                                style={styles.logo}
-                            />
-                            <View style={styles.storeInfoText}>
-                                <Text style={styles.storeName}>Yasin Qasab</Text>
-                                <Text style={styles.storeDescription}>Fresh Meat & Fish, Chicken, Speciality
-                                    St...</Text>
-                                <View style={styles.ratingContainer}>
-                                    <Ionicons name='star' size={16} color='#FFD700'/>
-                                    <Text style={styles.rating}>4.6 (32 Ratings)</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.deliveryInfo}>
-                            <View style={styles.deliveryInfoItem}>
-                                <Text style={styles.deliveryInfoLabel}>Delivery fee</Text>
-                                <Text style={styles.deliveryInfoValue}>Free</Text>
-                            </View>
-                            <View style={styles.deliveryInfoItem}>
-                                <Text style={styles.deliveryInfoLabel}>Delivery time</Text>
-                                <Text style={styles.deliveryInfoValue}>24 mins</Text>
-                            </View>
-                            <View style={styles.deliveryInfoItem}>
-                                <Text style={styles.deliveryInfoLabel}>Delivered by</Text>
-                                <Text style={styles.deliveryInfoValue}>talabat</Text>
-                            </View>
-                        </View>
-                        <View style={styles.promoContainer}>
-                            <Ionicons name='gift-outline' size={16} color='#FF6347'/>
-                            <Text style={styles.promoText}>Free delivery on your first order</Text>
-                        </View>
-                    </View>
-                </Animated.View>
+                <StoreHeader
+                    headerColors={colors.primary}
+                    onChatPress={() => router.push('/chat')}
+                    onSharePress={() => {
+                    }}
+                    onSearchPress={() => {
+                    }}
+                    onInfoPress={() => {
+                    }}
+                    onLayout={(event) => {
+                        const { height } = event.nativeEvent.layout;
+                        setCardHeight(height);
+                    }}
+                />
 
                 <View style={styles.contentContainer}>
                     {renderCategoryBar()}
@@ -238,19 +180,19 @@ const StorePage2 = () => {
                                   categoryOffsets.current[category] = totalHeight;
                               }}
                         >
-                            <Text style={styles.categoryTitle}>{category}</Text>
+                            <Text style={commonStyles.sectionTitle}>{category}</Text>
                             {products
                                 .filter((product) => product.category === category)
                                 .map((product) => (
-                                    <View key={product.id} style={styles.productItem}>
+                                    <View key={product.id} style={commonStyles.listItem}>
                                         <Image
                                             source={{ uri: `https://cdn.instashop.ae/60aba30aad3fc4584d8908654f604d16_rounded-superstore-mockup-18.png` }}
-                                            style={styles.productImage}
+                                            style={commonStyles.listItemImage}
                                         />
-                                        <View style={styles.productInfo}>
-                                            <Text style={styles.productName}>{product.name}</Text>
+                                        <View style={commonStyles.listItemContent}>
+                                            <Text style={commonStyles.productName}>{product.name}</Text>
                                             <Text style={styles.productWeight}>1 Kg</Text>
-                                            <Text style={styles.productPrice}>IQD {product.price}</Text>
+                                            <Text style={commonStyles.productPrice}>IQD {product.price}</Text>
                                         </View>
                                     </View>
                                 ))}
@@ -258,8 +200,8 @@ const StorePage2 = () => {
                     ))}
                 </View>
 
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Add IQD 5000 to start your order</Text>
+                <View style={commonStyles.footer}>
+                    <Text style={commonStyles.footerText}>Add IQD 5000 to start your order</Text>
                 </View>
             </Animated.ScrollView>
             {showFloatingBar && (
@@ -276,111 +218,17 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    headerButton: {
-        padding: 10,
-    },
-    headerRightContainer: {
-        flexDirection: 'row',
-    },
     scrollView: {
         flex: 1,
     },
-    header: {
-        height: HEADER_HEIGHT,
-        backgroundColor: '#FFF0F5',
-        zIndex: 1,
-    },
-    storeInfoCard: {
-        margin: 16,
-        padding: 16,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
     contentContainer: {
         paddingTop: HEADER_HEIGHT - 150,
-    },
-    infoButton: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        zIndex: 2,
-    },
-    storeInfoHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    logo: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-    },
-    storeInfoText: {
-        flex: 1,
-        marginLeft: 16,
-    },
-    storeName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    storeDescription: {
-        fontSize: 14,
-        color: '#666',
-    },
-    ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 4,
-    },
-    rating: {
-        marginLeft: 4,
-        fontSize: 14,
-    },
-    deliveryInfo: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 16,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
-    },
-    deliveryInfoItem: {
-        alignItems: 'center',
-    },
-    deliveryInfoLabel: {
-        fontSize: 12,
-        color: '#666',
-    },
-    deliveryInfoValue: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginTop: 4,
-    },
-    promoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF0F5',
-        padding: 8,
-        borderRadius: 4,
-        marginTop: 16,
-    },
-    promoText: {
-        marginLeft: 8,
-        fontSize: 12,
-        color: '#FF6347',
     },
     categoryBar: {
         height: CATEGORY_BAR_HEIGHT,
         backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
+        borderBottomColor: colors.separator,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -392,7 +240,7 @@ const styles = StyleSheet.create({
         zIndex: 2,
         backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
+        borderBottomColor: colors.separator,
     },
     floatingCategoryBarContainer: {
         position: 'absolute',
@@ -401,14 +249,7 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 2,
         backgroundColor: 'white',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        ...shadowStyles.large,
     },
     burgerMenu: {
         padding: 10,
@@ -419,58 +260,22 @@ const styles = StyleSheet.create({
     },
     selectedCategory: {
         borderBottomWidth: 2,
-        borderBottomColor: '#FF6347',
+        borderBottomColor: colors.primary,
     },
     categoryText: {
         fontSize: 16,
+        color: colors.text,
     },
     selectedCategoryText: {
-        color: '#FF6347',
+        color: colors.primary,
     },
-    categoryTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        padding: 16,
-    },
-    productItem: {
-        flexDirection: 'row',
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
-    },
-    productImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 8,
-    },
-    productInfo: {
-        marginLeft: 16,
-        flex: 1,
-    },
-    productName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+    // Using commonStyles.sectionTitle, listItem, listItemImage, listItemContent, productName
     productWeight: {
         fontSize: 14,
-        color: '#666',
+        color: colors.muted,
         marginTop: 2,
     },
-    productPrice: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#FF6347',
-        marginTop: 4,
-    },
-    footer: {
-        padding: 16,
-        backgroundColor: '#F3F4F6',
-    },
-    footerText: {
-        textAlign: 'center',
-        fontSize: 14,
-        color: '#666',
-    },
+    // Using commonStyles.productPrice, footer, footerText
 
 });
 

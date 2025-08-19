@@ -1,25 +1,20 @@
 import {
-    View,
-    Text,
-    ScrollView,
+    Dimensions,
     Image,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
-    SafeAreaView,
-    StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
-    Keyboard,
-    StatusBar, Dimensions
+    View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {useEffect, useState} from "react";
+import React from "react";
 import {colors} from '@/assets/theme'
+import {commonStyles} from '@/assets/commonStyles';
 import Header from "@/components/Header";
 import {categories} from "@/constants/category";
 import {Link, router} from "expo-router";
@@ -30,20 +25,20 @@ interface CategoryItemProps {
     isSelected?: boolean;
 }
 
-const CategoryItem: React.FC<CategoryItemProps> = ({ imageUrl, name, isSelected }) => (
+const CategoryItem: React.FC<CategoryItemProps> = ({imageUrl, name, isSelected}) => (
 
-        <Link href={{
-            pathname: '/list',
-            params: { title: name }
-        }}>
-            <View style={styles.categoryItem}>
-        <Image
-            source={{ uri: imageUrl }}
-            style={[styles.categoryImage, isSelected && styles.selectedCategoryImage]}
-        />
-        <Text style={styles.categoryName}>{name}</Text>
-            </View>
-        </Link>
+    <Link href={{
+        pathname: '/list',
+        params: {title: name}
+    }}>
+        <View style={commonStyles.categoryItem}>
+            <Image
+                source={{uri: imageUrl}}
+                style={[commonStyles.categoryImage, isSelected && commonStyles.selectedCategoryImage]}
+            />
+            <Text style={commonStyles.categoryName}>{name}</Text>
+        </View>
+    </Link>
 
 );
 
@@ -56,14 +51,14 @@ interface RestaurantCardProps {
     distance: string;
 }
 
-const RestaurantCard: React.FC<RestaurantCardProps> = ({ imageUrl, name, cuisine, rating, price, distance }) => (
-    <TouchableOpacity style={styles.restaurantCard} onPress={()=>router.push('/StorePage3')}>
-        <Image source={{ uri: imageUrl }} style={styles.restaurantImage} />
-        <Text style={styles.restaurantName}>{name}</Text>
+const RestaurantCard: React.FC<RestaurantCardProps> = ({imageUrl, name, cuisine, rating, price, distance}) => (
+    <TouchableOpacity style={commonStyles.productCard} onPress={() => router.push('/StorePage3')}>
+        <Image source={{uri: imageUrl}} style={commonStyles.productImage}/>
+        <Text style={commonStyles.productName}>{name}</Text>
         <Text style={styles.cuisineText}>{cuisine}</Text>
-        <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={16} color="#FFD700" />
-            <Text style={styles.ratingText}>{rating}</Text>
+        <View style={commonStyles.ratingContainer}>
+            <Ionicons name="star" size={16} color="#FFD700"/>
+            <Text style={commonStyles.ratingText}>{rating}</Text>
             <Text style={styles.distanceText}>{price} • {distance}</Text>
         </View>
     </TouchableOpacity>
@@ -78,15 +73,15 @@ interface RestaurantListItemProps {
     distance: string;
 }
 
-const RestaurantListItem: React.FC<RestaurantListItemProps> = ({ imageUrl, name, cuisine, rating, time, distance }) => (
-    <TouchableOpacity style={styles.listItemContainer} onPress={()=>router.push('/StorePage2')}>
-        <Image source={{ uri: imageUrl }} style={styles.listItemImage} />
-        <View style={styles.listItemDetails}>
-            <Text style={styles.listItemName}>{name}</Text>
-            <Text style={styles.listItemCuisine}>{cuisine}</Text>
-            <View style={styles.listItemRatingContainer}>
-                <Ionicons name="star" size={16} color="#FFD700" />
-                <Text style={styles.listItemRating}>{rating}</Text>
+const RestaurantListItem: React.FC<RestaurantListItemProps> = ({imageUrl, name, cuisine, rating, time, distance}) => (
+    <TouchableOpacity style={styles.listItemContainer} onPress={() => router.push('/StorePage2')}>
+        <Image source={{uri: imageUrl}} style={commonStyles.listItemImage}/>
+        <View style={commonStyles.listItemContent}>
+            <Text style={commonStyles.listItemTitle}>{name}</Text>
+            <Text style={commonStyles.listItemSubtitle}>{cuisine}</Text>
+            <View style={commonStyles.ratingContainer}>
+                <Ionicons name="star" size={16} color="#FFD700"/>
+                <Text style={commonStyles.ratingText}>{rating}</Text>
                 <Text style={styles.listItemTimeDistance}>{time} • {distance}</Text>
             </View>
         </View>
@@ -98,7 +93,12 @@ const Home: React.FC = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, {paddingTop: insets.top}]}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF"/>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.primary}/>
+
+            {/* Header Background (solid color) */}
+            <View
+                style={[styles.headerGradient, {backgroundColor: colors.primary}]}
+            />
             {/*<KeyboardAvoidingView*/}
             {/*    behavior={Platform.OS === "ios" ? "padding" : "height"}*/}
             {/*    style={styles.keyboardAvoidingView}*/}
@@ -108,12 +108,31 @@ const Home: React.FC = () => {
 
             <ScrollView style={styles.scrollView}>
                 {/* Search Bar */}
-                <View style={styles.searchBarContainer}>
-                    <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>
-                    <TextInput
-                        placeholder="Restaurants, groceries, dishes"
-                        style={styles.searchInput}
-                    />
+                {/*<View style={styles.searchBarContainer}>*/}
+                {/*    <Ionicons name="search-outline" size={20} color="#9CA3AF" style={styles.searchIcon}/>*/}
+                {/*    <TextInput*/}
+                {/*        placeholder="Restaurants, groceries, dishes"*/}
+                {/*        placeholderTextColor={colors.muted}*/}
+                {/*        style={styles.searchInput}*/}
+                {/*    />*/}
+                {/*</View>*/}
+
+                <View style={commonStyles.searchContainer}>
+                    <View style={commonStyles.searchBar}>
+                        <Ionicons name="search" size={20} color="#9CA3AF" style={commonStyles.searchIcon}/>
+                        <TextInput
+                            style={commonStyles.searchInput}
+                            placeholder="Restaurants, groceries, dishes"
+                            placeholderTextColor="#9CA3AF"
+                            // value={searchQuery}
+                            // onChangeText={handleSearch}
+                        />
+                        {/*{searchQuery.length > 0 && (*/}
+                        {/*    <TouchableOpacity onPress={() => handleSearch('')}>*/}
+                        {/*        <Ionicons name="close-circle" size={20} color="#9CA3AF" />*/}
+                        {/*    </TouchableOpacity>*/}
+                        {/*)}*/}
+                    </View>
                 </View>
 
                 {/* Categories */}
@@ -133,8 +152,8 @@ const Home: React.FC = () => {
                 </View>
 
                 {/* Top Picks */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Top Picks For You</Text>
+                <View style={commonStyles.sectionContainer}>
+                    <Text style={commonStyles.sectionTitle}>Top Picks For You</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.restaurantsContainer}>
                         <RestaurantCard
                             imageUrl="https://random.imagecdn.app/300/200?restaurant1"
@@ -156,8 +175,8 @@ const Home: React.FC = () => {
                 </View>
 
                 {/* Popular Brands */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Popular Brands</Text>
+                <View style={commonStyles.sectionContainer}>
+                    <Text style={commonStyles.sectionTitle}>Popular Brands</Text>
                     <View style={styles.popularBrandsContainer}>
                         <CategoryItem imageUrl="https://random.imagecdn.app/100/100?mcdonalds" name="McDonald's"/>
                         <CategoryItem imageUrl="https://random.imagecdn.app/100/100?kfc" name="KFC"/>
@@ -167,8 +186,8 @@ const Home: React.FC = () => {
                 </View>
 
                 {/* All Restaurants */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>All Restaurants</Text>
+                <View style={commonStyles.sectionContainer}>
+                    <Text style={commonStyles.sectionTitle}>All Restaurants</Text>
                     <RestaurantListItem
                         imageUrl="https://random.imagecdn.app/120/120"
                         name="Green Leaf Cafe"
@@ -211,56 +230,62 @@ const styles = StyleSheet.create({
     // },
     safeArea: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#FFFFFF',
+        position: 'relative',
     },
-   scrollView: {
+    headerGradient: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 50,
+        zIndex: -1,
+    },
+    scrollView: {
         flex: 1,
     },
+    // Using commonStyles.searchContainer, searchBar, searchIcon, searchInput
     searchBarContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F3F4F6',
+        backgroundColor: colors.separator,
         borderRadius: 8,
         margin: 16,
         paddingHorizontal: 12,
         height: 40, // Set the height to 40
     },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 14,
-        color: '#111827',
-        height: '100%', // Make the input take full height of the container
-        padding: 0, // Remove default padding
-    },
+    // searchBarContainer: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     backgroundColor: '#FFFFFF',
+    //     borderRadius: 25,
+    //     margin: 16,
+    //     marginTop: 8,
+    //     paddingHorizontal: 16,
+    //     height: 48,
+    //     shadowColor: '#000',
+    //     shadowOffset: {
+    //         width: 0,
+    //         height: 2,
+    //     },
+    //     shadowOpacity: 0.1,
+    //     shadowRadius: 3,
+    //     elevation: 3,
+    // },
+    // Using commonStyles.searchIcon, searchInput
+    // searchInput: {
+    //     flex: 1,
+    //     fontSize: 16,
+    //     color: colors.text,
+    //     height: '100%',
+    //     padding: 0,
+    //     fontWeight: '400',
+    // },
     categoriesContainer: {
         paddingLeft: 16,
         marginBottom: 16,
     },
-    categoryItem: {
-        alignItems: 'center',
-        marginRight: 16,
-        width: 80, // Fixed width for each category item
-    },
-    categoryName: {
-        fontSize: 11,
-        fontWeight: '500',
-        textAlign: 'center',
-        height: 32, // Fixed height for two lines of text
-    },
-    categoryImage: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        marginBottom: 4,
-        marginTop:3
-    },
-    selectedCategoryImage: {
-        borderWidth: 2,
-        borderColor: colors.primary,
-    },
+    // Using commonStyles.categoryItem, categoryName, categoryImage, selectedCategoryImage
     bannerContainer: {
         width: '100%',
         aspectRatio: 1920 / 600, // Adjust this ratio based on the actual dimensions of your GIF
@@ -291,53 +316,22 @@ const styles = StyleSheet.create({
         color: colors.primary,
         fontWeight: 'bold',
     },
-    sectionContainer: {
-        marginTop: 16,
-        paddingHorizontal: 16,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 12,
-    },
+    // Using commonStyles.sectionContainer, sectionTitle
     restaurantsContainer: {
         marginLeft: -16,
         paddingLeft: 16,
         marginBottom: 16,
     },
-    restaurantCard: {
-        width: 250,
-        marginRight: 16,
-    },
-    restaurantImage: {
-        width: '100%',
-        height: 150,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    restaurantName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
+    // Using commonStyles.productCard, productImage, productName
     cuisineText: {
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.muted,
         marginBottom: 4,
     },
-    ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    ratingText: {
-        fontSize: 14,
-        fontWeight: '500',
-        marginLeft: 4,
-        marginRight: 8,
-    },
+    // Using commonStyles.ratingContainer, ratingText
     distanceText: {
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.muted,
     },
     popularBrandsContainer: {
         flexDirection: 'row',
@@ -347,7 +341,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         borderTopWidth: 1,
-        borderTopColor: '#E5E5E5',
+        borderTopColor: colors.separator,
         paddingVertical: 8,
     },
     navItem: {
@@ -355,7 +349,7 @@ const styles = StyleSheet.create({
     },
     navText: {
         fontSize: 12,
-        color: '#6B7280',
+        color: colors.muted,
         marginTop: 4,
     },
     activeNavText: {
@@ -367,44 +361,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E5E5',
+        borderBottomColor: colors.separator,
         paddingBottom: 16,
     },
-    listItemImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 8,
-        marginRight: 16,
-    },
-    listItemDetails: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    listItemName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 4,
-    },
-    listItemCuisine: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 4,
-    },
-    listItemRatingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    listItemRating: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#333',
-        marginLeft: 4,
-        marginRight: 8,
-    },
+    // Using commonStyles.listItemImage, listItemContent, listItemTitle, listItemSubtitle, ratingContainer, ratingText
     listItemTimeDistance: {
         fontSize: 14,
-        color: '#666',
+        color: colors.muted,
     },
 });
 
