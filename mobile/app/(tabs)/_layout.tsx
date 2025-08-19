@@ -63,11 +63,11 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="cart"
+                name="chats"
                 options={{
-                    title: 'Cart',
+                    title: 'Chats',
                     tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon name={focused ? 'cart' : 'cart-outline'} color={color} type={'Ionicons'} />
+                        <TabBarIcon name={focused ? 'chatbubbles' : 'chatbubbles-outline'} color={color} type={'Ionicons'} />
                     ),
                 }}
             />
