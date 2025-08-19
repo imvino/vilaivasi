@@ -1279,18 +1279,6 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-    cancelRecordingBtn: {
-        backgroundColor: '#EF4444',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
-        marginLeft: 12,
-    },
-    cancelRecordingText: {
-        color: '#FFFFFF',
-        fontSize: 12,
-        fontWeight: '600',
-    },
     safe: {
         flex: 1,
         backgroundColor: '#ffff',
@@ -1534,10 +1522,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
     },
-    emojiBtn: {
-        padding: 4,
-        marginLeft: 4,
-    },
     iconBtn: {
         padding: 8,
         borderRadius: 25,
@@ -1617,64 +1601,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'rgba(255,255,255,0.8)',
     },
-    selectAllText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#FFFFFF',
-    },
     // Media styles
     image: {
         width: MEDIA_WIDTH,
         aspectRatio: 4 / 3,
         borderRadius: 12,
     },
-    imageOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 40,
-        borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12,
-    },
     bubbleMedia: {
         paddingHorizontal: 4,
         paddingVertical: 4,
-    },
-    // Audio styles
-    audioRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        minWidth: 200,
-        paddingVertical: 4,
-    },
-    audioButton: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 8,
-    },
-    audioWaveform: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-        height: 20,
-        marginHorizontal: 8,
-    },
-    waveBar: {
-        width: 3,
-        height: 10,
-        backgroundColor: '#4CAF50',
-        borderRadius: 2,
-        marginHorizontal: 1,
-    },
-    audioDuration: {
-        fontSize: 12,
-        color: '#6B7280',
-        marginLeft: 8,
     },
     // File styles
     fileRow: {
@@ -1731,36 +1666,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#6B7280',
         marginHorizontal: 2,
     },
-    // Recording overlay
-    recordingOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-    recordingContainer: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    recordingBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
     recordingInfo: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -1770,28 +1675,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#111827',
         marginLeft: 8,
-    },
-    slideIndicator: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    slideText: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginLeft: 4,
-    },
-    cancelIndicator: {
-        position: 'absolute',
-        bottom: -40,
-        left: 0,
-        right: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    cancelText: {
-        fontSize: 14,
-        color: '#EF4444',
-        fontWeight: '600',
     },
     // Background and other styles
     modalContainer: {
